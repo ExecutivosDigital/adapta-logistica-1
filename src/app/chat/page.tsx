@@ -1,51 +1,34 @@
 "use client";
-import { handleSendStreamMessage } from "@/utils/chatFunctions";
-import { useState } from "react";
+import Image from "next/image";
+import { Section } from "./SectionGemini";
 
-export default function Chat() {
-  const [message, setMessage] = useState("");
-  const [threadId, setThreadId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<
-    {
-      content: string;
-      role: "user" | "assistant";
-    }[]
-  >([]);
-  const [isMessageLoading, setIsMessageLoading] = useState(false);
-
-  const handleSendMessageWrapper = () => {
-    handleSendStreamMessage({
-      assistantId: "asst_3wZYpIdbfLaxC0DEi21R2h46",
-      inputMessage: message,
-      threadId: threadId,
-      setMessages: setMessages,
-      setThreadId: setThreadId,
-      setIsMessageLoading: setIsMessageLoading,
-      isStream: true,
-    });
-  };
-
+export default function BranchesList() {
   return (
-    <div className="h-screen w-full">
-      <div className="flex h-[80%] w-full flex-col">
-        {messages.map((message, index) => (
-          <div key={index}>{message.content}</div>
-        ))}
+    <div className="bg-primary h-screen max-h-screen w-full p-4 pb-0 lg:p-8">
+      <div className="relative flex h-[calc(100vh-16px)] max-h-[calc(100vh-16px)] w-full flex-col rounded-t-2xl bg-white py-4 lg:h-[calc(100vh-32px)] lg:max-h-[calc(100vh-32px)] lg:p-8">
+        <div>
+          <Image
+            src="/logo/ai-icon.png"
+            alt=""
+            width={500}
+            height={750}
+            className="absolute top-5 right-5 h-10 w-max object-contain lg:h-40"
+          />
+        </div>
+        <div className="flex w-full flex-1 flex-col">
+          <div className="flex flex-col items-center gap-4 px-2 lg:mx-auto lg:w-max lg:px-0">
+            <span className="text-2xl font-bold">Adapta.AI</span>
+            <span className="text-center text-sm lg:w-2/3 lg:text-xl">
+              Esta seção auxilia com tudo referente à empresa, incluindo PDFs,
+              transcrição de áudio, explicação, resumo de arquivos,
+              identificação de imagens e vídeos.
+            </span>
+          </div>
+          <div className="mt-16 flex h-full flex-col">
+            <Section />
+          </div>
+        </div>
       </div>
-
-      <input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="border-2 border-black"
-      />
-
-      <button onClick={handleSendMessageWrapper}>
-        {isMessageLoading ? (
-          <div className="h-10 w-10 animate-spin rounded-full border-r border-b border-l border-red-500 duration-200" />
-        ) : (
-          "Enviar"
-        )}
-      </button>
     </div>
   );
 }

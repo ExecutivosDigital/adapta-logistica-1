@@ -9,138 +9,188 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/cn";
-import { ArrowLeft, ChevronsUpDown } from "lucide-react";
+import {
+  ArrowLeft,
+  Ban,
+  ChevronRight,
+  ChevronsUpDown,
+  EllipsisVertical,
+  PlusSquare,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function UnitDetails() {
   const router = useRouter();
   const columns = [
-    { key: "name", label: "Nome do Participante" },
+    { key: "actions", label: "Ações" },
+    { key: "name", label: "Colaboradores" },
     { key: "access", label: "Nível de Acesso" },
-    { key: "email", label: "Email" },
+    { key: "role", label: "Cargo" },
+    { key: "businessUnits", label: "Unidades de Negócio" },
   ];
 
   const rows = [
     {
       id: "1",
+      actions: "",
       name: "Alex Marin",
       access: "Master",
-      email: "gabriel.antonio@email.com",
+      role: "Administrativo",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "2",
-      name: "Alex Marin",
-      access: "Gestão",
-      email: "gabriel.antonio@email.com",
+      actions: "",
+      name: "João Stel",
+      access: "Admin",
+      role: "Financeiro",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "3",
-      name: "Alex Marin",
-      access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      actions: "",
+      name: "João Souza",
+      access: "Executivo",
+      role: "Compliance",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "4",
-      name: "Alex Marin",
+      actions: "",
+      name: "Marin Alex",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Tecnologia da Informação",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "5",
-      name: "Alex Marin",
+      actions: "",
+      name: "Pedro Oliveira",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Comercial",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "6",
-      name: "Alex Marin",
+      actions: "",
+      name: "Paulo Amaro",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Produto",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "7",
-      name: "Alex Marin",
+      actions: "",
+      name: "Bruna Adélia",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Logística",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "8",
-      name: "Alex Marin",
+      actions: "",
+      name: "Carlos Alberto de Paula",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "CEO",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
+    // ———————— Placeholders adicionais ————————
     {
       id: "9",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 9",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 9",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "10",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 10",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 10",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "11",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 11",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 11",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "12",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 12",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 12",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "13",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 13",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 13",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "14",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 14",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 14",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "15",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 15",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 15",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "16",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 16",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 16",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "17",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 17",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 17",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "18",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 18",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 18",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "19",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 19",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 19",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
     {
       id: "20",
-      name: "Alex Marin",
+      actions: "",
+      name: "Usuário Exemplo 20",
       access: "Operacional",
-      email: "gabriel.antonio@email.com",
+      role: "Departamento 20",
+      businessUnits: "Ver todas Unidade de Negócios",
     },
   ];
 
@@ -172,24 +222,39 @@ export default function UnitDetails() {
             </span>
           </div>
           <div className="mt-16 flex h-[calc(100%-150px)] w-full flex-col gap-4">
-            <div className="flex items-center gap-8">
-              <span className="text-xl font-semibold">Nome da Unidade</span>
-              <div className="text-primary border-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1">
-                <span className="font-semibold">Alterar Unidade</span>
-                <ChevronsUpDown />
-              </div>
-            </div>
-            <div className="flex h-[calc(100%-36px)] w-full">
-              <div className="flex h-[calc(100%-150px)] w-1/2 flex-col">
-                <div className="relative flex w-full border-b border-b-zinc-200">
-                  <div className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
-                    Membros da Unidade
-                  </div>
-                  <div className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent">
-                    Níveis de Acesso
+            <div className="flex w-full flex-row items-center justify-between">
+              <div className="flex flex-1 flex-col gap-4">
+                <div className="flex items-center gap-8">
+                  <span className="text-xl font-semibold">
+                    Filial de (Cidade)
+                  </span>
+                  <div className="text-primary border-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1">
+                    <span className="font-semibold">Alterar Unidade</span>
+                    <ChevronsUpDown />
                   </div>
                 </div>
-                <ScrollArea className="h-full w-full">
+              </div>
+              <div className="text-primary border-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1">
+                <PlusSquare />
+                <span className="font-semibold">Adicionar novo Usuário</span>
+              </div>
+            </div>
+
+            <div className="flex h-[calc(100%-36px)] w-full">
+              <div className="flex w-full flex-col">
+                <div className="relative flex w-full border-b border-b-zinc-200">
+                  <div className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
+                    Unid. de Negócios
+                  </div>
+                  <div className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent">
+                    Informações da Filial
+                  </div>
+                  <div className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent">
+                    Usuários da Filial
+                  </div>
+                </div>
+
+                <ScrollArea className="h-[calc(100%-150px)] w-full">
                   <Table>
                     <TableHeader>
                       <TableRow className="gap-[1px]">
@@ -201,8 +266,7 @@ export default function UnitDetails() {
                             <p
                               className={cn(
                                 "text-center",
-                                column.key === "name" && "text-start",
-                                column.key === "email" && "text-end",
+                                column.key === "actions" && "text-start",
                               )}
                             >
                               {column.label}
@@ -220,49 +284,37 @@ export default function UnitDetails() {
                           }
                           className="hover:bg-primary/10 h-10 max-h-10 cursor-pointer text-center transition duration-200"
                         >
-                          <TableCell className="text-sm font-medium whitespace-nowrap">
-                            <div className="mr-auto flex w-max items-center gap-2">
-                              <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-full">
-                                <Image
-                                  src="/logo/icon-white.png"
-                                  alt=""
-                                  width={100}
-                                  height={100}
-                                  className="h-6 w-6 object-contain"
-                                />
-                              </div>
+                          <TableCell className="flex h-full items-center gap-2 text-sm font-medium whitespace-nowrap">
+                            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
+                              <EllipsisVertical />
+                            </div>
+                            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
+                              <Ban />
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-s0.5 text-sm font-medium whitespace-nowrap">
+                            <div className="mx-auto flex w-max items-center gap-2">
+                              <div className="bg-primary h-6 w-6 rounded-full" />
                               {row.name}
-                              <div
-                                className={cn(
-                                  "rounded-md bg-zinc-200 px-1 py-0.5 text-zinc-600",
-                                  row.access !== "Master" && "hidden",
-                                )}
-                              >
-                                Criador da Unidade
-                              </div>
                             </div>
                           </TableCell>
                           <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
                             {row.access}
                           </TableCell>
                           <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
-                            {row.email}
+                            <div className="mx-auto flex w-max items-center gap-2">
+                              {row.role}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-primary m-auto flex h-full w-max items-center gap-1 py-2 text-sm font-medium whitespace-nowrap underline">
+                            Acessar Unidade de Negócios
+                            <ChevronRight />
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </ScrollArea>
-              </div>
-              <div className="flex h-full w-1/2 flex-col items-center justify-center">
-                <div className="flex h-full w-2/3 flex-col rounded-t-2xl border border-b-0 border-zinc-200 shadow-sm">
-                  <div className="flex w-full flex-col border-b border-b-zinc-200 px-16 py-8">
-                    <span className="font-semibold">
-                      Dados da Unidade de Negócios
-                    </span>
-                    <span>Responsável pela Unidade</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
