@@ -78,8 +78,7 @@ export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const client = new OpenAI({
-    apiKey:
-      "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",
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
 
