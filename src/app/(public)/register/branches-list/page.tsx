@@ -167,18 +167,24 @@ export default function BranchesList() {
                   <ChevronsUpDown className="text-zinc-400" />
                 </div>
               </div>
-              <button className="border-primary text-primary flex items-center gap-2 rounded-lg border p-1">
+              <button
+                onClick={() => router.push("/register/new-branch")}
+                className="border-primary text-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1"
+              >
                 <PlusSquare />
                 <span>Adicionar mais uma filial</span>
               </button>
             </div>
             <div className="relative flex w-full border-b border-b-zinc-200">
-              <div className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
+              <button className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
                 Filiais Cadastradas
-              </div>
-              <div className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent">
+              </button>
+              <button
+                onClick={() => router.push("/register/new-branch")}
+                className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent"
+              >
                 Informações do CNPJ
-              </div>
+              </button>
             </div>
             <ScrollArea className="h-[calc(100%-150px)] w-full">
               <Table>
