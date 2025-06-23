@@ -19,10 +19,10 @@ import {
   ChevronsUpDown,
   Loader2,
   Pencil,
-  PlusSquare,
   Upload,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 
@@ -72,6 +72,7 @@ const members = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -215,18 +216,17 @@ export default function Home() {
                   <ChevronsUpDown className="text-zinc-400" />
                 </div>
               </div>
-              <button className="border-primary text-primary flex items-center gap-2 rounded-lg border p-1">
-                <PlusSquare />
-                <span>Adicionar mais uma filial</span>
-              </button>
             </div>
             <div className="relative flex w-full border-b border-b-zinc-200">
-              <div className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent">
+              <button
+                onClick={() => router.push("/register/branches-list")}
+                className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent"
+              >
                 Filiais Cadastradas
-              </div>
-              <div className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
+              </button>
+              <button className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
                 Informações do CNPJ
-              </div>
+              </button>
             </div>
             <div className="w-full rounded-xl border border-gray-300">
               <div className="flex w-full justify-between px-6 py-4">
