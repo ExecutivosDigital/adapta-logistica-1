@@ -167,7 +167,10 @@ export default function BranchesList() {
                   <ChevronsUpDown className="text-zinc-400" />
                 </div>
               </div>
-              <button className="border-primary text-primary flex items-center gap-2 rounded-lg border p-1">
+              <button
+                onClick={() => router.push("/register/new-branch")}
+                className="border-primary text-primary flex items-center gap-2 rounded-lg border p-1"
+              >
                 <PlusSquare />
                 <span>Adicionar mais uma filial</span>
               </button>
