@@ -209,7 +209,7 @@ export default function UnitDetails() {
           alt=""
           width={500}
           height={750}
-          className="absolute top-5 right-5 h-40 w-max object-contain"
+          className="absolute top-5 right-5 h-28 w-max object-contain"
         />
         <div className="flex h-full w-full flex-col">
           <div className="mx-auto flex w-max flex-col items-center gap-4">
@@ -280,7 +280,7 @@ export default function UnitDetails() {
                         <TableRow
                           key={row.id}
                           onClick={() =>
-                            router.push("/register/branch-details")
+                            router.push("/register/branch-overview")
                           }
                           className="hover:bg-primary/10 h-10 max-h-10 cursor-pointer text-center transition duration-200"
                         >

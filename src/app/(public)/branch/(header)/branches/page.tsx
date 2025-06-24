@@ -21,7 +21,7 @@ export default function RegisterBranches() {
         <span>Voltar</span>
       </button>
       <div className="flex h-screen w-5/12 flex-col items-center justify-center">
-        <div className="flex h-full w-11/12 flex-col gap-8 py-8 pt-14">
+        <div className="flex h-1/2 w-11/12 flex-col gap-8">
           <Image
             src="/logo/logo.png"
             alt=""

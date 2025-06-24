@@ -71,7 +71,7 @@ const members = [
   },
 ];
 
-export default function Home() {
+export default function BranchOverview() {
   const router = useRouter();
   const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -192,12 +192,12 @@ export default function Home() {
           alt=""
           width={500}
           height={750}
-          className="absolute top-5 right-5 h-40 w-max object-contain"
+          className="absolute top-5 right-5 h-28 w-max object-contain"
         />
         <div className="flex h-full w-full flex-col">
           <div className="mx-auto flex w-max flex-col items-center gap-4">
             <span className="text-2xl font-bold">
-              Lista de Filiais Cadastradas
+              Detalhes das Unidades de Negócios
             </span>
             <span className="w-2/3 text-center text-xl">
               Texto referente a explicar que aqui conseguimos acessas listadas,
@@ -208,7 +208,7 @@ export default function Home() {
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-8">
                 <span className="text-xl font-semibold">
-                  Filiais do Negócio
+                  Filial de (Cidade)
                 </span>
                 <div className="flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1">
                   <span className="font-semibold">43.795.283/0001-18</span>
@@ -221,10 +221,13 @@ export default function Home() {
                 onClick={() => router.push("/register/branches-list")}
                 className="flex h-12 w-60 cursor-pointer items-center justify-center border-b border-b-transparent"
               >
-                Filiais Cadastradas
+                Unid. de Negócios
               </button>
               <button className="text-primary border-b-primary flex h-12 w-60 cursor-pointer items-center justify-center border-b">
-                Informações do CNPJ
+                Informações da Filial
+              </button>
+              <button className="flex h-12 w-60 cursor-pointer items-center justify-center border-b">
+                Usuários da Filial
               </button>
             </div>
             <div className="w-full rounded-xl border border-gray-300">
@@ -332,33 +335,24 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-                  <div className="col-span-3 w-10/12 text-gray-800">
-                    Atividade Economica Principal (CNAE)
-                  </div>
-                  <div className="col-span-8 text-gray-800">
-                    {summary
-                      ? summary.mainActivity
-                      : "Atividade Economica Principal"}
-                  </div>
-                  <div className="col-span-1">
-                    <button className="text-primary">Editar {">"}</button>
-                  </div>
-                </div>
               </div>
               <div className="flex w-full flex-col gap-4">
                 <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
                   <div className="col-span-3 w-10/12 text-gray-800">
-                    Atividades Econômicas Secundarias (CNAE)
+                    Descrição da Atividade Econômica (CNAE)
                   </div>
                   <textarea
                     disabled
                     ref={textareaRef}
-                    className="col-span-8 h-max w-full resize-none text-gray-800"
+                    className="col-span-8 h-max min-h-32 w-full resize-none text-gray-800"
                     value={
                       summary
                         ? summary.secondaryActivities
-                        : "Atividades Econômicas Secundarias"
+                        : `4930-2/01 – Transporte rodoviário de carga, exceto produtos perigosos e mudanças municipais
+
+4930-2/02 – Transporte rodoviário de carga, exceto produtos perigosos e mudanças interestaduais e internacionais
+
+4930-2/03 – Transporte rodoviário de produtos perigosos`
                     }
                   />
                   <div className="col-span-1">

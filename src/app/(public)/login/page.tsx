@@ -22,8 +22,8 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen w-full">
-      <div className="flex h-screen w-5/12 flex-col items-center justify-center">
-        <div className="flex h-1/2 w-11/12 flex-col gap-8">
+      <div className="flex h-screen w-full flex-col items-center justify-center p-4 md:p-0 lg:w-5/12">
+        <div className="flex h-full w-full flex-col items-center gap-8 lg:h-full lg:w-11/12 lg:items-start lg:py-8">
           <Image
             src="/logo/logo.png"
             alt=""
@@ -35,7 +35,7 @@ export default function Login() {
             <span className="text-2xl font-bold">
               Acessar Escritório Adapta
             </span>
-            <span className="w-1/2 text-xl">
+            <span className="text-sm lg:text-xl">
               Gestão inteligente para uma logística moderna, tudo o que você
               precisa para rendimento{" "}
               <span className="text-primary">{""} #AdaptSe</span>
@@ -43,7 +43,7 @@ export default function Login() {
           </div>
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="flex w-2/3 flex-col gap-8"
+            className="flex w-full flex-col gap-8 lg:w-2/3"
           >
             <div className="relative">
               <Label htmlFor="email" className="border-default-900 text-lg">
@@ -93,8 +93,8 @@ export default function Login() {
                   </Label>
                 </div>
                 <Link
-                  href="#"
-                  className="text-primary hover:text-primary/90 flex-none font-bold"
+                  href="/recover-password"
+                  className="text-primary hover:text-primary/90 flex-none text-sm font-bold"
                 >
                   Esqueceu a senha?
                 </Link>
@@ -106,7 +106,7 @@ export default function Login() {
             >
               Entrar Agora
             </button>
-            <span className="mx-auto">
+            <span className="mx-auto text-center md:text-start">
               Novo aqui no Adapta?
               <span className="text-primary cursor-pointer font-semibold">
                 {""} Conheça o Grupo Agora
@@ -115,7 +115,7 @@ export default function Login() {
           </form>
         </div>
       </div>
-      <div className="bg-primary relative flex h-screen w-7/12 items-center justify-center p-8">
+      <div className="bg-primary relative hidden h-screen w-7/12 items-center justify-center p-8 lg:flex">
         <Image
           src="/static/login-bg.png"
           alt=""

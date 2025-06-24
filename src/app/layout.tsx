@@ -23,9 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${poppins.variable}`}>
-        <ContextProviders>{children}</ContextProviders>
-      </body>
+      <ContextProviders>
+        <body className={`${poppins.variable}`}>{children}</body>
+      </ContextProviders>
     </html>
   );
 }
