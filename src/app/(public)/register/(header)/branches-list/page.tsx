@@ -149,7 +149,7 @@ export default function BranchesList() {
           {rows.map((row) => (
             <TableRow
               key={row.id}
-              onClick={() => router.push("/branch/branch-details")}
+              onClick={() => router.push("/branch")}
               className="hover:bg-primary/10 h-14 cursor-pointer py-8 text-center transition duration-200"
             >
               {/* AÇÕES – 28 px, sem padding */}

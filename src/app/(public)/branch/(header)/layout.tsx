@@ -12,15 +12,15 @@ export default function RegisterLayout({
   const router = useRouter();
 
   const routes = [
-    { id: "1", name: "Filiais Cadastradas", route: "/register/branches-list" },
-    { id: "2", name: "Informações da Matriz", route: "/register/new-branch" },
+    { id: "1", name: "Unid. de Negócios", route: "/branch" },
+    { id: "2", name: "Informações da Filial", route: "/branch/branch-details" },
     {
       id: "3",
-      name: "Planejamento Orçamentário",
-      route: "/register/budget",
+      name: "Usuários da Filial",
+      route: "/branch/branch-users",
     },
-    { id: "4", name: "Centro de Resultados", route: "/register/result-center" },
-    { id: "5", name: "Usuários", route: "/register/user" },
+    { id: "4", name: "Contas da Filial", route: "/branch4" },
+    { id: "5", name: "Centro de Resultados", route: "/branch/result-center" },
   ];
   const pathname = usePathname();
 
@@ -52,11 +52,9 @@ export default function RegisterLayout({
           {/* Seção de Títulos e Texto */}
           <div className="flex w-full flex-col">
             <div className="mx-auto flex w-max flex-col items-center gap-4">
-              <span className="text-2xl font-bold">
-                Lista de Filiais Cadastradas
-              </span>
+              <span className="text-2xl font-bold">Processo de Cadastro</span>
               <span className="w-2/3 text-center text-xl">
-                Texto referente a explicar que aqui conseguimos acessar as
+                Texto referente a explicar que aqui conseguimos acessas
                 listadas, cadastrar e também acessar as Unidades de Negócios.
               </span>
             </div>
@@ -67,9 +65,7 @@ export default function RegisterLayout({
             {/* Controles: Dropdown e Botão "Adicionar" */}
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-8">
-                <span className="text-xl font-semibold">
-                  Filiais do Negócio
-                </span>
+                <span className="text-xl font-semibold">Curitiba - Paraná</span>
                 <div className="flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1">
                   <span className="font-semibold">43.795.283/0001-18</span>
                   <ChevronsUpDown className="text-zinc-400" />

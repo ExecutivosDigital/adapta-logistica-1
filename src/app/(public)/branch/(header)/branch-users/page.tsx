@@ -1,4 +1,5 @@
 "use client";
+import { OrangeButton } from "@/components/OrangeButton";
 import {
   Table,
   TableBody,
@@ -8,122 +9,95 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/cn";
-import { ChevronRight, EllipsisVertical } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { ChevronRight, EllipsisVertical, Plus, Search } from "lucide-react";
+import { useState } from "react";
 
 export default function BranchesList() {
-  const router = useRouter();
   const columns = [
     { key: "actions", label: "Ações" },
-    { key: "name", label: "Razão Social" },
-    { key: "CNPJ", label: "CNPJ" },
-    { key: "place", label: "Cidade e Estado" },
-    { key: "unit", label: "Acesso à Filial" },
+    { key: "name", label: "Colaboradores" },
+    { key: "access", label: "Nível de Acesso" },
+    { key: "role", label: "Cargo" },
+    { key: "unit", label: "Unidades de Negócio" },
   ];
 
   const rows = [
     {
       id: "1",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-      parentCompany: true,
+      name: "Alex Marin",
+      access: "Master",
+      role: "Administrativo",
+      unit: "Unidades de Negócio Vinculadas",
+      isResponsible: true,
     },
     {
       id: "2",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "João Stel",
+      access: "Admin",
+      role: "Financeiro",
+      unit: "Unidades de Negócio Vinculadas",
     },
     {
       id: "3",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "João Souza",
+      access: "Executivo",
+      role: "Compliance",
+      unit: "Unidades de Negócio Vinculadas",
     },
     {
       id: "4",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "Marin",
+      access: "Operacional",
+      role: "Tecnologia da Informação",
+      unit: "Unidades de Negócio Vinculadas",
     },
     {
       id: "5",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "Pedro Oliveira",
+      access: "Operacional",
+      role: "Comercial",
+      unit: "Unidades de Negócio Vinculadas",
     },
     {
       id: "6",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "Paulo Amaro",
+      access: "Operacional",
+      role: "Produto",
+      unit: "Unidades de Negócio Vinculadas",
     },
     {
       id: "7",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "Bruna Adélia",
+      access: "Operacional",
+      role: "Logística",
+      unit: "Unidades de Negócio Vinculadas",
     },
     {
       id: "8",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "9",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "10",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "11",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "12",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "13",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "14",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "15",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "16",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
+      name: "Carlos Alberto de Paula",
+      access: "Operacional",
+      role: "CEO",
+      unit: "Unidades de Negócio Vinculadas",
     },
   ];
-
+  const [value, setValue] = useState("");
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex-ro flex w-full items-center justify-between">
+        <div className="border-primary text-primary flex flex-row items-center gap-2 rounded-lg border p-1">
+          <Search />
+          <input
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            type="text"
+            placeholder="Pesquisar"
+            className="bg-transparent outline-none focus:outline-none"
+          />
+        </div>
+        <OrangeButton iconPosition="left" icon={<Plus />} className="gap-2">
+          Adicionar novo Usuário
+        </OrangeButton>
+      </div>
       <Table className="border-collapse">
         <TableHeader>
           <TableRow className="gap-1">
@@ -149,7 +123,6 @@ export default function BranchesList() {
           {rows.map((row) => (
             <TableRow
               key={row.id}
-              onClick={() => router.push("/branch/branch-details")}
               className="hover:bg-primary/10 h-14 cursor-pointer py-8 text-center transition duration-200"
             >
               {/* AÇÕES – 28 px, sem padding */}
@@ -164,9 +137,9 @@ export default function BranchesList() {
                 <div className="flex items-center gap-4 text-center">
                   <span className="bg-primary h-5 w-5 rounded-full" />
                   {row.name}
-                  {row.parentCompany && (
+                  {row.isResponsible && (
                     <span className="flex items-center justify-center rounded-lg bg-[#EEEFF2] p-2 font-bold text-[#6C7386]">
-                      Matriz
+                      Responsável Filial
                     </span>
                   )}
                 </div>
@@ -174,20 +147,11 @@ export default function BranchesList() {
 
               {/* demais colunas... */}
               <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                {row.CNPJ}
+                {row.access}
               </TableCell>
 
-              <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
-                <div className="flex items-center gap-2">
-                  <Image
-                    src="/icons/city.png"
-                    alt=""
-                    width={96}
-                    height={96}
-                    className="h-5 w-5 object-contain"
-                  />
-                  {row.place}
-                </div>
+              <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                {row.role}
               </TableCell>
 
               <TableCell className="text-primary flex items-end justify-end gap-1 py-2 text-end text-sm font-medium whitespace-nowrap underline">
