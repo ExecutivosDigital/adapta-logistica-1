@@ -87,9 +87,9 @@ const NAV: { heading: string; items: Item[] }[] = [
         href: "/private/workflow/compras",
       },
       {
-        label: "Confirmação de Compras",
+        label: "Aprovação de Compras",
         icon: CheckSquare,
-        href: "/private/workflow/confirmacao",
+        href: "/purchase-approval",
       },
       {
         label: "Pagamentos",
@@ -258,16 +258,17 @@ function SidebarItem({
   const Icon = item.icon;
 
   const base =
-    "group flex items-center gap-3 w-full rounded-md px-3 py-2 text-sm font-medium transition-all duration-300";
+    "group flex group items-center gap-3 w-full rounded-md px-3 py-2 text-sm font-medium transition-all duration-300";
 
   /* estilos */
   const cls = clsx(base, {
     // 👇 Se nem ele nem o pai estiverem ativos, usa hover padrão
     "bg-white text-primary": isSub && active,
-    "hover:bg-zinc-600/80 hover:text-white": !active && !parentActive,
+    "hover:bg-zinc-600/80 hover:text-white text-zinc-500":
+      !active && !parentActive,
 
     // 👇 Pai ativo, eu NÃO ativo → estilo “herdado”
-    "bg-zinc-400/60 hover:bg-zinc-400/80 ": parentActive && !active,
+    "bg-zinc-400/60 hover:bg-zinc-400/80  ": parentActive && !active,
 
     // 👇 Eu ativo (prioridade maior que herdado)
     "": active,
@@ -289,7 +290,7 @@ function SidebarItem({
               ? "text-white"
               : !isSub && active
                 ? "text-white"
-                : "text-black",
+                : "text-zinc-500 group-hover:text-white",
         )}
       />
       {!collapsed && <span className="truncate">{item.label}</span>}
