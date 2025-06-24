@@ -11,12 +11,12 @@ export default function PrivateLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="lg:flex">
+      <div className="lg:flex lg:bg-[#FAFBFD]">
         <Sidebar />
 
         {/* conteúdo: já considera 16 rem (64) ou 4 rem (16) de sidebar.
             A largura real vem de CSS var no peer-selector */}
-        <div className="flex min-h-screen flex-1 flex-col bg-white transition-[padding] duration-200 lg:pl-[--sidebar-width]">
+        <div className="flex min-h-screen flex-1 flex-col border-l border-l-zinc-200 bg-white transition-[padding] duration-200 lg:pl-[--sidebar-width]">
           <Header />
           <main className="flex-1 p-4 lg:px-20">{children}</main>
         </div>

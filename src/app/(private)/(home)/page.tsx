@@ -1,8 +1,10 @@
 import { ChevronRight } from "lucide-react";
 import { HomeButtonGroup } from "./components/button-group";
 import { HomeCategoryList } from "./components/category-list";
+import { HomeFinancialLists } from "./components/financial-lists";
 import { HomeGoalCards } from "./components/goal-cards";
 import { HomeResultsGraph } from "./components/results-graph";
+import { HomeTransactions } from "./components/transactions";
 
 export default function Home() {
   return (
@@ -28,6 +30,12 @@ export default function Home() {
         </div>
         <div className="col-span-12">
           <HomeGoalCards />
+        </div>
+        <div className="col-span-12">
+          <HomeFinancialLists />
+        </div>
+        <div className="col-span-12">
+          <HomeTransactions />
         </div>
       </div>
     </div>
