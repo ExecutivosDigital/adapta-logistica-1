@@ -279,9 +279,7 @@ export default function UnitDetails() {
                       {rows.map((row) => (
                         <TableRow
                           key={row.id}
-                          onClick={() =>
-                            router.push("/register/branch-overview")
-                          }
+                          onClick={() => router.push("/branch/branch-overview")}
                           className="hover:bg-primary/10 h-10 max-h-10 cursor-pointer text-center transition duration-200"
                         >
                           <TableCell className="flex h-full items-center gap-2 text-sm font-medium whitespace-nowrap">
