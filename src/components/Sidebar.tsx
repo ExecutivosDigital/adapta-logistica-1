@@ -186,7 +186,7 @@ export default function Sidebar() {
               {items.map((item) => (
                 <div
                   key={item.label}
-                  className={`${isActive(item) ? "flex w-full flex-col gap-0.5 rounded-lg bg-gradient-to-r from-orange-500 to-orange-400 text-white" : item.children && openGroup[item.label] ? "flex w-full flex-col gap-0.5 rounded-lg bg-zinc-400/60" : ""}`}
+                  className={`${isActive(item) ? "from-primary/90 to-primary flex w-full flex-col gap-0.5 rounded-lg bg-gradient-to-b text-white" : item.children && openGroup[item.label] ? "flex w-full flex-col gap-0.5 rounded-lg bg-zinc-400/60" : ""}`}
                 >
                   {/* link ou botão-pai */}
                   <SidebarItem
@@ -333,7 +333,14 @@ function SidebarItem({
   }
 
   return (
-    <Link href={item.href ?? "#"} onClick={closeMobile} className={cls}>
+    <Link
+      href={
+        // item.href ??
+        "#"
+      }
+      onClick={closeMobile}
+      className={cls}
+    >
       {inner}
     </Link>
   );
