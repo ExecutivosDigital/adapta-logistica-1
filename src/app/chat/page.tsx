@@ -26,7 +26,7 @@ export default function BranchesList() {
           />
         </div>
         <div className="flex w-full flex-1 flex-col">
-          <div className="flex flex-col items-center gap-4 px-2 lg:mx-auto lg:w-max lg:px-0">
+          <div className="flex flex-col items-center gap-4 px-2 lg:mx-auto lg:px-0">
             <span className="text-2xl font-bold">Adapta.AI</span>
             <span className="text-center text-sm lg:w-2/3 lg:text-xl">
               Esta seção auxilia com tudo referente à empresa, incluindo PDFs,
