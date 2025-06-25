@@ -573,7 +573,7 @@ export function Section() {
                           alt="AI Avatar"
                           width={250}
                           height={250}
-                          className="h-6 w-6 xl:h-10 xl:w-10"
+                          className="h-6 w-max object-contain xl:h-10 xl:w-max"
                         />
                         <div className="flex flex-col">
                           <div className="bg-primary/60 flex flex-col rounded-xl p-2 text-white">
