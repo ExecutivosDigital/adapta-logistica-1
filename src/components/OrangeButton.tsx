@@ -6,6 +6,7 @@ type Props = {
   type?: "button" | "submit";
   loading?: boolean;
   loadingText?: string;
+  unselected?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
 };
@@ -14,6 +15,7 @@ export function OrangeButton({
   className,
   onClick,
   disabled,
+  unselected = false,
   type = "button",
   loading,
   loadingText,
@@ -24,12 +26,12 @@ export function OrangeButton({
     <div className="p-0.5">
       <button
         type={type}
-        className={`group flex flex-row gap-2 rounded-lg bg-orange-500 font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-orange-600`}
+        className={`group flex flex-row gap-2 overflow-hidden rounded-lg border font-bold transition-all duration-300 hover:scale-[1.02] hover:bg-orange-600 ${unselected ? "border-zinc-600/40 bg-white text-[#272835]" : "border-transparent bg-orange-500 text-white"}`}
         onClick={onClick}
         disabled={disabled || loading}
       >
         <div
-          className={`px-4 py-2 ${className} hover:from-white-0 flex w-full flex-row bg-gradient-to-b from-white/20 to-white/0 transition-all duration-300`}
+          className={`px-4 py-2 ${className} hover:from-white-0 ${unselected ? "bg-white" : "bg-gradient-to-b"} flex w-full flex-row from-white/20 to-white/0 transition-all duration-300`}
         >
           {loading ? (
             <span>{loadingText || "Loading..."}</span>
