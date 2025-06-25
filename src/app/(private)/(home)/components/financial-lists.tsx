@@ -116,7 +116,7 @@ export function HomeFinancialLists() {
   ];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between">
         <span className="font-semibold">Extrato Consolidado</span>
         <DropdownMenu>
@@ -127,9 +127,15 @@ export function HomeFinancialLists() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Lorem Ipsum</DropdownMenuItem>
-            <DropdownMenuItem>Lorem Ipsum</DropdownMenuItem>
-            <DropdownMenuItem>Lorem Ipsum</DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

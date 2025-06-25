@@ -238,7 +238,7 @@ export default function Purchase() {
               {rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="hover:bg-primary/10 h-14 transition duration-200"
+                  className="hover:bg-primary/20 h-14 transition duration-300"
                 >
                   <TableCell className="text-center text-sm font-medium whitespace-nowrap">
                     <div className="flex items-center gap-3">

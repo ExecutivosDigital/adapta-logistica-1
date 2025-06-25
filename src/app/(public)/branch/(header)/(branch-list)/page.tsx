@@ -21,22 +21,22 @@ export default function BranchDetails() {
   const router = useRouter();
   const members = [
     {
-      name: "Nick Jonas",
+      name: "Alex",
       value: "userid1",
       image: faker.image.avatarLegacy(),
     },
     {
-      name: "Fahim",
+      name: "João",
       value: "userid2",
       image: faker.image.avatarLegacy(),
     },
     {
-      name: "Nayeem",
+      name: "Paulo",
       value: "userid3",
       image: faker.image.avatarLegacy(),
     },
     {
-      name: "Iftekhar",
+      name: "Gabriel",
       value: "userid4",
       image: faker.image.avatarLegacy(),
     },
@@ -44,7 +44,7 @@ export default function BranchDetails() {
 
   return (
     <div className="grid h-full w-full grid-cols-3 gap-8">
-      <div className="border-primary relative h-40 w-full overflow-hidden rounded-xl border-2 p-4">
+      <div className="border-primary relative h-40 w-full cursor-pointer overflow-hidden rounded-xl border-2 p-4">
         <Image
           src="/static/branch-details-bg.png"
           alt=""
@@ -65,7 +65,7 @@ export default function BranchDetails() {
         <div
           key={index}
           onClick={() => router.push("/register/unit-details")}
-          className="border-primary relative h-40 w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg"
+          className="border-primary relative h-40 w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition duration-300 hover:scale-[1.005]"
         >
           <div className="flex h-full w-full flex-col justify-between">
             <span className="text-2xl font-bold">NOME DA UNID. DE NEGÓCIO</span>
@@ -106,7 +106,7 @@ export default function BranchDetails() {
                   </Avatar>
                 </AvatarGroup>
               </div>
-              <button className="border-primary bg-primary/20 text-primary flex items-center gap-2 rounded-xl border p-1">
+              <button className="border-primary bg-primary/20 text-primary hover:bg-primary flex cursor-pointer items-center gap-2 rounded-xl border px-2 py-1 transition duration-300 hover:text-white">
                 <span>Acessar Unidade</span>
                 <ChevronRight />
               </button>

@@ -43,9 +43,15 @@ export default function Header() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Lorem ipsum</DropdownMenuItem>
-              <DropdownMenuItem>Lorem ipsum</DropdownMenuItem>
-              <DropdownMenuItem>Lorem ipsum</DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem ipsum
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem ipsum
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem ipsum
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <button className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">

@@ -364,7 +364,7 @@ export default function PurchaseApproval() {
                 return (
                   <TableRow
                     key={row.id}
-                    className="hover:bg-primary/10 h-14 transition duration-200"
+                    className="hover:bg-primary/20 h-14 transition duration-300"
                   >
                     {/* Data + checkbox */}
                     <TableCell className="w-32 min-w-32 text-center text-sm font-medium">
@@ -488,7 +488,7 @@ export default function PurchaseApproval() {
               {/* autorizar */}
               <button
                 //   onClick={handleAuthorize /* crie sua função */}
-                className="relative flex items-center rounded-md bg-gradient-to-r from-orange-600 to-orange-500 px-4 py-2 font-semibold text-white"
+                className="to-primary-dark relative flex items-center rounded-md bg-gradient-to-r from-orange-600 px-4 py-2 font-semibold text-white"
               >
                 Autorizar Operação
                 <span className="ml-2 flex h-6 w-6 items-center justify-center rounded-md bg-white">

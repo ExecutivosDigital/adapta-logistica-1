@@ -9,7 +9,7 @@ export function Home2ButtonGroup() {
       id: "1",
       label: "Mecânica",
       icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
+      selected: true,
     },
     {
       id: "2",
@@ -20,7 +20,7 @@ export function Home2ButtonGroup() {
   ]);
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {buttons.map((b) => (
         <button
           onClick={() => {
@@ -41,7 +41,7 @@ export function Home2ButtonGroup() {
           }}
           key={b.id}
           className={cn(
-            "flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 font-semibold transition duration-200",
+            "hover:bg-primary flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 transition duration-300 hover:font-semibold hover:text-white",
             b.selected
               ? "bg-primary border-primary text-white"
               : "text-zinc-600",

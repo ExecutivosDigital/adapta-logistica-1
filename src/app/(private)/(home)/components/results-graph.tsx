@@ -137,9 +137,15 @@ export function HomeResultsGraph() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Lorem Ipsum</DropdownMenuItem>
-            <DropdownMenuItem>Lorem Ipsum</DropdownMenuItem>
-            <DropdownMenuItem>Lorem Ipsum</DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

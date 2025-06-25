@@ -37,11 +37,11 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Dashboard",
         icon: Home,
-        href: "/",
+        href: "#",
         children: [
-          { label: "Dashboard", icon: Home, href: "/1" },
-          { label: "Dashboard", icon: Home, href: "/2" },
-          { label: "Dashboard", icon: Home, href: "/3" },
+          { label: "Home", icon: Home, href: "/" },
+          { label: "Home 2", icon: Home, href: "/home2" },
+          { label: "Dashboard", icon: Home, href: "#" },
         ],
       },
       {
@@ -51,29 +51,29 @@ const NAV: { heading: string; items: Item[] }[] = [
           {
             label: "Receitas",
             icon: DollarSign,
-            href: "/private/transacoes/receitas",
+            href: "#",
           },
           {
             label: "Despesas",
             icon: DollarSign,
-            href: "/private/transacoes/despesas",
+            href: "#",
           },
         ],
       },
-      { label: "Lorem", icon: List, href: "/private/lorem" },
+      { label: "Lorem", icon: List, href: "#" },
       {
         label: "Cartão de Crédito",
         icon: CreditCard,
-        href: "/private/cartoes",
+        href: "#",
       },
-      { label: "Plano de Contas", icon: Layers, href: "/private/planos" },
+      { label: "Plano de Contas", icon: Layers, href: "#" },
       {
         label: "Contas Bancárias",
         icon: Banknote,
         badge: 4,
         children: [
-          { label: "Empresa", icon: Banknote, href: "/private/contas/empresa" },
-          { label: "Pessoal", icon: Banknote, href: "/private/contas/pessoal" },
+          { label: "Empresa", icon: Banknote, href: "#" },
+          { label: "Pessoal", icon: Banknote, href: "#" },
         ],
       },
     ],
@@ -84,7 +84,7 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Relação de Compras",
         icon: ShoppingCart,
-        href: "/private/workflow/compras",
+        href: "#",
       },
       {
         label: "Aprovação de Compras",
@@ -94,13 +94,13 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Pagamentos",
         icon: DollarSign,
-        href: "/private/workflow/pagamentos",
+        href: "#",
       },
-      { label: "Lorem", icon: Plus, href: "/private/workflow/lorem" },
+      { label: "Lorem", icon: Plus, href: "#" },
       {
         label: "Organização",
         icon: Layers,
-        href: "/private/workflow/organizacao",
+        href: "#",
       },
     ],
   },
@@ -137,7 +137,7 @@ export default function Sidebar() {
 
       <aside
         className={clsx(
-          "peer fixed z-50 flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] transition-all duration-200 lg:static",
+          "peer fixed z-50 flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] transition-all duration-300 lg:static",
           width,
           isOpenMobile ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
@@ -334,14 +334,7 @@ function SidebarItem({
   }
 
   return (
-    <Link
-      href={
-        // item.href ??
-        "#"
-      }
-      onClick={closeMobile}
-      className={cls}
-    >
+    <Link href={item.href ?? "#"} onClick={closeMobile} className={cls}>
       {inner}
     </Link>
   );

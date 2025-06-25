@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { faker } from "@faker-js/faker";
 import { Loader2, Pencil, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 
@@ -42,28 +43,29 @@ interface CnpjCardResponse {
 
 const members = [
   {
-    name: "Nick Jonas",
+    name: "Alex",
     value: "userid1",
     image: faker.image.avatar(),
   },
   {
-    name: "Fahim",
+    name: "João",
     value: "userid2",
     image: faker.image.avatar(),
   },
   {
-    name: "Nayeem",
+    name: "Paulo",
     value: "userid3",
     image: faker.image.avatar(),
   },
   {
-    name: "Iftekhar",
+    name: "Gabriel",
     value: "userid4",
     image: faker.image.avatar(),
   },
 ];
 
 export default function BranchOverview() {
+  const router = useRouter();
   const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -209,14 +211,19 @@ export default function BranchOverview() {
                   </TooltipProvider>
                 ))}
               </AvatarGroup>
-              <button className="text-primary underline">Ver todos</button>
+              <button
+                onClick={() => router.push("/branch/branch-users")}
+                className="text-primary hover:text-primary-dark cursor-pointer underline transition duration-300"
+              >
+                Ver todos
+              </button>
             </div>
           </div>
           <span className="bg-primary/20 text-primary h-max rounded-sm px-2 py-1 text-sm font-medium">
             CNPJ: {summary ? summary.cnpj : "000.000.000/0000-00"}
           </span>
         </div>
-        <button className="border-primary text-primary bg-primary/10 relative flex flex-col items-center rounded-xl border px-2 py-4 font-medium">
+        <button className="border-primary hover:border-primary-dark hover:text-primary-dark hover:primary-dark/20 group text-primary bg-primary/20 relative flex cursor-pointer flex-col items-center rounded-xl border px-2 py-4 font-medium transition duration-300">
           {loading ? (
             <>
               {" "}
@@ -250,7 +257,7 @@ export default function BranchOverview() {
               }
             }}
             title=" "
-            className="absolute top-0 h-full w-full bg-transparent text-transparent"
+            className="absolute top-0 h-full w-full cursor-pointer bg-transparent text-transparent"
           />
         </button>
       </div>
@@ -264,7 +271,9 @@ export default function BranchOverview() {
               {summary ? summary.fantasyName : "Nome Fantasia"}
             </div>
             <div className="col-span-1">
-              <button className="text-primary">Editar {">"}</button>
+              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
+                Editar {">"}
+              </button>
             </div>
           </div>
         </div>
@@ -281,15 +290,13 @@ export default function BranchOverview() {
             value={
               summary
                 ? summary.secondaryActivities
-                : `4930-2/01 – Transporte rodoviário de carga, exceto produtos perigosos e mudanças municipais
-
-4930-2/02 – Transporte rodoviário de carga, exceto produtos perigosos e mudanças interestaduais e internacionais
-
-4930-2/03 – Transporte rodoviário de produtos perigosos`
+                : "Atividades Econômicas Secundarias"
             }
           />
           <div className="col-span-1">
-            <button className="text-primary">Editar {">"}</button>
+            <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
+              Editar {">"}
+            </button>
           </div>
         </div>
       </div>
@@ -330,7 +337,9 @@ export default function BranchOverview() {
             </div>
           </div>
           <div className="col-span-1">
-            <button className="text-primary">Editar {">"}</button>
+            <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
+              Editar {">"}
+            </button>
           </div>
         </div>
       </div>
@@ -353,7 +362,9 @@ export default function BranchOverview() {
             </span>
           </div>
           <div className="col-span-1">
-            <button className="text-primary">Editar {">"}</button>
+            <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
+              Editar {">"}
+            </button>
           </div>
         </div>
       </div>
@@ -374,7 +385,9 @@ export default function BranchOverview() {
             </span>
           </div>
           <div className="col-span-1">
-            <button className="text-primary">Editar {">"}</button>
+            <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
+              Editar {">"}
+            </button>
           </div>
         </div>
       </div>
@@ -391,7 +404,9 @@ export default function BranchOverview() {
             </span>
           </div>
           <div className="col-span-1">
-            <button className="text-primary">Editar {">"}</button>
+            <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
+              Editar {">"}
+            </button>
           </div>
         </div>
       </div>

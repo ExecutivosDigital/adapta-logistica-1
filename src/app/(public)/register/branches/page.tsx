@@ -11,6 +11,7 @@ import { useState } from "react";
 export default function RegisterBranches() {
   const router = useRouter();
   const [arrayLength, setArrayLength] = useState(0);
+
   return (
     <div className="relative flex min-h-screen w-full">
       <button
@@ -111,20 +112,20 @@ export default function RegisterBranches() {
             </ScrollArea>
             <button
               onClick={() => setArrayLength(arrayLength + 1)}
-              className="border-primary text-primary flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border font-semibold"
+              className="border-primary hover:bg-primary text-primary flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border font-semibold transition duration-300 hover:text-white"
             >
               <PlusSquare />
               <span>Clique aqui para Inserir outra Filial</span>
             </button>
             <button
               onClick={() => router.push("/register/branches-list")}
-              className="bg-primary h-12 w-full cursor-pointer rounded-lg font-semibold text-white"
+              className="bg-primary hover:bg-primary-dark h-12 w-full cursor-pointer rounded-lg font-semibold text-white transition duration-300"
             >
               Continuar
             </button>
             <span className="mx-auto">
               Novo aqui no Adapta?
-              <span className="text-primary cursor-pointer font-semibold">
+              <span className="text-primary hover:text-primary-dark cursor-pointer font-semibold transition duration-300">
                 {""} Conheça o Grupo Agora
               </span>
             </span>

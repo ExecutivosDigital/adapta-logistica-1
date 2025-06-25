@@ -1,5 +1,12 @@
 "use client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { ArrowLeft, ChevronsUpDown, PlusSquare } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -19,7 +26,7 @@ export default function RegisterLayout({
       name: "Usuários da Filial",
       route: "/branch/branch-users",
     },
-    { id: "4", name: "Contas da Filial", route: "/branch4" },
+    { id: "4", name: "Contas da Filial", route: "#" },
     { id: "5", name: "Centro de Resultados", route: "/branch/result-center" },
   ];
   const pathname = usePathname();
@@ -32,7 +39,7 @@ export default function RegisterLayout({
         {/* Cabeçalho com itens posicionados absolutamente */}
         <div className="relative p-8 pb-0">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push("/register/branches-list")}
             className="text-primary absolute top-5 left-5 flex cursor-pointer items-center gap-2"
           >
             <ArrowLeft />
@@ -66,17 +73,30 @@ export default function RegisterLayout({
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-8">
                 <span className="text-xl font-semibold">Curitiba - Paraná</span>
-                <div className="flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1">
-                  <span className="font-semibold">43.795.283/0001-18</span>
-                  <ChevronsUpDown className="text-zinc-400" />
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">
+                      <span className="font-semibold">43.795.283/0001-18</span>
+                      <ChevronsUpDown className="text-zinc-400" />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48">
+                    <DropdownMenuArrow />
+                    <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                      12.345.678/9999-99
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                      00.000.000/0000-00
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <button
                 onClick={() => router.push("/register/new-branch")}
-                className="border-primary text-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1"
+                className="border-primary hover:bg-primary text-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1 transition duration-300 hover:text-white"
               >
                 <PlusSquare />
-                <span>Adicionar mais uma filial</span>
+                <span>Adicionar filial</span>
               </button>
             </div>
 
@@ -86,7 +106,7 @@ export default function RegisterLayout({
                 <button
                   key={index}
                   onClick={() => router.push(tab.route)}
-                  className={`flex h-12 cursor-pointer items-center justify-center border-b px-2 transition-all duration-300 ${
+                  className={`hover:text-primary flex h-12 cursor-pointer items-center justify-center border-b px-2 transition transition-all duration-300 ${
                     pathname === tab.route
                       ? "text-primary border-b-primary"
                       : "border-b-transparent"
@@ -106,7 +126,7 @@ export default function RegisterLayout({
           {/* Rodapé - Ficará fixo na parte inferior */}
           <div className="flex flex-col bg-white py-4">
             <span>Há alguma necessidade de conversar com o time Adapta?</span>
-            <span className="text-primary cursor-pointer font-semibold underline">
+            <span className="text-primary hover:text-primary-dark cursor-pointer font-semibold underline transition duration-300">
               Clique aqui para conversar com o time
             </span>
           </div>

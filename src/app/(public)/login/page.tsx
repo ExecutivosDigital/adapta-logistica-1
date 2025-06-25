@@ -53,7 +53,9 @@ export default function Login() {
                 removeWrapper
                 id="email"
                 placeholder=""
-                className={cn("peer border-zinc-200 text-base")}
+                className={cn(
+                  "peer active:border-primary focus:border-primary border-zinc-200 text-base",
+                )}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -64,7 +66,7 @@ export default function Login() {
                 <Input
                   type={passwordType}
                   id="password"
-                  className="peer border-zinc-200 text-base"
+                  className="peer active:border-primary focus:border-primary border-zinc-200 text-base"
                 />
 
                 <div
@@ -94,7 +96,7 @@ export default function Login() {
                 </div>
                 <Link
                   href="/recover-password"
-                  className="text-primary hover:text-primary/90 flex-none text-sm font-bold"
+                  className="text-primary hover:text-primary-dark flex-none text-sm font-bold transition duration-300"
                 >
                   Esqueceu a senha?
                 </Link>
@@ -102,13 +104,13 @@ export default function Login() {
             </div>
             <button
               onClick={() => router.push("/register/branches")}
-              className="bg-primary h-12 w-full cursor-pointer rounded-lg font-semibold text-white"
+              className="bg-primary hover:bg-primary-dark h-12 w-full cursor-pointer rounded-lg font-semibold text-white transition duration-300"
             >
               Entrar Agora
             </button>
             <span className="mx-auto text-center md:text-start">
               Novo aqui no Adapta?
-              <span className="text-primary cursor-pointer font-semibold">
+              <span className="text-primary hover:text-primary-dark cursor-pointer font-semibold transition duration-300">
                 {""} Conheça o Grupo Agora
               </span>
             </span>

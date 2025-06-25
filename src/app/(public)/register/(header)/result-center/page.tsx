@@ -12,22 +12,26 @@ export default function BranchDetails() {
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex-ro flex w-full items-center justify-between">
-        <div className="border-primary text-primary flex flex-row items-center gap-2 rounded-lg border p-1">
+        <label
+          htmlFor="search"
+          className="border-primary text-primary flex flex-row items-center gap-2 rounded-lg border p-1"
+        >
           <Search />
           <input
+            id="search"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             type="text"
             placeholder="Pesquisar"
             className="bg-transparent outline-none focus:outline-none"
           />
-        </div>
+        </label>
         <OrangeButton iconPosition="right" icon={<Plus />} className="gap-8">
-          Atrela
+          Lorem
         </OrangeButton>
       </div>
       <div className="grid h-full w-full grid-cols-5 gap-x-12 gap-y-6 p-4">
-        <div className="border-primary relative h-40 w-full overflow-hidden rounded-xl border-2 p-4 shadow-lg transition-all duration-300 hover:scale-[1.05]">
+        <div className="border-primary relative h-40 w-full cursor-pointer overflow-hidden rounded-xl border-2 p-4 shadow-lg transition-all duration-300 hover:scale-[1.005]">
           <Image
             src="/static/branch-details-bg.png"
             alt=""
@@ -48,7 +52,7 @@ export default function BranchDetails() {
           <div
             key={index}
             onClick={() => router.push("/register/center-detail")}
-            className="border-primary relative h-40 w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition-all duration-300 hover:scale-[1.05]"
+            className="border-primary relative h-40 w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition-all duration-300 hover:scale-[1.005]"
           >
             <div className="flex h-full w-full flex-col justify-between">
               <span className="text-lg font-bold">
@@ -56,8 +60,8 @@ export default function BranchDetails() {
               </span>
 
               <div className="flex w-full items-center justify-between">
-                <div className="border-primary bg-primary/20 text-primary flex cursor-pointer items-center gap-2 rounded-xl border p-1">
-                  <span>Acessar Unidade</span>
+                <div className="border-primary bg-primary/20 text-primary hover:bg-primary mx-auto flex cursor-pointer items-center gap-2 rounded-xl border px-2 py-1 transition duration-300 hover:text-white">
+                  <span>Detalhes</span>
                   <ChevronRight />
                 </div>
               </div>

@@ -56,7 +56,7 @@ export function HomeButtonGroup() {
   ]);
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {buttons.map((b) => (
         <button
           onClick={() => {
@@ -77,9 +77,9 @@ export function HomeButtonGroup() {
           }}
           key={b.id}
           className={cn(
-            "flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 font-semibold transition duration-200",
+            "hover:bg-primary flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 transition duration-300 hover:font-semibold hover:text-white",
             b.selected
-              ? "bg-primary border-primary text-white"
+              ? "bg-primary border-primary font-semibold text-white"
               : "text-zinc-600",
           )}
         >
