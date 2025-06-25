@@ -140,7 +140,7 @@ export function Home2ResultsGraph() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <span className="text-lg font-semibold text-[#00A181]">
+        <span className="text-2xl font-semibold text-[#00A181]">
           R$ <span className="font-bold">1.322.890,00</span>
         </span>
         <div className="flex flex-col gap-2">

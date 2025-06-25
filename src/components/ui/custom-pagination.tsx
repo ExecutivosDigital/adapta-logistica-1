@@ -63,11 +63,11 @@ export const CustomPagination = ({
         {getPageNumbers().map((page, index) => (
           <PaginationItem key={index}>
             {page === 0 ? (
-              <span className="px-2">...</span>
+              <span className="px-1">...</span>
             ) : (
               <PaginationLink
                 className={cn(
-                  "hover:bg-primary/40 cursor-pointer text-[10px] hover:text-white xl:text-sm",
+                  "hover:bg-primary/40 h-6 w-6 cursor-pointer text-[10px] hover:text-white xl:text-sm",
                   page === currentPage &&
                     "bg-primary hover:bg-primary text-white hover:text-white",
                 )}

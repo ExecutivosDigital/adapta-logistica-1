@@ -146,9 +146,24 @@ export function HomeFinancialLists() {
               <span className="text-sm">Receitas</span>
               <span className="font-semibold text-[#00A181]">R$12,890.00</span>
             </div>
-            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-              <EllipsisVertical />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="left">
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
             {incomeList.map((inc) => (
@@ -207,9 +222,24 @@ export function HomeFinancialLists() {
               <span className="text-sm">Despesas</span>
               <span className="font-semibold text-[#EF4444]">-R$8,890.00</span>
             </div>
-            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-              <EllipsisVertical />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="left">
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
             {expenseList.map((exp) => (

@@ -24,7 +24,7 @@ export default function Header() {
       </button>
       <div className="flex w-full items-center justify-between">
         <label
-          className="flex w-80 items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400"
+          className="flex w-80 items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 transition duration-300"
           htmlFor="search"
         >
           <Search />
