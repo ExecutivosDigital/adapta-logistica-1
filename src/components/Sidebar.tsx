@@ -52,6 +52,7 @@ const NAV: { heading: string; items: Item[] }[] = [
         ],
       },
       { label: "Agenda", icon: "/icons/sidebar-calendar.png", href: "#" },
+      { label: "Chat", icon: "/icons/sidebar-chat.png", href: "/chat" },
       {
         label: "Fornecedores e Clientes",
         icon: "/icons/sidebar-clients.png",

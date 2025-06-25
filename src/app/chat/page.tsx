@@ -1,11 +1,21 @@
 "use client";
+import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Section } from "./SectionGemini";
 
 export default function BranchesList() {
+  const router = useRouter();
   return (
     <div className="bg-primary h-screen max-h-screen w-full p-4 pb-0 lg:p-8">
       <div className="relative flex h-[calc(100vh-16px)] max-h-[calc(100vh-16px)] w-full flex-col rounded-t-2xl bg-white py-4 lg:h-[calc(100vh-32px)] lg:max-h-[calc(100vh-32px)] lg:p-8">
+        <div
+          onClick={() => router.back()}
+          className="text-primary absolute top-5 left-5 flex cursor-pointer items-center gap-2"
+        >
+          <ChevronLeft />
+          <span>Voltar</span>
+        </div>
         <div>
           <Image
             src="/logo/ai-icon.png"
