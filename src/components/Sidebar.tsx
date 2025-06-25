@@ -37,7 +37,7 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Dashboard",
         icon: Home,
-        href: "#",
+        href: "/",
         children: [
           { label: "Home", icon: Home, href: "/" },
           { label: "Home 2", icon: Home, href: "/home2" },
@@ -200,12 +200,19 @@ export default function Sidebar() {
                     active={isActive(item)}
                     collapsed={isCollapsed}
                     open={!!openGroup[item.label]}
-                    toggle={() =>
+                    toggle={() => {
                       setOpenGroup((s) => ({
                         ...s,
                         [item.label]: !s[item.label],
-                      }))
-                    }
+                      }));
+                      if (isCollapsed) {
+                        setOpenGroup((s) => ({
+                          ...s,
+                          [item.label]: true,
+                        }));
+                        toggleCollapse();
+                      }
+                    }}
                     closeMobile={closeMobile}
                   />
 
@@ -276,8 +283,8 @@ function SidebarItem({
 
   // Filho (sub)
   const childClasses = clsx(base, "pl-0", {
-    "border-l-2 border-primary text-primary pl-2": active,
-    "border-l-2 border-zinc-400 text-zinc-700 hover:text-primary pl-2": !active,
+    "border-l-4 border-primary text-primary pl-2": active,
+    "border-l-4 border-zinc-400 text-zinc-700 hover:text-primary pl-2": !active,
   });
 
   const cls = isSub ? childClasses : parentClasses;
