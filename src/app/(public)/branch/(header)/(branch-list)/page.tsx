@@ -43,7 +43,7 @@ export default function BranchDetails() {
   ];
 
   return (
-    <div className="grid h-full w-full grid-cols-3 gap-8">
+    <div className="grid h-full w-full grid-cols-3 gap-8 p-4">
       <NewBusinessButton />
 
       {Array.from({ length: 11 }).map((_, index) => (

@@ -22,7 +22,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 /* ---------- estrutura de navegação ---------- */
-type Item = {
+export type Item = {
   label: string;
   icon: React.ElementType;
   href?: string; // link simples
@@ -118,10 +118,19 @@ export default function Sidebar() {
   const width = isCollapsed ? "w-16" : "w-64";
 
   /* util ─ verifica rota ativa ou filho ativo */
-  const isActive = (item: Item): boolean =>
-    item.href
-      ? pathname === item.href
-      : !!item.children?.some((c) => pathname === c.href);
+  const isActive = (item: Item): boolean => {
+    // Se houver filhos, verificamos se algum filho coincide com a rota atual
+    if (item.children?.length) {
+      return item.children.some((c) => c.href && pathname === c.href);
+    }
+
+    // Caso contrário, comparamos o próprio href, ignorando marcadores vazios / #
+    if (item.href && item.href !== "#") {
+      return pathname === item.href;
+    }
+
+    return false;
+  };
 
   /* ---------- render ---------- */
   return (
@@ -184,10 +193,7 @@ export default function Sidebar() {
 
               {/* itens */}
               {items.map((item) => (
-                <div
-                  key={item.label}
-                  className={`${isActive(item) ? "from-primary/90 to-primary flex w-full flex-col gap-0.5 rounded-lg bg-gradient-to-b text-white" : item.children && openGroup[item.label] ? "flex w-full flex-col gap-0.5 rounded-lg bg-zinc-400/60" : ""}`}
-                >
+                <div key={item.label} className="flex w-full flex-col gap-0.5">
                   {/* link ou botão-pai */}
                   <SidebarItem
                     item={item}
@@ -206,7 +212,7 @@ export default function Sidebar() {
                   {item.children && openGroup[item.label] && (
                     <div
                       className={clsx(
-                        "flex w-full flex-col gap-1 px-4 pb-1",
+                        "flex w-full flex-col pt-1 pl-3",
                         isCollapsed && "hidden",
                       )}
                     >
@@ -249,7 +255,6 @@ function SidebarItem({
   item,
   active,
   collapsed,
-  parentActive = false,
   open,
   toggle,
   isSub,
@@ -257,42 +262,38 @@ function SidebarItem({
 }: SidebarItemProps) {
   const Icon = item.icon;
 
+  // estilos base
   const base =
-    "group flex group items-center gap-3 w-full rounded-md px-3 py-2 text-sm font-medium transition-all duration-300";
+    "group flex items-center  w-full gap-3   px-3 py-2 text-sm font-medium transition-all duration-300";
 
-  /* estilos */
-  const cls = clsx(base, {
-    // 👇 Se nem ele nem o pai estiverem ativos, usa hover padrão
-    "bg-white text-primary": isSub && active,
-    "hover:bg-zinc-600/80 hover:text-white text-zinc-500":
-      !active && !parentActive,
-
-    // 👇 Pai ativo, eu NÃO ativo → estilo “herdado”
-    "bg-zinc-400/60 hover:bg-zinc-400/80  ": parentActive && !active,
-
-    // 👇 Eu ativo (prioridade maior que herdado)
-    "": active,
-
-    // Ajustes já existentes
-    "justify-center gap-0": collapsed,
-    "pl-2": isSub, // sub-item indented
+  // ---------- LÓGICA DE ESTILOS ----------
+  // Pai (não é sub)
+  // Pai (não é sub)
+  const parentClasses = clsx(base, {
+    "bg-primary text-white rounded-md": active, // ativo OU se algum filho ativo
+    "text-zinc-900 hover:bg-zinc-100 hover:text-primary rounded-md": !active,
   });
+
+  // Filho (sub)
+  const childClasses = clsx(base, "pl-0", {
+    "border-l-2 border-primary text-primary pl-2": active,
+    "border-l-2 border-zinc-400 text-zinc-700 hover:text-primary pl-2": !active,
+  });
+
+  const cls = isSub ? childClasses : parentClasses;
+
+  // ---------- CORES DO ÍCONE ----------
+  const iconColor = (() => {
+    if (isSub) {
+      return active ? "text-primary" : "text-zinc-500 group-hover:text-primary";
+    }
+    return active ? "text-white" : "text-zinc-500 group-hover:text-primary";
+  })();
 
   /* conteúdo comum */
   const inner = (
     <>
-      <Icon
-        className={clsx(
-          "h-5 w-5 shrink-0",
-          isSub && active
-            ? "text-primary"
-            : isSub && parentActive && !active
-              ? "text-white"
-              : !isSub && active
-                ? "text-white"
-                : "text-zinc-500 group-hover:text-white",
-        )}
-      />
+      <Icon className={clsx("h-5 w-5 shrink-0", iconColor)} />
       {!collapsed && <span className="truncate">{item.label}</span>}
 
       {/* badge / chevron */}
@@ -302,7 +303,7 @@ function SidebarItem({
             <span
               className={clsx(
                 "rounded-full bg-orange-100 px-2 text-xs font-semibold text-orange-600",
-                active && "bg-white/20 text-white",
+                active && "bg-orange-600 text-white",
               )}
             >
               {item.badge}
@@ -313,9 +314,13 @@ function SidebarItem({
               className={clsx(
                 "h-4 w-4 transition-transform",
                 open ? "rotate-180" : "",
-                active
-                  ? "text-white"
-                  : "text-neutral-500 group-hover:text-white",
+                isSub
+                  ? active
+                    ? "text-primary"
+                    : "group-hover:text-primary text-neutral-500"
+                  : active
+                    ? "text-white"
+                    : "group-hover:text-primary text-neutral-500",
               )}
             />
           )}

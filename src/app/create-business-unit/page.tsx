@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/utils/cn";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { Check, ChevronDown, Plus, X } from "lucide-react";
@@ -65,10 +66,10 @@ export default function CreateBusinessUnitPage() {
 
   /* ------------------------------ dropdown util ---------------------- */
   const buttonBase =
-    "relative flex w-full items-center gap-2 rounded-lg border border-zinc-200 px-3 py-3 text-sm transition";
+    "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
 
   const dropdownItem =
-    "cursor-pointer rounded px-4 py-2 text-sm transition duration-300 hover:bg-primary/20";
+    "cursor-pointer rounded px-4 py-2 w-full text-sm transition duration-300 hover:bg-primary/20";
 
   /* ------------------------------------------------------------------ */
   /* render */
@@ -193,7 +194,7 @@ export default function CreateBusinessUnitPage() {
                     )
                   }
                   placeholder="Nome do Tópico"
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm placeholder:text-zinc-500"
+                  className={`rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.topic ? "border-primary" : "border-zinc-200"}`}
                 />
 
                 {/* tipo (Dropdown) */}
@@ -201,10 +202,12 @@ export default function CreateBusinessUnitPage() {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className={clsx(
+                      className={cn(
                         buttonBase,
                         "h-10 justify-between px-3 py-2",
-                        field.type ? "text-zinc-700" : "text-zinc-500",
+                        field.type
+                          ? "border-primary text-zinc-700"
+                          : "border-zinc-200 text-zinc-500",
                       )}
                     >
                       {field.type || "Tipo"}
@@ -243,7 +246,7 @@ export default function CreateBusinessUnitPage() {
                     )
                   }
                   placeholder="Ex.: 100L"
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm placeholder:text-zinc-500"
+                  className={`rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.value ? "border-primary" : "border-zinc-200"}`}
                 />
               </div>
             ))}
@@ -251,7 +254,7 @@ export default function CreateBusinessUnitPage() {
             <button
               type="button"
               onClick={addTechField}
-              className="flex h-5 items-center gap-1 rounded-full border border-zinc-300 px-3 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-50"
+              className="flex h-5 items-center gap-1 rounded-lg border border-zinc-300 p-4 px-3 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-50"
             >
               <Plus size={14} /> Adicionar novo campo
             </button>
@@ -296,7 +299,7 @@ export default function CreateBusinessUnitPage() {
                   )
                 }
                 placeholder="Escreva o nome do Membro"
-                className="rounded-lg border border-zinc-200 px-3 py-2 text-sm placeholder:text-zinc-500"
+                className={`rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${m.name ? "border-primary" : "border-zinc-200"}`}
               />
 
               {/* nível de acesso (Dropdown) */}
@@ -307,6 +310,7 @@ export default function CreateBusinessUnitPage() {
                     className={clsx(
                       buttonBase,
                       "h-10 justify-between px-3 py-2",
+                      m.access ? "border-primary" : "border-zinc-200",
                       m.access ? "text-zinc-700" : "text-zinc-500",
                     )}
                   >
@@ -314,12 +318,12 @@ export default function CreateBusinessUnitPage() {
                     <ChevronDown size={16} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-52">
+                <DropdownMenuContent className="flex w-full flex-col">
                   <DropdownMenuArrow />
                   {["Visualizar", "Editar", "Administrador"].map((opt) => (
                     <DropdownMenuItem
                       key={opt}
-                      className={dropdownItem}
+                      className={`hover:bg-primary/20 w-full cursor-pointer rounded px-4 py-2 text-sm transition duration-300`}
                       onSelect={(e) => {
                         e.preventDefault();
                         setMembers((prev) =>
@@ -360,7 +364,7 @@ export default function CreateBusinessUnitPage() {
           <button
             type="button"
             onClick={addMember}
-            className="flex h-5 items-center gap-1 rounded-full border border-zinc-300 px-3 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-50"
+            className="flex h-5 items-center gap-1 rounded-lg border border-zinc-300 p-4 px-3 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-50"
           >
             <Plus size={14} /> Adicionar novo membro
           </button>
@@ -380,7 +384,7 @@ export default function CreateBusinessUnitPage() {
 
         <OrangeButton
           className="h-9 w-[132px]"
-          onClick={() => router.push("/create-business-unit/review")}
+          onClick={() => router.push("/create-business-unit/details")}
           icon={<ChevronDown size={16} className="-rotate-90" />}
           iconPosition="right"
         >
