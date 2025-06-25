@@ -34,7 +34,7 @@ export default function BranchesList() {
               identificação de imagens e vídeos.
             </span>
           </div>
-          <div className="mt-16 flex h-full flex-col">
+          <div className="mt-16 flex h-[calc((100vh-250px))] flex-col">
             <Section />
           </div>
         </div>

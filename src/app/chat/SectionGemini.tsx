@@ -41,6 +41,7 @@ export function Section() {
   const [inputMessage, setInputMessage] = useState("");
 
   // --- ESTADOS DE GRAVAÇÃO (MANTIDOS) ---
+  const scrollAreaViewportRef = useRef<HTMLDivElement>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
@@ -58,6 +59,13 @@ export function Section() {
   const chatSessionRef = useRef<ReturnType<
     GoogleGenAI["chats"]["create"]
   > | null>(null);
+
+  useEffect(() => {
+    if (scrollAreaViewportRef.current) {
+      scrollAreaViewportRef.current.scrollTop =
+        scrollAreaViewportRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   // ==================================================================
   // INICIALIZAÇÃO DA IA E SESSÃO DE CHAT (LÓGICA UNIFICADA)
@@ -501,7 +509,10 @@ export function Section() {
       <div className="flex h-full w-full flex-col items-center justify-between gap-2 rounded-lg xl:flex-row xl:gap-8">
         <div className="bg-default-100 flex h-full w-full flex-col rounded-lg">
           {/* ÁREA DE EXIBIÇÃO DAS MENSAGENS (Nenhuma alteração necessária aqui) */}
-          <ScrollArea className="flex h-[calc(100%-80px)] max-h-[calc(100%-80px)] w-full flex-col-reverse overflow-y-auto p-2 xl:p-8">
+          <ScrollArea
+            viewportRef={scrollAreaViewportRef}
+            className="flex h-[calc(100%-80px)] max-h-[calc(100%-80px)] w-full overflow-y-auto p-2 xl:p-8"
+          >
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -628,7 +639,7 @@ export function Section() {
                 <TooltipContent
                   side="top"
                   align="start"
-                  className="border-primary border bg-gradient-to-r from-[#FF0080] to-[#7928CA]"
+                  className="border-primary bg-primary border"
                 >
                   <p className="text-white">Documento</p>
                   <TooltipArrow className="fill-primary" />
@@ -654,7 +665,7 @@ export function Section() {
                 <TooltipContent
                   side="top"
                   align="start"
-                  className="border-primary border bg-gradient-to-r from-[#FF0080] to-[#7928CA]"
+                  className="border-primary bg-primary border"
                 >
                   <p className="text-white">Imagem ou vídeo</p>
                   <TooltipArrow className="fill-primary" />
