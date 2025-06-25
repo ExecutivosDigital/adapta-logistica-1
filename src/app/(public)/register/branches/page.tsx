@@ -22,7 +22,7 @@ export default function RegisterBranches() {
         <span>Voltar</span>
       </button>
       <div className="flex h-screen w-5/12 flex-col items-center justify-center">
-        <div className="flex h-full w-11/12 flex-col gap-8 py-8 pt-14">
+        <div className="flex h-full w-11/12 flex-col gap-4 py-4 pt-14">
           <Image
             src="/logo/logo.png"
             alt=""
@@ -32,15 +32,15 @@ export default function RegisterBranches() {
           />
           <div className="flex flex-col">
             <span className="text-2xl font-bold">Cadastrar Filiais</span>
-            <span className="w-1/2 text-xl">
+            <span className="w-1/2">
               Texto referente ao cadastro das Filiais da empresa
             </span>
           </div>
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="flex w-2/3 flex-col gap-8"
+            className="flex w-2/3 flex-col gap-4"
           >
-            <ScrollArea className="h-80">
+            <ScrollArea className="h-60">
               <div className="relative mb-2 flex flex-col gap-1">
                 <Label htmlFor="CNPJ1" className="border-default-900 text-lg">
                   CNPJ Filial 1
