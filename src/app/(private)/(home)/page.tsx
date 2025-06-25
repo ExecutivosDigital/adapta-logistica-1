@@ -1,8 +1,8 @@
-import { ChevronRight } from "lucide-react";
 import { HomeButtonGroup } from "./components/button-group";
 import { HomeCategoryList } from "./components/category-list";
 import { HomeFinancialLists } from "./components/financial-lists";
 import { HomeGoalCards } from "./components/goal-cards";
+import { HomeNewRelease } from "./components/new-release";
 import { HomeResultsGraph } from "./components/results-graph";
 import { HomeTransactions } from "./components/transactions";
 
@@ -17,10 +17,7 @@ export default function Home() {
           <HomeButtonGroup />
         </div>
         <div className="col-span-5 flex items-end justify-end">
-          <button className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
-            <span className="text-sm"> Criar Lançamento</span>
-            <ChevronRight />
-          </button>
+          <HomeNewRelease />
         </div>
         <div className="col-span-7 rounded-xl border border-zinc-200 p-2 shadow-sm lg:p-4">
           <HomeResultsGraph />

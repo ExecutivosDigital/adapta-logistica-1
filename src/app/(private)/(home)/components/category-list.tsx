@@ -1,5 +1,11 @@
 "use client";
 import { CustomPagination } from "@/components/ui/custom-pagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/utils/cn";
 import { EllipsisVertical, Filter } from "lucide-react";
@@ -197,12 +203,42 @@ export function HomeCategoryList() {
       <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
         <span className="text-sm font-semibold">Categorias</span>
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-            <Filter />
-          </div>
-          <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-            <EllipsisVertical />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
+                <Filter />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="left">
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem Ipsum
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem Ipsum
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem Ipsum
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
+                <EllipsisVertical />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="left">
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem Ipsum
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem Ipsum
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                Lorem Ipsum
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <ScrollArea className="h-80 w-full p-2">

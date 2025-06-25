@@ -149,7 +149,7 @@ export function HomeResultsGraph() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <span className="text-lg font-semibold">R$180.789,00</span>
+      <span className="text-2xl font-semibold">R$180.789,00</span>
       <div className="flex h-6 items-center gap-2">
         <ArrowUpRight className="text-green-500" />
         <span className="text-sm">R$522.000,00</span>

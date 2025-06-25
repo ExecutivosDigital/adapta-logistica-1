@@ -116,7 +116,7 @@ export function Home2FinancialLists() {
   ];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between">
         <span className="font-semibold">Extrato Consolidado</span>
         <DropdownMenu>

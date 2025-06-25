@@ -6,6 +6,12 @@ import {
   TooltipTrigger,
 } from "@/app/chat/tooltip";
 import { OrangeButton } from "@/components/OrangeButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -266,7 +272,7 @@ export default function PurchaseApproval() {
                 setStatusFilter(tab.id as "pendente" | "agendado" | "historico")
               }
               className={cn(
-                "flex h-12 items-center justify-center border-b px-2 transition-all",
+                "hover:text-primary flex h-12 cursor-pointer items-center justify-center border-b px-2 transition-all duration-300",
                 statusFilter === tab.id
                   ? "border-b-primary text-primary"
                   : "border-b-transparent text-zinc-500",
@@ -276,9 +282,26 @@ export default function PurchaseApproval() {
             </button>
           ))}
         </div>
-        <OrangeButton icon={<OctagonAlert />} iconPosition="right">
-          Reportar Erro
-        </OrangeButton>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div>
+              <OrangeButton icon={<OctagonAlert />} iconPosition="right">
+                Ações
+              </OrangeButton>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="left">
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Tabela */}
@@ -352,7 +375,7 @@ export default function PurchaseApproval() {
                 <TableHead className="h-12 text-center text-sm font-semibold text-[#808897] uppercase">
                   Requerido por
                 </TableHead>
-                <TableHead className="flex h-12 w-10 px-0 text-center text-sm font-semibold text-[#808897] uppercase">
+                <TableHead className="h-12 text-center text-sm font-semibold text-[#808897] uppercase">
                   Ações
                 </TableHead>
               </TableRow>
@@ -444,9 +467,24 @@ export default function PurchaseApproval() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 text-zinc-400">
-                        •••
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <div className="hover:bg-primary mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-zinc-200 text-zinc-400 transition duration-300 hover:text-white">
+                            •••
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="left">
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            Lorem Ipsum
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            Lorem Ipsum
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            Lorem Ipsum
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 );
