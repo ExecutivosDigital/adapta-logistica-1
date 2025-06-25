@@ -34,7 +34,7 @@ export function OrangeButton({
       >
         <div
           className={cn(
-            "px-4 py-2",
+            "items-center gap-2 px-4 py-2",
             className,
             {
               "bg-white": unselected,

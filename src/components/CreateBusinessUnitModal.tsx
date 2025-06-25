@@ -1,14 +1,21 @@
 // components/CreateBusinessUnitModal.tsx
 "use client";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCreateBusinessUnit } from "@/context/CreateBusinessUnitContext";
 import * as Dialog from "@radix-ui/react-dialog";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { ArrowRight, Check, X } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { OrangeButton } from "./OrangeButton";
-
 export function CreateBusinessUnitModal() {
   const { isOpenCreateBusinessUnitModal, closeCreateBusinessUnitModal } =
     useCreateBusinessUnit();
@@ -25,6 +32,7 @@ export function CreateBusinessUnitModal() {
   const [name, setName] = useState("");
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
   return (
     <Dialog.Root
       open={isOpenCreateBusinessUnitModal}
@@ -157,11 +165,26 @@ export function CreateBusinessUnitModal() {
                   height={250}
                   className="h-5 w-5 object-contain"
                 />
-                <input
-                  id="city"
-                  placeholder="Cidade · Estado"
-                  className="flex-1 px-3 py-2 outline-none placeholder:text-zinc-600 focus:border-orange-500"
-                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      id="city"
+                      className="flex-1 px-3 py-2 outline-none placeholder:text-zinc-600 focus:border-orange-500"
+                    >
+                      Cidade . Estado
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48">
+                    <DropdownMenuArrow />
+                    <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                      Sinop - MT
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                      Curitiba - PR
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </label>
             </div>
             <p className="-mt-2 text-xs text-zinc-400">
@@ -172,20 +195,21 @@ export function CreateBusinessUnitModal() {
             <div className="flex items-center justify-end gap-6 border-t border-t-zinc-400/50 pt-6">
               <button
                 type="button"
-                onClick={closeCreateBusinessUnitModal}
+                onClick={() => closeCreateBusinessUnitModal()}
                 className="rounded-md border border-zinc-200 px-4 py-2 font-medium text-zinc-700 transition hover:bg-zinc-50"
               >
                 Salvar e sair
               </button>
 
-              <button
+              <OrangeButton
                 type="submit"
+                onClick={() => router.push("/create-business-unit")}
                 disabled={confirmedName === "" || confirmedName !== name}
-                className="flex items-center gap-1 rounded-md bg-orange-500 px-4 py-2 font-semibold text-white transition duration-300 hover:bg-orange-600 disabled:opacity-50"
+                iconPosition="right"
+                icon={<ArrowRight size={16} />}
               >
                 Continuar
-                <ArrowRight size={16} />
-              </button>
+              </OrangeButton>
             </div>
           </form>
         </Dialog.Content>

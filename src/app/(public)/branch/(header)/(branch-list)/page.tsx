@@ -13,8 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { faker } from "@faker-js/faker";
-import { ChevronRight, Plus } from "lucide-react";
-import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { NewBusinessButton } from "./components/NewBusinessButton";
 
@@ -46,23 +45,7 @@ export default function BranchDetails() {
   return (
     <div className="grid h-full w-full grid-cols-3 gap-8">
       <NewBusinessButton />
-      <div className="border-primary relative h-40 w-full cursor-pointer overflow-hidden rounded-xl border-2 p-4">
-        <Image
-          src="/static/branch-details-bg.png"
-          alt=""
-          width={1000}
-          height={250}
-          className="absolute top-0 left-0 h-full w-full object-cover"
-        />
-        <div className="flex h-full w-full flex-col justify-between">
-          <div className="z-10 flex h-10 w-10 items-center justify-center rounded-md bg-white">
-            <Plus className="text-primary" />
-          </div>
-          <span className="z-10 w-1/2 text-2xl font-bold text-white">
-            Cadastrar Nova Unidade de Negócios da Filial
-          </span>
-        </div>
-      </div>
+
       {Array.from({ length: 11 }).map((_, index) => (
         <div
           key={index}
