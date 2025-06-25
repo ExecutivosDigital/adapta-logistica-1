@@ -1,7 +1,9 @@
+import { cn } from "@/utils/cn";
+
 type Props = {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   type?: "button" | "submit";
   loading?: boolean;
@@ -31,7 +33,17 @@ export function OrangeButton({
         disabled={disabled || loading}
       >
         <div
-          className={`px-4 py-2 ${className} hover:from-white-0 ${unselected ? "bg-white" : "bg-gradient-to-b"} flex w-full flex-row from-white/20 to-white/0 transition-all duration-300`}
+          className={cn(
+            "px-4 py-2",
+            className,
+            {
+              "bg-white": unselected,
+              "bg-gradient-to-b from-white/20 to-white/0": !unselected,
+            },
+            "hover:from-white-0",
+            "flex w-full flex-row",
+            "transition-all duration-300",
+          )}
         >
           {loading ? (
             <span>{loadingText || "Loading..."}</span>
