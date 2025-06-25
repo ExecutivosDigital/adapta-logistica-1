@@ -56,7 +56,7 @@ export const inputVariants = cva(
       {
         variant: "flat",
         color: "primary",
-        className: "bg-primary/10 read-only:bg-primary/10",
+        className: "bg-primary/20 read-only:bg-primary/20",
       },
       {
         variant: "flat",
@@ -82,7 +82,7 @@ export const inputVariants = cva(
         variant: "faded",
         color: "primary",
         className:
-          "bg-primary/10 border-primary/30 read-only:bg-primary/10 border-primary/30",
+          "bg-primary/20 border-primary/30 read-only:bg-primary/20 border-primary/30",
       },
       {
         variant: "faded",

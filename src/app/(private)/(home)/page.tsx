@@ -17,7 +17,7 @@ export default function Home() {
           <HomeButtonGroup />
         </div>
         <div className="col-span-5 flex items-end justify-end">
-          <button className="bg-primary border-primary flex items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm">
+          <button className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
             <span className="text-sm"> Criar Lançamento</span>
             <ChevronRight />
           </button>

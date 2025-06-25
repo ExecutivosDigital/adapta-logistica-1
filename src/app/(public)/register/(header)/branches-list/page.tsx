@@ -1,5 +1,11 @@
 "use client";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -8,7 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/cn";
-import { ChevronRight, EllipsisVertical } from "lucide-react";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
+import { ChevronRight, EllipsisVertical, Info } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -150,13 +157,35 @@ export default function BranchesList() {
             <TableRow
               key={row.id}
               onClick={() => router.push("/branch")}
-              className="hover:bg-primary/10 h-14 cursor-pointer py-8 text-center transition duration-200"
+              className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
             >
               {/* AÇÕES – 28 px, sem padding */}
               <TableCell className="mr-8 h-10 max-h-10 w-10 max-w-10 min-w-10 flex-shrink-0 flex-grow-0 p-1">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 text-zinc-400">
-                  <EllipsisVertical size={14} />
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    asChild
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="hover:bg-primary flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 text-zinc-400 transition duration-300 hover:border-white hover:text-white">
+                      <EllipsisVertical size={14} />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="right">
+                    <DropdownMenuArrow />
+                    <DropdownMenuItem className="hover:bg-primary/20 flex cursor-pointer items-center gap-2 transition duration-300">
+                      <Info className="h-4 text-zinc-600" />
+                      Lorem ipsum
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-primary/20 flex cursor-pointer items-center gap-2 transition duration-300">
+                      <Info className="h-4 text-zinc-600" />
+                      Lorem ipsum
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-primary/20 flex cursor-pointer items-center gap-2 transition duration-300">
+                      <Info className="h-4 text-zinc-600" />
+                      Lorem ipsum
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
 
               {/* RAZÃO SOCIAL – sem margem extra do lado esquerdo */}
@@ -190,7 +219,7 @@ export default function BranchesList() {
                 </div>
               </TableCell>
 
-              <TableCell className="text-primary flex items-end justify-end gap-1 py-2 text-end text-sm font-medium whitespace-nowrap underline">
+              <TableCell className="text-primary hover:text-primary-dark flex items-end justify-end gap-1 py-2 text-end text-sm font-medium whitespace-nowrap underline transition duration-300">
                 Acesso à Filial
                 <ChevronRight size={16} />
               </TableCell>

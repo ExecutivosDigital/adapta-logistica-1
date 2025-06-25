@@ -280,7 +280,7 @@ export default function UnitDetails() {
                         <TableRow
                           key={row.id}
                           onClick={() => router.push("/branch/branch-overview")}
-                          className="hover:bg-primary/10 h-10 max-h-10 cursor-pointer text-center transition duration-200"
+                          className="hover:bg-primary/20 h-10 max-h-10 cursor-pointer text-center transition duration-300"
                         >
                           <TableCell className="flex h-full items-center gap-2 text-sm font-medium whitespace-nowrap">
                             <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">

@@ -200,8 +200,8 @@ export default function CenterDetails() {
           {rows.map((row) => (
             <TableRow
               key={row.id}
-              onClick={() => router.push("/register/branch-details")}
-              className="hover:bg-primary/10 h-14 cursor-pointer py-8 text-center transition duration-200"
+              onClick={() => router.push("/branch")}
+              className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
             >
               {/* AÇÕES – 28 px, sem padding */}
               <TableCell className="mr-8 h-10 max-h-10 w-10 max-w-10 min-w-10 flex-shrink-0 flex-grow-0 p-1">

@@ -119,11 +119,11 @@ export function Home2Transactions() {
             <span>Ver todas</span>
             <ChevronRight />
           </div>
-          <button className="bg-primary border-primary flex items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm">
-            <span className="text-sm"> Criar Lançamento</span>
-            <ChevronRight />
-          </button>
         </div>
+        <button className="bg-primary border-primary flex items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm">
+          <span className="text-sm"> Criar Lançamento</span>
+          <ChevronRight />
+        </button>
       </div>
       <Table className="border-collapse">
         <TableHeader>
@@ -143,9 +143,9 @@ export function Home2Transactions() {
           {rows.map((row) => (
             <TableRow
               key={row.id}
-              className="hover:bg-primary/10 h-14 cursor-pointer py-8 text-center transition duration-200"
+              className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
             >
-              <TableCell className="flex items-start py-0.5 text-sm font-medium whitespace-nowrap">
+              <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
                 {row.date}
               </TableCell>
               <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
@@ -173,7 +173,7 @@ export function Home2Transactions() {
                   {row.approvedBy}
                 </div>
               </TableCell>
-              <TableCell className="flex items-start py-0.5 text-sm font-medium whitespace-nowrap">
+              <TableCell className="h-full py-0.5 text-sm font-medium whitespace-nowrap">
                 {row.reason}
               </TableCell>
               <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
@@ -193,7 +193,7 @@ export function Home2Transactions() {
                   {row.status}
                 </div>
               </TableCell>
-              <TableCell className="flex items-end justify-end gap-1 py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-400 underline">
+              <TableCell className="py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-400 underline">
                 <EllipsisVertical />
               </TableCell>
             </TableRow>

@@ -283,7 +283,7 @@ export default function BranchOverview() {
                     CNPJ: {summary ? summary.cnpj : "000.000.000/0000-00"}
                   </span>
                 </div>
-                <button className="border-primary text-primary bg-primary/10 relative flex flex-col items-center rounded-xl border px-2 py-4 font-medium">
+                <button className="border-primary text-primary bg-primary/20 relative flex flex-col items-center rounded-xl border px-2 py-4 font-medium">
                   {loading ? (
                     <>
                       {" "}

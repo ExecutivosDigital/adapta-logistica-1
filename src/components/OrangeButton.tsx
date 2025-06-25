@@ -28,7 +28,7 @@ export function OrangeButton({
     <div className="p-0.5">
       <button
         type={type}
-        className={`group flex flex-row gap-2 overflow-hidden rounded-lg border font-bold transition-all duration-300 hover:scale-[1.02] hover:bg-orange-600 ${unselected ? "border-zinc-600/40 bg-white text-[#272835]" : "border-transparent bg-orange-500 text-white"}`}
+        className={`group hover:bg-primary-dark/80 flex cursor-pointer flex-row gap-2 overflow-hidden rounded-lg border font-bold transition-all duration-300 hover:scale-[1.02] ${unselected ? "border-zinc-600/40 bg-white text-[#272835]" : "bg-primary border-transparent text-white"}`}
         onClick={onClick}
         disabled={disabled || loading}
       >

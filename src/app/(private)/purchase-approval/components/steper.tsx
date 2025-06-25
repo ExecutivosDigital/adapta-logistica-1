@@ -44,10 +44,10 @@ const Stepper: React.FC<StepperProps> = ({
                 type="button"
                 onClick={() => onStepClick?.(idx, step)}
                 disabled={onStepClick == null}
-                className={`h-6 w-6 rounded-full border transition-colors duration-300 focus:ring-2 focus:ring-orange-500/40 focus:outline-none disabled:cursor-default ${
+                className={`focus:ring-primary-dark/40 h-6 w-6 rounded-full border transition-colors duration-300 focus:ring-2 focus:outline-none disabled:cursor-default ${
                   isCompleted
-                    ? "border-orange-600 bg-orange-600"
-                    : "border-gray-300 bg-white hover:border-orange-400"
+                    ? "border-primary bg-primary"
+                    : "hover:border-primary-dark border-gray-300 bg-white"
                 }`}
               />
               <span
@@ -65,7 +65,7 @@ const Stepper: React.FC<StepperProps> = ({
                 <div className="relative top-1/2 h-full w-full -translate-y-1/2">
                   <div className="absolute inset-0 rounded-full bg-gray-200" />
                   <div
-                    className="absolute inset-0 rounded-full bg-orange-600 transition-[width] duration-500"
+                    className="bg-primary absolute inset-0 rounded-full transition-[width] duration-500"
                     style={{ width: segmentCompleted ? "100%" : "0%" }}
                   />
                 </div>

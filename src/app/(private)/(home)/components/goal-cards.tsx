@@ -4,8 +4,8 @@ import moment from "moment";
 export function HomeGoalCards() {
   return (
     <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-4 flex flex-col rounded-xl border border-zinc-200 shadow-sm">
-        <div className="bg-primary/20 flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
+      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+        <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2 text-white">
           <span>Meta da Filial</span>
           <div className="flex items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
             <EllipsisVertical />
@@ -44,8 +44,8 @@ export function HomeGoalCards() {
           </div>
         </div>
       </div>
-      <div className="col-span-4 flex flex-col rounded-xl border border-zinc-200 shadow-sm">
-        <div className="bg-primary/20 flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
+      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+        <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2 text-white">
           <span>Lorem</span>
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
@@ -86,8 +86,8 @@ export function HomeGoalCards() {
           </div>
         </div>
       </div>
-      <div className="col-span-4 flex flex-col rounded-xl border border-zinc-200 shadow-sm">
-        <div className="bg-primary/20 flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
+      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+        <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2 text-white">
           <span>Lorem</span>
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
@@ -99,7 +99,7 @@ export function HomeGoalCards() {
           </div>
         </div>
         <div className="flex flex-col gap-2 p-2">
-          <div className="flex w-full items-center justify-center gap-4">
+          {/* <div className="flex w-full items-center justify-center gap-4">
             <div className="flex flex-col">
               <div className="flex items-center gap-2 text-zinc-400">
                 <span className="text-sm">Lorem</span>
@@ -112,6 +112,12 @@ export function HomeGoalCards() {
               </div>
               <span>2 - R$6.000,00</span>
             </div>
+          </div> */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 text-zinc-400">
+              <span className="text-sm">Lorem</span>
+            </div>
+            <span>Lorem - R$12.000,00</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
