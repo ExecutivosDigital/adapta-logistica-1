@@ -137,7 +137,7 @@ export default function Sidebar() {
 
       <aside
         className={clsx(
-          "peer fixed z-50 flex h-full flex-col overflow-hidden bg-white shadow transition-all duration-200 lg:static",
+          "peer fixed z-50 flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] shadow transition-all duration-200 lg:static",
           width,
           isOpenMobile ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
@@ -145,7 +145,7 @@ export default function Sidebar() {
         {/* topo/logo */}
         <div
           className={clsx(
-            "flex h-16 items-center justify-between overflow-hidden border-b px-4",
+            "flex h-16 items-center justify-between overflow-hidden border-b border-b-zinc-200 px-4",
             isCollapsed && "justify-center",
           )}
         >
