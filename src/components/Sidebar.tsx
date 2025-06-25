@@ -1,19 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
-import {
-  Banknote,
-  CheckSquare,
-  ChevronDown,
-  CreditCard,
-  DollarSign,
-  Home,
-  Layers,
-  List,
-  Plus,
-  RefreshCw,
-  ShoppingCart,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,7 +12,7 @@ import { useState } from "react";
 /* ---------- estrutura de navegação ---------- */
 export type Item = {
   label: string;
-  icon: React.ElementType;
+  icon: string;
   href?: string; // link simples
   badge?: string | number; // pílula à direita
   children?: Item[]; // sub-nível
@@ -36,44 +24,47 @@ const NAV: { heading: string; items: Item[] }[] = [
     items: [
       {
         label: "Dashboard",
-        icon: Home,
+        icon: "/icons/sidebar-dashboard.png",
         href: "#",
         children: [
-          { label: "Home", icon: Home, href: "/" },
-          { label: "Home 2", icon: Home, href: "/home2" },
-          { label: "Dashboard", icon: Home, href: "#" },
+          { label: "Home", icon: "/icons/sidebar-dashboard.png", href: "/" },
+          {
+            label: "Home 2",
+            icon: "/icons/sidebar-dashboard.png",
+            href: "/home2",
+          },
         ],
       },
       {
         label: "Transações",
-        icon: RefreshCw,
+        icon: "/icons/sidebar-transactions.png",
         children: [
           {
-            label: "Receitas",
-            icon: DollarSign,
+            label: "Lorem",
+            icon: "/icons/sidebar-transactions.png",
             href: "#",
           },
           {
-            label: "Despesas",
-            icon: DollarSign,
+            label: "Lorem",
+            icon: "/icons/sidebar-transactions.png",
             href: "#",
           },
         ],
       },
-      { label: "Lorem", icon: List, href: "#" },
+      { label: "Agenda", icon: "/icons/sidebar-calendar.png", href: "#" },
       {
-        label: "Cartão de Crédito",
-        icon: CreditCard,
+        label: "Fornecedores e Clientes",
+        icon: "/icons/sidebar-clients.png",
         href: "#",
       },
-      { label: "Plano de Contas", icon: Layers, href: "#" },
+      { label: "Plano de Contas", icon: "/icons/sidebar-plan.png", href: "#" },
       {
         label: "Contas Bancárias",
-        icon: Banknote,
+        icon: "/icons/sidebar-accounts.png",
         badge: 4,
         children: [
-          { label: "Empresa", icon: Banknote, href: "#" },
-          { label: "Pessoal", icon: Banknote, href: "#" },
+          { label: "Lorem", icon: "/icons/sidebar-accounts.png", href: "#" },
+          { label: "Lorem", icon: "/icons/sidebar-accounts.png", href: "#" },
         ],
       },
     ],
@@ -83,23 +74,23 @@ const NAV: { heading: string; items: Item[] }[] = [
     items: [
       {
         label: "Relação de Compras",
-        icon: ShoppingCart,
+        icon: "/icons/sidebar-purchases.png",
         href: "#",
       },
       {
         label: "Aprovação de Compras",
-        icon: CheckSquare,
+        icon: "/icons/sidebar-approval.png",
         href: "/purchase-approval",
       },
       {
         label: "Pagamentos",
-        icon: DollarSign,
+        icon: "/icons/sidebar-payments.png",
         href: "#",
       },
-      { label: "Lorem", icon: Plus, href: "#" },
+      { label: "Lorem", icon: "/icons/sidebar-lorem.png", href: "#" },
       {
         label: "Organização",
-        icon: Layers,
+        icon: "/icons/sidebar-org.png",
         href: "#",
       },
     ],
@@ -260,8 +251,6 @@ function SidebarItem({
   isSub,
   closeMobile,
 }: SidebarItemProps) {
-  const Icon = item.icon;
-
   // estilos base
   const base =
     "group flex items-center  w-full gap-3   px-3 py-2 text-sm font-medium transition-all duration-300";
@@ -293,7 +282,20 @@ function SidebarItem({
   /* conteúdo comum */
   const inner = (
     <>
-      <Icon className={clsx("h-5 w-5 shrink-0", iconColor)} />
+      <Image
+        src={
+          active
+            ? isSub
+              ? item.icon
+              : item.icon.split(".")[0] + "-white." + item.icon.split(".")[1]
+            : item.icon
+        }
+        // src={item.icon}
+        alt=""
+        width={100}
+        height={100}
+        className={clsx("h-5 w-5 shrink-0", iconColor)}
+      />
       {!collapsed && <span className="truncate">{item.label}</span>}
 
       {/* badge / chevron */}
