@@ -120,7 +120,6 @@ export default function RegisterLayout({
                     </button>
                   ))}
                 </div>
-
                 {/* AQUI ESTÁ A MÁGICA: A ScrollArea ocupa o espaço restante */}
                 <div className="flex max-h-[80vh] w-full flex-1 py-4">
                   <ScrollArea className="w-full">{children}</ScrollArea>

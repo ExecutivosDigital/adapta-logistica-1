@@ -6,11 +6,7 @@
 
   --color-primary: #d96927;
   --color-primary-dark: #da5709;
-  @layer utilities {
-    .w-trigger {
-      width: var(--radix-dropdown-menu-trigger-width);
-    }
-  }
+
   /* --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-accordion-down: accordion-down 0.2s ease-out;
 
