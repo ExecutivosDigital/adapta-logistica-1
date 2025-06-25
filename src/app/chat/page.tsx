@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Section } from "./SectionGemini";
@@ -9,12 +9,14 @@ export default function BranchesList() {
   return (
     <div className="bg-primary h-screen max-h-screen w-full p-4 pb-0 lg:p-8">
       <div className="relative flex h-[calc(100vh-16px)] max-h-[calc(100vh-16px)] w-full flex-col rounded-t-2xl bg-white py-4 lg:h-[calc(100vh-32px)] lg:max-h-[calc(100vh-32px)] lg:p-8">
-        <div
-          onClick={() => router.back()}
-          className="text-primary absolute top-5 left-5 flex cursor-pointer items-center gap-2"
-        >
-          <ChevronLeft />
-          <span>Voltar</span>
+        <div className="absolute top-0 -left-8 p-8 pb-0 lg:top-5 lg:left-5">
+          <button
+            onClick={() => router.back()}
+            className="lg:text-md flex cursor-pointer items-center gap-2 text-xs"
+          >
+            <ArrowLeft />
+            <span>Voltar</span>
+          </button>
         </div>
         <div>
           <Image
@@ -22,7 +24,7 @@ export default function BranchesList() {
             alt=""
             width={500}
             height={750}
-            className="absolute top-5 right-5 h-10 w-max object-contain lg:h-40"
+            className="absolute top-5 right-5 hidden h-10 w-max object-contain lg:block lg:h-20"
           />
         </div>
         <div className="flex w-full flex-1 flex-col">
