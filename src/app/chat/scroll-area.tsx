@@ -6,21 +6,32 @@ const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> & {
     orientation?: "horizontal" | "vertical";
+    viewportRef?: React.RefObject<HTMLDivElement | null>; // Adiciona a prop viewportRef
   }
->(({ className, orientation, children, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root
-    ref={ref}
-    type="scroll"
-    className={cn("relative overflow-hidden", className)}
-    {...props}
-  >
-    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
-      {children}
-    </ScrollAreaPrimitive.Viewport>
-    <ScrollBar orientation={orientation} />
-    <ScrollAreaPrimitive.Corner />
-  </ScrollAreaPrimitive.Root>
-));
+>(
+  (
+    { className, orientation, children, viewportRef, ...props },
+    ref, // Desestrutura viewportRef
+  ) => (
+    <ScrollAreaPrimitive.Root
+      ref={ref}
+      type="scroll"
+      className={cn("relative overflow-hidden", className)}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport
+        ref={viewportRef}
+        className="h-full w-full rounded-[inherit]"
+      >
+        {" "}
+        {/* Passa a ref para o Viewport */}
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollBar orientation={orientation} />
+      <ScrollAreaPrimitive.Corner />
+    </ScrollAreaPrimitive.Root>
+  ),
+);
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollBar = React.forwardRef<
