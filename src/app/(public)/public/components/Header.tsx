@@ -4,7 +4,7 @@ export function Header() {
   return (
     <header className="absolute top-4 z-20 flex h-16 w-[calc(100%-64px)] flex-row items-center justify-between gap-4 self-center rounded-full border-zinc-200 bg-white p-4 shadow-lg md:gap-16 xl:w-[73.75%]">
       <Image
-        className="h-8 w-max object-contain"
+        className="h-max w-24 object-contain lg:h-8 lg:w-max"
         alt=" "
         width={200}
         height={200}
