@@ -7,13 +7,13 @@ export function Home2ButtonGroup() {
   const [buttons, setButtons] = useState([
     {
       id: "1",
-      label: "Filial",
+      label: "Todos",
       icon: <NotepadText className="h-4 w-max" />,
       selected: true,
     },
     {
       id: "2",
-      label: "Financeiro",
+      label: "Un. Negócios I",
       icon: <NotepadText className="h-4 w-max" />,
       selected: false,
     },

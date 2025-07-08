@@ -1,7 +1,7 @@
 "use client";
 
 import { useSidebar } from "@/context/SidebarContext";
-import { Bell, ChevronDown, Menu, Search } from "lucide-react";
+import { Bell, ChevronDown, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +23,8 @@ export default function Header() {
         <Menu className="h-6 w-6" />
       </button>
       <div className="flex w-full items-center justify-between">
-        <label
+        <div></div>
+        {/* <label
           className="flex w-80 items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 transition duration-300"
           htmlFor="search"
         >
@@ -33,7 +34,7 @@ export default function Header() {
             className="h-full w-full border-0 bg-transparent placeholder:text-zinc-300 focus:outline-none"
             placeholder="Pesquisa"
           />
-        </label>
+        </label> */}
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

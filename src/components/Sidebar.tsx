@@ -40,18 +40,22 @@ const NAV: { heading: string; items: Item[] }[] = [
         icon: "/icons/sidebar-transactions.png",
         children: [
           {
-            label: "Lorem",
+            label: "Títulos á Receber",
             icon: "/icons/sidebar-transactions.png",
-            href: "#",
+            href: "/transactions/receivable",
           },
           {
-            label: "Lorem",
+            label: "Contas á Pagar",
             icon: "/icons/sidebar-transactions.png",
-            href: "#",
+            href: "/transactions/payable",
           },
         ],
       },
-      { label: "Agenda", icon: "/icons/sidebar-calendar.png", href: "#" },
+      {
+        label: "Agenda",
+        icon: "/icons/sidebar-calendar.png",
+        href: "/calendar",
+      },
       { label: "Chat", icon: "/icons/sidebar-chat.png", href: "/chat" },
       {
         label: "Fornecedores e Clientes",
@@ -62,10 +66,17 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Contas Bancárias",
         icon: "/icons/sidebar-accounts.png",
-        badge: 4,
         children: [
-          { label: "Lorem", icon: "/icons/sidebar-accounts.png", href: "#" },
-          { label: "Lorem", icon: "/icons/sidebar-accounts.png", href: "#" },
+          {
+            label: "Contas",
+            icon: "/icons/sidebar-accounts.png",
+            href: "/bank-accounts",
+          },
+          {
+            label: "Criar Conta",
+            icon: "/icons/sidebar-accounts.png",
+            href: "/bank-accounts/create",
+          },
         ],
       },
     ],

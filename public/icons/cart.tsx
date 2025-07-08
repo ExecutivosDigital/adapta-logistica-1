@@ -1,0 +1,75 @@
+interface CardProps {
+  color?: string;
+  width?: number;
+  height?: number;
+}
+
+const Card = ({
+  color = "black",
+  width = 48,
+  height = 28,
+  ...props
+}: CardProps) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 48 28"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <rect y="0.746094" width="48" height="26.5075" rx="2.86567" fill={color} />
+
+    <foreignObject x="-11.4627" y="-10.7166" width="70.9254" height="49.4332">
+      <div
+        style={{
+          backdropFilter: "blur(5.73px)",
+          clipPath: "url(#bgblur_0_7116_5010_clip_path)",
+          width: "100%",
+          height: "100%",
+        }}
+      />
+    </foreignObject>
+
+    <rect
+      y="0.746094"
+      width="48"
+      height="26.5075"
+      rx="2.86567"
+      fill="white"
+      fillOpacity="0.4"
+    />
+
+    <path
+      d="M12.8662 0.746094C21.7345 5.4807 17.1336 18.3124 31.8887 17.9102C39.963 17.6899 45.0847 18.5038 48 19.9111V24.3877C48 25.9702 46.7172 27.2537 45.1348 27.2539H2.86523C1.28277 27.2537 0 25.9702 0 24.3877V3.61133C0.000237098 2.02901 1.28291 0.74633 2.86523 0.746094H12.8662Z"
+      fill="white"
+      fillOpacity="0.08"
+    />
+    <path
+      d="M45.1348 0.746094C46.7172 0.746331 47.9999 2.02889 48 3.61133V24.3877C48 25.9702 46.7172 27.2527 45.1348 27.2529H2.86523C1.28279 27.2527 3.2725e-05 25.9702 0 24.3877V3.61133C0.000101263 2.02889 1.28283 0.74633 2.86523 0.746094H45.1348Z"
+      fill="white"
+      fillOpacity="0.08"
+    />
+
+    <rect
+      x="4"
+      y="4.74609"
+      width="16"
+      height="9"
+      rx="2"
+      fill="white"
+      fillOpacity="0.5"
+    />
+
+    <defs>
+      <clipPath
+        id="bgblur_0_7116_5010_clip_path"
+        transform="translate(11.4627 10.7166)"
+      >
+        <rect y="0.746094" width="48" height="26.5075" rx="2.86567" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+export default Card;

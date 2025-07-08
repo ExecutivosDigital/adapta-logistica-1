@@ -3,16 +3,22 @@ import { cn } from "@/utils/cn";
 import { NotepadText } from "lucide-react";
 import { useState } from "react";
 
-export function Home2ButtonGroup() {
+export function ButtonGroup() {
   const [buttons, setButtons] = useState([
     {
       id: "1",
-      label: "Filial",
+      label: "Todos",
       icon: <NotepadText className="h-4 w-max" />,
       selected: true,
     },
     {
       id: "2",
+      label: "Mecânica",
+      icon: <NotepadText className="h-4 w-max" />,
+      selected: false,
+    },
+    {
+      id: "3",
       label: "Financeiro",
       icon: <NotepadText className="h-4 w-max" />,
       selected: false,
@@ -43,7 +49,7 @@ export function Home2ButtonGroup() {
           className={cn(
             "hover:bg-primary flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 transition duration-300 hover:font-semibold hover:text-white",
             b.selected
-              ? "bg-primary border-primary text-white"
+              ? "bg-primary border-primary font-semibold text-white"
               : "text-zinc-600",
           )}
         >
