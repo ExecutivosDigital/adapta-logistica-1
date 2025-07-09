@@ -27,7 +27,7 @@ export function Modal({ show, onHide, children, className }: Props) {
     <>
       {isModalOpen && (
         <div
-          className="fixed bottom-0 left-0 right-0 top-0 z-[1002] flex w-full items-center justify-center text-center transition-opacity duration-300 ease-in-out"
+          className="fixed top-0 right-0 bottom-0 left-0 z-[1002] flex w-full items-center justify-center text-center transition-opacity duration-300 ease-in-out"
           style={{ opacity: show ? 1 : 0 }}
         >
           <button
@@ -37,13 +37,13 @@ export function Modal({ show, onHide, children, className }: Props) {
           <div className="relative z-50 flex flex-col items-center justify-center">
             <div
               className={twMerge(
-                "relative z-20 flex h-[85%] max-h-[85vh] max-w-[500px] flex-col items-center justify-start gap-4 rounded-md border bg-card px-2 py-4 shadow-md",
+                "bg-card relative z-20 flex h-[85%] max-h-[85vh] max-w-[500px] flex-col items-center justify-start gap-4 rounded-md border px-2 py-4 shadow-md",
                 className,
               )}
             >
               {children}
             </div>
-            <div className="absolute bottom-0 right-0 z-10 h-full max-w-[500px] blur-sm" />
+            <div className="absolute right-0 bottom-0 z-10 h-full max-w-[500px] blur-sm" />
           </div>
         </div>
       )}

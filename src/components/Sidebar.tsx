@@ -107,6 +107,16 @@ const NAV: { heading: string; items: Item[] }[] = [
       },
     ],
   },
+  {
+    heading: "Seus Dados",
+    items: [
+      {
+        label: "Perfil",
+        icon: "/icons/sidebar-user.png",
+        href: "/profile",
+      },
+    ],
+  },
 ];
 
 /* ---------- componente ---------- */
