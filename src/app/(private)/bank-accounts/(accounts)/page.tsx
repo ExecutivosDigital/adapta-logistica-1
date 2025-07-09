@@ -1,5 +1,5 @@
 "use client";
-import { Modal } from "flowbite-react";
+import { Modal } from "@/components/ui/Modal";
 import { Edit2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -39,13 +39,11 @@ export default function Home2() {
       </div>
       {open && (
         <Modal
-          size="sm"
           show={open}
-          dismissible
-          onClose={() => setOpen(false)}
-          className="bg-white/10 backdrop-blur-md"
+          onHide={() => setOpen(false)}
+          className="border-zinc-400 bg-white p-0"
         >
-          <div className="mx-auto w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl">
+          <div className="mx-auto w-full max-w-md overflow-hidden rounded-xl shadow-xl">
             <div className="space-y-6 p-6">
               {/* Saldo Atual */}
               <div>

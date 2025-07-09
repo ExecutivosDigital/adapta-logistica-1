@@ -60,7 +60,7 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Fornecedores e Clientes",
         icon: "/icons/sidebar-clients.png",
-        href: "#",
+        href: "/suppliers-and-customers",
       },
       { label: "Plano de Contas", icon: "/icons/sidebar-plan.png", href: "#" },
       {

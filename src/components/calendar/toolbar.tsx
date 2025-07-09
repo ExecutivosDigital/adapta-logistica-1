@@ -99,7 +99,7 @@ const CustomToolbar = ({
             style={{
               backgroundColor: `#d96927`,
               color: "white",
-              opacity: "0.5",
+              opacity: "0.8",
             }}
             type="button"
             onClick={() => navigate("TODAY")}
@@ -117,6 +117,7 @@ const CustomToolbar = ({
           style={{
             backgroundColor: `#d96927`,
             color: "white",
+            opacity: "0.8",
           }}
         >
           <ChevronRight />
