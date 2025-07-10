@@ -40,7 +40,9 @@ export function Home2GoalCards() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#EF4444]" />
-              <span className="text-2xl text-zinc-400">Despesas</span>
+              <span className="text-lg text-zinc-400 2xl:text-2xl">
+                Despesas
+              </span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
               R$ <span className="">1.322.890,00</span>
@@ -80,7 +82,9 @@ export function Home2GoalCards() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#EF4444]" />
-              <span className="text-2xl text-zinc-400">Em Aberto</span>
+              <span className="text-lg text-zinc-400 2xl:text-2xl">
+                Em Aberto
+              </span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
               R$ <span className="">1.322.890,00</span>
@@ -120,7 +124,9 @@ export function Home2GoalCards() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#EF4444]" />
-              <span className="text-2xl text-zinc-400">Atrasados</span>
+              <span className="text-lg text-zinc-400 2xl:text-2xl">
+                Atrasados
+              </span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
               R$ <span className="">1.322.890,00</span>

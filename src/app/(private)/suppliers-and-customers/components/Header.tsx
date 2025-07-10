@@ -1,5 +1,5 @@
 "use client";
-import { File, Square } from "lucide-react";
+import { Box, File, User2 } from "lucide-react";
 import Image from "next/image";
 import Backgrond from "/public/header.png";
 interface HeaderProps {
@@ -37,7 +37,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
               : "text-text border-b-2 border-b-transparent"
           } cursor-pointer transition-all duration-300`}
         >
-          <Square />
+          <User2 />
           <span className="uppercase">CLIENTES</span>
         </button>
         <button
@@ -48,7 +48,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
               : "text-text border-b-2 border-b-transparent"
           } cursor-pointer transition-all duration-300`}
         >
-          <Square />
+          <Box />
           <span className="uppercase">Fornecedores</span>
         </button>
       </div>

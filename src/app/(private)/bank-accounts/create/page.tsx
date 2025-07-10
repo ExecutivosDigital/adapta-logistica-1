@@ -340,7 +340,7 @@ export default function Home2() {
 
               {/* cabeçalhos grid */}
               <div className="mt-4 mb-1 grid grid-cols-[repeat(3,1fr)_auto] gap-4 text-[13px] font-medium text-zinc-600">
-                <span>Usuátio</span>
+                <span>Usuário</span>
                 <span>Permissões</span>
                 <span className="sr-only" />
               </div>

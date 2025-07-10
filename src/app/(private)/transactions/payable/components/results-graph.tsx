@@ -142,7 +142,7 @@ export function Home2ResultsGraph() {
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
             <div className="h-full w-1 bg-[#EF4444]" />
-            <span className="text-2xl text-zinc-400">Á Pagar</span>
+            <span className="text-lg text-zinc-400 2xl:text-2xl">Á Pagar</span>
           </div>
           <span className="text-2xl font-semibold text-[#EF4444]">
             R$ <span className="">1.322.890,00</span>

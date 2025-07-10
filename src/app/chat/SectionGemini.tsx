@@ -80,7 +80,7 @@ export function Section() {
         model: "gemini-2.5-pro", // Modelo poderoso que aceita arquivos
         // history: initialHistory || [],
         config: {
-          systemInstruction: `Você é um Assistente Especialista Financeiro para empresas brasileiras no regime de Lucro Real, com amplo domínio em contabilidade, fiscal e tributário, especialmente para a Adapta Logística e a Adapta Sistemas. 
+          systemInstruction: `Você é um Assistente Especialista Financeiro para empresas brasileiras no regime de Lucro Real, com amplo domínio em contabilidade, fiscal e tributário, especialmente para o Adapta Logística e o Adapta Sistemas. 
             Sua personalidade é profissional, clara e direta, sempre orientada a soluções práticas para dúvidas de colaboradores. 
             Você deve:
             
@@ -88,18 +88,18 @@ export function Section() {
             2. Detalhar os lançamentos contábeis (débito/crédito, centro de custo, conta contábil), anexação de documentos e baixas.
             3. Esclarecer obrigações fiscais e tributárias do Lucro Real (apuração de PIS, COFINS, IRPJ, CSLL, SPED Fiscal e Contribuições, ECD, ECF).
             4. Auxiliar na geração e interpretação de relatórios gerenciais (DRE, Balanço Patrimonial, Fluxo de Caixa, aging lists).
-            5. Fornecer exemplos práticos de lançamentos e telas com referência aos procedimentos internos da Adapta.
+            5. Fornecer exemplos práticos de lançamentos e telas com referência aos procedimentos internos do Adapta.
             6. Responder sempre de forma objetiva, usando tópicos ou passos numerados e incluindo exemplos quando relevante.
             
             Use como base de conhecimento: 
             
             - Documentação oficial do SPED Fiscal e Contribuições  
             - Manuais NF-e/CT-e e layouts CNAB  
-            - Fluxos e procedimentos internos da Adapta (documento de referência)  
+            - Fluxos e procedimentos internos do Adapta (documento de referência)  
             - Legislação do Lucro Real e normas da Receita Federal  
-            - Plano de Contas da Adapta
+            - Plano de Contas do Adapta
             
-            A cada pergunta, forneça instruções claras, práticas e referenciadas ao contexto da Adapta Logística e da Adapta Sistemas.`,
+            A cada pergunta, forneça instruções claras, práticas e referenciadas ao contexto do Adapta Logística e do Adapta Sistemas.`,
         },
       });
     }
@@ -504,6 +504,14 @@ export function Section() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (scrollAreaViewportRef.current) {
+      scrollAreaViewportRef.current.scrollTop =
+        scrollAreaViewportRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <div className="flex h-full w-full flex-col">
       <div className="flex h-full w-full flex-col items-center justify-between gap-2 rounded-lg xl:flex-row xl:gap-8">
@@ -615,7 +623,7 @@ export function Section() {
             ))}
           </ScrollArea>
 
-          {/* ÁREA DE INPUT (ADAPTADA E CORRIGIDA) */}
+          {/* ÁREA DE INPUT (INTEGRADA E CORRIGIDA) */}
           <div className="relative flex h-20 w-full flex-row items-center gap-2 px-2 lg:px-4">
             {/* CORREÇÃO: Os inputs de arquivo agora usam a nova função e estado */}
             <TooltipProvider>
@@ -629,7 +637,7 @@ export function Section() {
                     <input
                       className="z-[2] h-full w-full cursor-pointer rounded-full opacity-0"
                       type="file"
-                      // ADAPTADO: Aceita vários tipos
+                      // INTEGRADO: Aceita vários tipos
                       accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                       onChange={handleFileUpload} // CORREÇÃO: chamada corrigida
                       disabled={loading || !!file} // CORREÇÃO: estado corrigido

@@ -24,10 +24,10 @@ export default function profile() {
         {/* Email */}
         <div className="grid grid-cols-12 border-t border-gray-300 px-6 py-4">
           <div className="col-span-5 flex flex-col items-start gap-1 text-gray-800">
-            Email Cadastrado
+            CPF{" "}
           </div>
           <div className="col-span-7 flex flex-col items-start gap-1 text-gray-800">
-            gabriel@adapta.com.br{" "}
+            000.000.000-00
             <button className="text-primary hover:text-primary-dark hover:underline">
               Editar {">"}
             </button>
@@ -38,13 +38,13 @@ export default function profile() {
         {/* CPF */}
         <div className="grid grid-cols-12 border-t border-gray-300 px-6 py-4">
           <div className="col-span-5 flex flex-col items-start gap-1 text-gray-800">
-            CPF{" "}
+            Email Cadastrado
             <span className="text-zinc-500">
               Este é o e-mail que será usado no Adapta e em todas suas contas
             </span>
           </div>
           <div className="col-span-7 flex flex-col items-start gap-1 text-gray-800">
-            000.000.000-00
+            gabriel@adapta.com.br{" "}
             <button className="text-primary hover:text-primary-dark hover:underline">
               Editar {">"}
             </button>
