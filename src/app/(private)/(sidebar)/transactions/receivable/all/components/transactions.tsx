@@ -11,12 +11,10 @@ import {
 import { cn } from "@/utils/cn";
 import { ChevronRight, EllipsisVertical, File } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ReceivableNewReleaseSheet } from "./new-release-sheet";
+import { AllReceivableNewReleaseSheet } from "./new-release-sheet";
 
-export function ReceivableTransactions() {
-  const router = useRouter();
+export function AllReceivableTransactions() {
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
@@ -121,10 +119,7 @@ export function ReceivableTransactions() {
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Transações</span>
-            <div
-              onClick={() => router.push("/transactions/receivable/all")}
-              className="text-primary flex cursor-pointer items-center gap-2 text-sm font-semibold"
-            >
+            <div className="text-primary flex items-center gap-2 text-sm font-semibold">
               <span>Ver todas</span>
               <ChevronRight />
             </div>
@@ -226,7 +221,7 @@ export function ReceivableTransactions() {
         </div>
       </div>
       {isNewReleaseSheetOpen && (
-        <ReceivableNewReleaseSheet
+        <AllReceivableNewReleaseSheet
           open={isNewReleaseSheetOpen}
           onOpenChange={() => setIsNewReleaseSheetOpen(false)}
         />

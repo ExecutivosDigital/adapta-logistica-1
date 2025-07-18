@@ -13,7 +13,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-export function Home2ResultsGraph() {
+export function ReceivableResultsGraph() {
   const [state] = useState({
     series: [
       {
@@ -104,7 +104,7 @@ export function Home2ResultsGraph() {
       },
       responsive: [
         {
-          breakpoint: 2160,
+          breakpoint: 4000,
           options: {
             chart: {
               height: 200,

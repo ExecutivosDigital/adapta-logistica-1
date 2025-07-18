@@ -6,12 +6,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical, Filter } from "lucide-react";
 
-export function ReceivableGoalCards() {
+export function AllPayableGoalCards() {
   return (
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
-          <span className="font-semibold text-white">Recebido Consolidado</span>
+          <span className="font-semibold text-white">Despesas Consolidado</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
@@ -39,12 +39,12 @@ export function ReceivableGoalCards() {
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
-              <div className="h-full w-1 bg-[#00A181]" />
+              <div className="h-full w-1 bg-[#EF4444]" />
               <span className="text-lg text-zinc-400 2xl:text-2xl">
-                Á Receber
+                Despesas
               </span>
             </div>
-            <span className="text-2xl font-semibold text-[#00A181]">
+            <span className="text-2xl font-semibold text-[#EF4444]">
               R$ <span className="">1.322.890,00</span>
             </span>
           </div>
@@ -57,7 +57,7 @@ export function ReceivableGoalCards() {
       </div>
       <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
-          <span className="font-semibold text-white">Receber neste Mês</span>
+          <span className="font-semibold text-white">Pagar este Mês</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
@@ -81,12 +81,12 @@ export function ReceivableGoalCards() {
         <div className="relative flex flex-col gap-2 p-2 px-4">
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
-              <div className="h-full w-1 bg-[#00A181]" />
+              <div className="h-full w-1 bg-[#EF4444]" />
               <span className="text-lg text-zinc-400 2xl:text-2xl">
                 Em Aberto
               </span>
             </div>
-            <span className="text-2xl font-semibold text-[#00A181]">
+            <span className="text-2xl font-semibold text-[#EF4444]">
               R$ <span className="">1.322.890,00</span>
             </span>
           </div>

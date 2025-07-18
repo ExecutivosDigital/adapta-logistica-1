@@ -3,7 +3,7 @@ import { cn } from "@/utils/cn";
 import { NotepadText } from "lucide-react";
 import { useState } from "react";
 
-export function Home2ButtonGroup() {
+export function PayableButtonGroup() {
   const [buttons, setButtons] = useState([
     {
       id: "1",

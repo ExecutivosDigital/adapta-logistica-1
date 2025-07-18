@@ -24,7 +24,6 @@ import {
   EllipsisVertical,
   Search,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 interface TransactionProps {
@@ -55,8 +54,7 @@ type SortableColumn =
   | "cc"
   | "status";
 
-export function PayableTransactions() {
-  const router = useRouter();
+export function AllPayableTransactions() {
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
@@ -176,6 +174,107 @@ export function PayableTransactions() {
         },
       ],
     },
+    {
+      transactions: [
+        {
+          id: "5",
+          date: "05/01/2025",
+          origin: "Cliente 5",
+          value: "R$ 1.000,00",
+          category: "Categoria 5",
+          cc: "Centro de Custos 5",
+          status: "Incompleto",
+          documents: [
+            { id: "1", name: "Documento 1", file: "file.pdf" },
+            { id: "2", name: "Documento 2", file: "file.pdf" },
+          ],
+        },
+      ],
+    },
+    {
+      transactions: [
+        {
+          id: "6",
+          date: "06/01/2025",
+          origin: "Cliente 6",
+          value: "R$ 1.000,00",
+          category: "Categoria 6",
+          cc: "Centro de Custos 6",
+          status: "Atrasado",
+          documents: [],
+        },
+      ],
+    },
+    {
+      transactions: [
+        {
+          id: "7",
+          date: "07/01/2025",
+          origin: "Cliente 7",
+          value: "R$ 1.000,00",
+          category: "Categoria 7",
+          cc: "Centro de Custos 7",
+          status: "Pago",
+          documents: [],
+        },
+      ],
+    },
+    {
+      transactions: [
+        {
+          id: "8",
+          date: "08/01/2025",
+          origin: "Cliente 8",
+          value: "R$ 1.000,00",
+          category: "Categoria 8",
+          cc: "Centro de Custos 8",
+          status: "Pago",
+          documents: [
+            { id: "1", name: "Documento 1", file: "file.pdf" },
+            { id: "2", name: "Documento 2", file: "file.pdf" },
+          ],
+        },
+        {
+          id: "9",
+          date: "09/01/2025",
+          origin: "Cliente 4",
+          value: "R$ 1.000,00",
+          category: "Categoria 9",
+          cc: "Centro de Custos 9",
+          status: "Atrasado",
+          documents: [
+            { id: "1", name: "Documento 1", file: "file.pdf" },
+            { id: "2", name: "Documento 2", file: "file.pdf" },
+          ],
+        },
+        {
+          id: "10",
+          date: "10/01/2025",
+          origin: "Cliente 10",
+          value: "R$ 1.000,00",
+          category: "Categoria 10",
+          cc: "Centro de Custos 10",
+          status: "Atrasado",
+          documents: [
+            { id: "1", name: "Documento 1", file: "file.pdf" },
+            { id: "2", name: "Documento 2", file: "file.pdf" },
+          ],
+        },
+        {
+          id: "11",
+          date: "11/01/2025",
+          origin: "Cliente 11",
+          value: "R$ 1.000,00",
+          category: "Categoria 11",
+          cc: "Centro de Custos 11",
+          status: "Pendente",
+          documents: [
+            { id: "1", name: "Documento 1", file: "file.pdf" },
+            { id: "2", name: "Documento 2", file: "file.pdf" },
+          ],
+        },
+      ],
+    },
   ];
 
   const toggleRow = (rowIndex: number) => {
@@ -199,7 +298,7 @@ export function PayableTransactions() {
         isSubRow && "bg-gray-50",
       )}
     >
-      <TableCell className="py-0.5 pl-12 text-start text-sm font-medium whitespace-nowrap">
+      <TableCell className="py-0.5 pl-20 text-start text-sm font-medium whitespace-nowrap">
         {transaction.date}
       </TableCell>
       <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
@@ -356,13 +455,6 @@ export function PayableTransactions() {
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Fluxo de Pagamentos</span>
-            <div
-              onClick={() => router.push("/transactions/payable/all")}
-              className="text-primary flex cursor-pointer items-center gap-2 text-sm font-semibold"
-            >
-              <span>Ver todas</span>
-              <ChevronRight />
-            </div>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

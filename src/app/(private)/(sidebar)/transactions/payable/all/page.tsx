@@ -6,25 +6,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PayableButtonGroup } from "./components/button-group";
-import { PayableFinancialLists } from "./components/financial-lists";
-import { PayableGoalCards } from "./components/goal-cards";
-import { PayableResultsGraph } from "./components/results-graph";
-import { PayableTransactions } from "./components/transactions";
+import { AllPayableButtonGroup } from "./components/button-group";
+import { AllPayableGoalCards } from "./components/goal-cards";
+import { AllPayableTransactions } from "./components/transactions";
 
-export default function Payable() {
+export default function AllPayable() {
   const router = useRouter();
 
   return (
     <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
-      <span className="text-lg font-semibold lg:text-xl">Contas á Pagar</span>
+      <div className="flex items-center gap-2">
+        <ChevronLeft onClick={() => router.back()} className="cursor-pointer" />
+        <span className="text-lg font-semibold lg:text-xl">
+          Todas as Contas á Pagar
+        </span>
+      </div>
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12 flex w-full items-center justify-between">
-          <PayableButtonGroup />
+          <AllPayableButtonGroup />
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <OrangeButton className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
                 <span className="text-sm"> Criar Lançamento</span>
                 <ChevronRight />
@@ -56,17 +59,11 @@ export default function Payable() {
           </DropdownMenu>
         </div>
 
-        <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm lg:p-4">
-          <PayableResultsGraph />
+        <div className="col-span-12">
+          <AllPayableGoalCards />
         </div>
         <div className="col-span-12">
-          <PayableGoalCards />
-        </div>
-        <div className="col-span-12">
-          <PayableTransactions />
-        </div>
-        <div className="col-span-12">
-          <PayableFinancialLists />
+          <AllPayableTransactions />
         </div>
       </div>
     </div>
