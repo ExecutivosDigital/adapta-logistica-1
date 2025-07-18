@@ -1,5 +1,4 @@
 "use client";
-import { OrangeButton } from "@/components/OrangeButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,12 +24,12 @@ export default function Payable() {
           <PayableButtonGroup />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <OrangeButton className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
+              <div className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
                 <span className="text-sm"> Criar Lançamento</span>
                 <ChevronRight />
-              </OrangeButton>
+              </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom" className="z-[999]">
+            <DropdownMenuContent align="end" side="bottom" className="z-[999]">
               <DropdownMenuItem
                 onClick={() => router.push("/create-payment")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"

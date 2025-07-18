@@ -10,6 +10,7 @@ export default function Receivable() {
       <span className="text-lg font-semibold lg:text-xl">
         Títulos á Receber
       </span>
+
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12">
           <ReceivableButtonGroup />

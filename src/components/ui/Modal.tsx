@@ -37,7 +37,7 @@ export function Modal({ show, onHide, children, className }: Props) {
           <div className="relative z-50 flex flex-col items-center justify-center">
             <div
               className={twMerge(
-                "bg-card relative z-20 flex h-[85%] max-h-[85vh] max-w-[500px] flex-col items-center justify-start gap-4 rounded-md border px-2 py-4 shadow-md",
+                "relative z-20 flex h-[85%] max-h-[85vh] max-w-[500px] flex-col items-center justify-start gap-4 rounded-md border bg-white px-2 py-4 shadow-md",
                 className,
               )}
             >

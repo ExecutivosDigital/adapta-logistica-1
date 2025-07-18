@@ -2,7 +2,15 @@
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
 import { Modal } from "@/components/ui/Modal";
-import { Calendar, ChevronDown, DollarSign, Search, X } from "lucide-react";
+import { cn } from "@/utils/cn";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronLeft,
+  DollarSign,
+  Search,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -188,6 +196,9 @@ export default function CreateBusinessUnitPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredContabilAccounts]);
+
+  console.log("steps: ", steps);
+
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       {/* HEADER -------------------------------------------------------- */}
@@ -214,6 +225,7 @@ export default function CreateBusinessUnitPage() {
         <Modal
           show={isOpenClientModal}
           onHide={() => setIsOpenClientModal(false)}
+          className="w-[720px] border-none bg-transparent shadow-none"
         >
           <div className="w-[720px] overflow-hidden rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
@@ -346,6 +358,7 @@ export default function CreateBusinessUnitPage() {
         <Modal
           show={isOpenContabilAccountModal}
           onHide={() => setIsOpenContabilAccountModal(false)}
+          className="w-[720px] border-none bg-transparent shadow-none"
         >
           <div className="w-[720px] overflow-hidden rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
@@ -489,12 +502,18 @@ export default function CreateBusinessUnitPage() {
         </Modal>
         <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
           <div className="flex w-full justify-between">
-            <div className="flex flex-col">
-              <h2 className="text-xl font-semibold">Fatura À Pagar</h2>
-              <span className="flex items-center gap-1 text-sm text-zinc-600">
-                <Calendar size={16} />
-                22/03/2025
-              </span>
+            <div className="flex items-center gap-2">
+              <ChevronLeft
+                onClick={() => setSteps((s) => s - 1)}
+                className={cn("", steps === 1 && "hidden")}
+              />
+              <div className="flex flex-col">
+                <h2 className="text-xl font-semibold">Fatura À Pagar</h2>
+                <span className="flex items-center gap-1 text-sm text-zinc-600">
+                  <Calendar size={16} />
+                  22/03/2025
+                </span>
+              </div>
             </div>
             <div className="flex flex-col items-center">
               <h2 className="flex flex-row items-center gap-1 text-xl font-semibold">
