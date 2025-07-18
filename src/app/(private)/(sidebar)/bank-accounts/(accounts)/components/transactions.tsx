@@ -13,10 +13,14 @@ import { cn } from "@/utils/cn";
 import { CreditCard, EllipsisVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Card from "../../../../../../public/icons/cart";
+import Card from "../../../../../../../public/icons/cart";
 import { Home2NewReleaseSheet } from "./new-release-sheet";
 
-export function BankAccount() {
+interface BankAccountProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+export function BankAccount({ setOpen }: BankAccountProps) {
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
@@ -154,6 +158,7 @@ export function BankAccount() {
           <TableBody>
             {rows.map((row) => (
               <TableRow
+                onClick={() => setOpen(true)}
                 key={row.id}
                 className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
               >

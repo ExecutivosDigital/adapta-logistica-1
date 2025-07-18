@@ -1,0 +1,299 @@
+/* app/(dashboard)/create-business-unit/page.tsx */
+"use client";
+import { OrangeButton } from "@/components/OrangeButton";
+import { Modal } from "@/components/ui/Modal";
+import { Calendar, ChevronDown, DollarSign, Search, X } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Step1 } from "./step1";
+import { Step2 } from "./step2";
+import { Step3 } from "./step3";
+
+export interface DataType {
+  entryType: "TOTAL" | "PARTIAL";
+  supplier: {
+    name: string;
+    cnpj: string;
+  };
+  documentType: string;
+  amount: number;
+  currency: string;
+  costType: string;
+  category: string;
+  costCenter: string;
+  accountingAccount: {
+    code: string;
+    description: string;
+  };
+  paymentMethod: {
+    bank: string;
+    account: string;
+  };
+  paymentForm: string;
+  documentNumber: string;
+  issueDate: string; // Format: 'YYYY-MM-DD'
+  dueDate: string; // Format: 'YYYY-MM-DD'
+  paymentTerms: string;
+  paymentDetails: string;
+  description: string;
+  approval: string;
+}
+
+export default function CreateBusinessUnitPage() {
+  const router = useRouter();
+
+  const [data, setData] = useState<DataType>({
+    entryType: "TOTAL", // 'TOTAL' or 'PARTIAL'
+    supplier: {
+      name: "",
+      cnpj: "",
+    },
+    documentType: "",
+    amount: 0,
+    currency: "",
+    costType: "",
+    category: "",
+    costCenter: "",
+    accountingAccount: {
+      code: "",
+      description: "",
+    },
+    paymentMethod: {
+      bank: "",
+      account: "",
+    },
+    paymentForm: "",
+    documentNumber: "",
+    issueDate: "",
+    dueDate: "",
+    paymentTerms: "",
+    paymentDetails: "",
+    description: "",
+    approval: "",
+  });
+  /* render */
+
+  const [isOpenClientModal, setIsOpenClientModal] = useState(false);
+  const clientes = Array(5).fill({
+    nome: "Razão Social Cliente",
+    cnpj: "43.795.283/0001-18",
+    validade: "25/04/2025",
+    status: "ATIVO",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [steps, setSteps] = useState(1);
+  const [isShowingDocument, setIsShowingDocument] = useState(false);
+
+  return (
+    <div className="flex h-screen flex-col overflow-hidden">
+      {/* HEADER -------------------------------------------------------- */}
+      <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
+        <Image
+          src="/logo/logoFull.png"
+          alt="Adapta"
+          width={140}
+          height={24}
+          className="h-16 w-auto"
+          priority
+        />
+
+        <button
+          onClick={() => router.back()}
+          className="absolute top-4 right-8 flex items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+        >
+          Encerrar
+          <X size={16} />
+        </button>
+      </header>
+
+      <main className="flex flex-1 overflow-y-auto">
+        <Modal
+          show={isOpenClientModal}
+          onHide={() => setIsOpenClientModal(false)}
+        >
+          <div className="w-[720px] overflow-hidden rounded-xl bg-white shadow-xl">
+            {/* Cabeçalho */}
+            <div className="bg-primary flex items-center justify-between px-6 py-4">
+              <h2 className="text-lg font-semibold text-white">
+                Lista de Clientes e/ou Grupos Empresariais no Sistema
+              </h2>
+              <button className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl">
+                ⋮
+              </button>
+            </div>
+
+            {/* Campo de busca */}
+            <div className="flex flex-row items-center gap-2 px-6 py-4">
+              <label className="mb-2 block text-xl text-[#6C7386]">
+                Selecione o Cliente Pagador:
+              </label>
+              <div className="bg-primary/20 border-primary relative flex flex-1 items-center rounded-md border px-4 py-2">
+                <input
+                  type="text"
+                  placeholder="Digite o CNPJ, CPF ou clique"
+                  className="w-full flex-1 px-2 text-sm outline-none focus:outline-none"
+                />
+                <span className="text-primary">
+                  <Search />
+                </span>
+              </div>
+            </div>
+
+            {/* Lista de clientes */}
+            <ul className="space-y-4 px-6">
+              {clientes.map((cliente, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between border-b border-zinc-200 pb-2"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary h-4 w-4 rounded-full" />
+                    <div className="flex flex-col text-sm">
+                      <span className="text-zinc-800">{cliente.nome}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col text-sm">
+                      <span className="font-semibold text-zinc-900">
+                        {cliente.cnpj}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="text-primary flex items-center gap-1 font-medium">
+                      <span>🪙</span>
+                      <span>{cliente.validade}</span>
+                    </div>
+                    <span className="rounded-md border border-emerald-500 bg-emerald-600/20 px-3 py-1 font-semibold text-emerald-600">
+                      {cliente.status}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Paginação */}
+            <div className="my-6 flex items-center justify-center gap-2 text-sm">
+              {[1, 2, 3, 4, 5, 6].map((page) => (
+                <button
+                  key={page}
+                  className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                    page === currentPage
+                      ? "bg-primary text-white"
+                      : "text-primary"
+                  }`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            {/* Botões de ação */}
+            <div className="flex justify-between border-t border-zinc-200 px-6 py-4">
+              <button className="text-primary rounded-md border border-zinc-200 px-6 py-2 font-bold">
+                Cancelar
+              </button>
+              <button className="text-primary flex items-center gap-2 rounded-md border border-zinc-200 px-6 py-2 font-bold">
+                Avançar →
+              </button>
+            </div>
+          </div>
+        </Modal>
+        <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
+          <div className="flex w-full justify-between">
+            <div className="flex flex-col">
+              <h2 className="text-xl font-semibold">Fatura À Pagar</h2>
+              <span className="flex items-center gap-1 text-sm text-zinc-600">
+                <Calendar size={16} />
+                22/03/2025
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <h2 className="flex flex-row items-center gap-1 text-xl font-semibold">
+                <span className="flex flex-row items-center gap-1 text-xs">
+                  <div className="bg-primary/20 text-primary flex h-4 w-4 items-center justify-center rounded-full">
+                    <DollarSign size={14} />
+                  </div>
+                  R$
+                </span>
+                100.000,00
+              </h2>
+              <span className="flex items-center gap-1 text-sm text-zinc-600">
+                Preço da Fatura
+              </span>
+            </div>
+          </div>
+          <div className="my-4 h-px bg-zinc-200/60" />
+          {steps === 1 ? (
+            <Step1
+              data={data}
+              setData={setData}
+              setIsOpenClientModal={setIsOpenClientModal}
+            />
+          ) : steps === 2 ? (
+            <Step2 data={data} setData={setData} />
+          ) : (
+            <Step3 data={data} setData={setData} />
+          )}
+          <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
+            <button
+              onClick={() => router.back()}
+              className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+            >
+              Salvar e sair
+            </button>
+
+            <OrangeButton
+              className="h-9 w-[132px]"
+              onClick={() => setSteps(steps + 1)}
+              icon={<ChevronDown size={16} className="-rotate-90" />}
+              iconPosition="right"
+            >
+              Continuar
+            </OrangeButton>
+          </footer>
+        </section>
+
+        {/* DIVISOR vertical */}
+        <div className="w-px bg-orange-200" />
+
+        {/* COLUNA DIREITA ------------------- ------------------------ */}
+        <section className="bg-primary/10 flex flex-1 items-center justify-center p-4">
+          {!isShowingDocument ? (
+            <div
+              onClick={() => setIsShowingDocument(true)}
+              className="border-primary flex h-[80%] w-[80%] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8"
+              style={{ borderWidth: "2px", borderSpacing: "80px" }}
+            >
+              <div className="border-primary flex h-16 w-16 items-center justify-center rounded-full border">
+                <span className="text-primary text-3xl font-light">+</span>
+              </div>
+              <div className="mt-2 text-center">
+                <p className="text-primary font-medium">Upload de Documento</p>
+                <p className="text-primary/70 text-sm">
+                  Arraste e solte o arquivo aqui ou adicione do seu dispositivo
+                  <br />
+                  PDF ou PNG
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="h-full w-full overflow-y-auto">
+              <Image
+                src="/doc.png"
+                width={500}
+                height={500}
+                className="h-max w-full"
+                alt=""
+              />
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* FOOTER -------------------------------------------------------- */}
+    </div>
+  );
+}
