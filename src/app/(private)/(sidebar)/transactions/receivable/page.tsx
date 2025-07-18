@@ -1,10 +1,10 @@
-import { Home2ButtonGroup } from "./components/button-group";
-import { Home2FinancialLists } from "./components/financial-lists";
-import { Home2GoalCards } from "./components/goal-cards";
-import { Home2ResultsGraph } from "./components/results-graph";
-import { Home2Transactions } from "./components/transactions";
+import { ReceivableButtonGroup } from "./components/button-group";
+import { ReceivableFinancialLists } from "./components/financial-lists";
+import { ReceivableGoalCards } from "./components/goal-cards";
+import { ReceivableResultsGraph } from "./components/results-graph";
+import { ReceivableTransactions } from "./components/transactions";
 
-export default function Home2() {
+export default function Receivable() {
   return (
     <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
       <span className="text-lg font-semibold lg:text-xl">
@@ -12,20 +12,20 @@ export default function Home2() {
       </span>
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12">
-          <Home2ButtonGroup />
+          <ReceivableButtonGroup />
         </div>
 
         <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm lg:p-4">
-          <Home2ResultsGraph />
+          <ReceivableResultsGraph />
         </div>
         <div className="col-span-12">
-          <Home2GoalCards />
+          <ReceivableGoalCards />
         </div>
         <div className="col-span-12">
-          <Home2Transactions />
+          <ReceivableTransactions />
         </div>
         <div className="col-span-12">
-          <Home2FinancialLists />
+          <ReceivableFinancialLists />
         </div>
       </div>
     </div>

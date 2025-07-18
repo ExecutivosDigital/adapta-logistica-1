@@ -13,7 +13,7 @@ import {
   Filter,
 } from "lucide-react";
 
-export function Home2FinancialLists() {
+export function ReceivableFinancialLists() {
   const incomeList = [
     {
       id: "1",

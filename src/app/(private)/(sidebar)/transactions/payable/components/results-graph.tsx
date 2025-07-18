@@ -13,7 +13,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-export function Home2ResultsGraph() {
+export function PayableResultsGraph() {
   const [state] = useState({
     series: [
       {

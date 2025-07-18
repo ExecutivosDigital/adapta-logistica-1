@@ -27,7 +27,7 @@ const colorStyles = {
   }),
 };
 
-export function Home2NewReleaseSheet({
+export function AllReceivableNewReleaseSheet({
   open,
   onOpenChange,
 }: NewReleaseSheetProps) {

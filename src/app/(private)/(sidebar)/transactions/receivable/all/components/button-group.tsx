@@ -3,7 +3,7 @@ import { cn } from "@/utils/cn";
 import { NotepadText } from "lucide-react";
 import { useState } from "react";
 
-export function ReceivableButtonGroup() {
+export function AllReceivableButtonGroup() {
   const [buttons, setButtons] = useState([
     {
       id: "1",

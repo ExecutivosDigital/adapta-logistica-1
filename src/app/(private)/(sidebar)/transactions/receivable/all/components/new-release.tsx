@@ -1,9 +1,9 @@
 "use client";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { Home2NewReleaseSheet } from "./new-release-sheet";
+import { AllReceivableNewReleaseSheet } from "./new-release-sheet";
 
-export function Home2NewRelease() {
+export function AllReceivableNewRelease() {
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ export function Home2NewRelease() {
         <ChevronRight />
       </button>
       {isNewReleaseSheetOpen && (
-        <Home2NewReleaseSheet
+        <AllReceivableNewReleaseSheet
           open={isNewReleaseSheetOpen}
           onOpenChange={() => setIsNewReleaseSheetOpen(false)}
         />

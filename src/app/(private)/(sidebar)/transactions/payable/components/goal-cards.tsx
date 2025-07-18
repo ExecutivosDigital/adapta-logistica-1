@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical, Filter } from "lucide-react";
 
-export function Home2GoalCards() {
+export function PayableGoalCards() {
   return (
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
