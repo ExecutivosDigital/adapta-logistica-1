@@ -20,65 +20,222 @@ import { DataType } from "./page";
 
 interface Props {
   setIsOpenClientModal: (value: boolean) => void;
+  setIsOpenContabilidadeModal: (value: boolean) => void;
   data: DataType;
   setData: (value: DataType) => void;
 }
+type CostType =
+  | "Custo Fixo"
+  | "Custo Variável"
+  | "Custo de Vendas / Operação Logística"
+  | "Impostos e Tributos"
+  | "Capex (Investimentos)"
+  | "Reembolsos / Adiantamentos";
 
+type Category = {
+  /** Descrição da categoria a ser mostrada ao usuário */
+  type: string;
+  /** Deve SEMPRE repetir o CostType correspondente, para facilitar filtros  */
+  category: CostType;
+};
 /**
  * Helper to format BRL currency while we keep the raw number in state.
  */
-const formatBRL = (value: number) =>
-  value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-  });
 
-export function Step1({ setIsOpenClientModal, data, setData }: Props) {
-  const categories = [
-    "Aluguel / Condomínio / IPTU",
-    "Internet",
-    "Energia",
-    "Licenças e Softwares",
-    "Seguros de Carga",
-    "Custos - Contabilidade",
-    "Serviços Terceirizados",
-    "Manutenção Preventiva",
-    "Água e Esgoto",
-    "Telefonia e Similares",
-    "Seguros Patrimoniais",
-    "Seguros Empresariais Gerais",
-    "Folha Administrativa",
-    "Taxas Bancárias",
-    "Material de Escritório",
-    "Material Limpeza",
-    "Outros - Descreva",
-  ];
-  const costCenters = [
-    "Frete Contratado",
-    "Operacional",
-    "Consolidação de Carga",
-    "Seguros / GR",
-    "Frota",
-    "Comercial",
-    "Administrativo",
-    "Financeiro / Contábil",
-    "Ativo/Passivo Transitório",
-    "Retiradas de Sócios",
-    "Corporativo",
-    "Recursos Humanos (RH)",
-    "Jurídico",
-    "Compras / Suprimentos",
-  ];
+export function Step1({
+  setIsOpenClientModal,
+  data,
+  setData,
+  setIsOpenContabilidadeModal,
+}: Props) {
+  const categoriesByCostType: Record<CostType, Category[]> = {
+    "Custo Fixo": [
+      { type: "Aluguel", category: "Custo Fixo" },
+      { type: "Energia Elétrica", category: "Custo Fixo" },
+      { type: "Água", category: "Custo Fixo" },
+      { type: "Internet", category: "Custo Fixo" },
+      { type: "Telefone", category: "Custo Fixo" },
+      { type: "Salários Administrativos", category: "Custo Fixo" },
+      { type: "Segurança Patrimonial", category: "Custo Fixo" },
+      { type: "Contabilidade", category: "Custo Fixo" },
+      { type: "Licenças de Software", category: "Custo Fixo" },
+      { type: "Limpeza e Conservação", category: "Custo Fixo" },
+    ],
+    "Custo Variável": [
+      { type: "Comissões de Venda", category: "Custo Variável" },
+      { type: "Bonificações", category: "Custo Variável" },
+      { type: "Embalagens", category: "Custo Variável" },
+      { type: "Materiais de Expedição", category: "Custo Variável" },
+      { type: "Horas Extras Operacionais", category: "Custo Variável" },
+      { type: "Custos com Terceirizados", category: "Custo Variável" },
+      { type: "Combustível (uso variável)", category: "Custo Variável" },
+      { type: "Materiais de Consumo", category: "Custo Variável" },
+    ],
+    "Impostos e Tributos": [
+      { type: "IRPJ", category: "Impostos e Tributos" },
+      { type: "CSLL", category: "Impostos e Tributos" },
+      { type: "IRRF", category: "Impostos e Tributos" },
+      { type: "IPI", category: "Impostos e Tributos" },
+      { type: "II", category: "Impostos e Tributos" },
+      { type: "PIS/PASEP", category: "Impostos e Tributos" },
+      { type: "COFINS", category: "Impostos e Tributos" },
+      { type: "IOF", category: "Impostos e Tributos" },
+      { type: "Multa", category: "Impostos e Tributos" },
+      { type: "Ganhos de Capital", category: "Impostos e Tributos" },
+      { type: "Renda Fixa PF", category: "Impostos e Tributos" },
+      { type: "Renda Fixa PJ", category: "Impostos e Tributos" },
+      { type: "Rendimentos em Bolsa", category: "Impostos e Tributos" },
+      { type: "SISCOMEX", category: "Impostos e Tributos" },
+      { type: "INSS", category: "Impostos e Tributos" },
+      { type: "FGTS", category: "Impostos e Tributos" },
+      { type: "DARF", category: "Impostos e Tributos" },
+      { type: "Simples", category: "Impostos e Tributos" },
+      { type: "CPRB", category: "Impostos e Tributos" },
+    ],
+    "Custo de Vendas / Operação Logística": [
+      {
+        type: "Frete Contratado",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Frete Coleta",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Frete Redespacho",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      { type: "Combustível", category: "Custo de Vendas / Operação Logística" },
+      { type: "Pedágio", category: "Custo de Vendas / Operação Logística" },
+      { type: "GRIS", category: "Custo de Vendas / Operação Logística" },
+      { type: "Advalorem", category: "Custo de Vendas / Operação Logística" },
+      {
+        type: "Seguro de Carga",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      { type: "Coleta", category: "Custo de Vendas / Operação Logística" },
+      {
+        type: "Taxas de Entrega",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Manutenção de Frota",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Pneus e Peças",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Serviços de Logística Terceirizados",
+        category: "Custo de Vendas / Operação Logística",
+      },
+    ],
+    "Capex (Investimentos)": [
+      { type: "Compra de Equipamentos", category: "Capex (Investimentos)" },
+      { type: "Aquisição de Imobilizado", category: "Capex (Investimentos)" },
+      { type: "Construção / Obra", category: "Capex (Investimentos)" },
+      { type: "Investimento em Tecnologia", category: "Capex (Investimentos)" },
+      { type: "Reforma de Infraestrutura", category: "Capex (Investimentos)" },
+    ],
+    "Reembolsos / Adiantamentos": [
+      {
+        type: "Adiantamento de Viagem",
+        category: "Reembolsos / Adiantamentos",
+      },
+      {
+        type: "Despesas com Alimentação",
+        category: "Reembolsos / Adiantamentos",
+      },
+      {
+        type: "Combustível (Reembolso)",
+        category: "Reembolsos / Adiantamentos",
+      },
+      { type: "Despesas com Pedágio", category: "Reembolsos / Adiantamentos" },
+      {
+        type: "Caixa Interno / Fundo Fixo",
+        category: "Reembolsos / Adiantamentos",
+      },
+    ],
+  };
+
   const costTypes = [
     "Custo Fixo",
     "Custo Variável",
+    "Custo de Vendas / Operação Logística",
     "Impostos e Tributos",
-    "Custo de Vendas/Op. Logística",
     "Capex (Investimentos)",
     "Reembolsos / Adiantamentos",
-    "Outros",
   ];
+  const costCenters = [
+    "Centro de Custo",
+    "Abastecimento Interno",
+    "Administrativo",
+    "Armazém / CD",
+    "Atendimento ao Cliente / SAC",
+    "Auditoria / Conformidade",
+    "Backoffice / Suporte",
+    "Caixa Interno / Fundo Fixo",
+    "Capex / Investimentos",
+    "Comercial",
+    "Compras / Suprimentos",
+    "Consultivo Empresarial",
+    "Consultoria Estratégica",
+    "Contabilidade",
+    "Contencioso Trabalhista",
+    "Controle de Estoque / Inventário",
+    "Departamento Pessoal",
+    "Desenvolvimento de Produto",
+    "Desenvolvimento de Sistemas",
+    "Engenharia de Processos",
+    "Equipamentos Logísticos",
+    "Filiais / Regionais",
+    "Financeiro",
+    "Fiscal / Tributário",
+    "Frota",
+    "Funcionários em Viagem",
+    "Gerenciamento de Crises",
+    "Gestão Ambiental",
+    "Infraestrutura",
+    "Infraestrutura / Manutenção",
+    "Infraestrutura de TI",
+    "Inovação e P&D",
+    "Investimentos",
+    "Jurídico",
+    "Licenças e Softwares",
+    "Manutenção Predial",
+    "Marketing Digital",
+    "Motoristas",
+    "Novas Filiais",
+    "Obras e Projetos",
+    "Obras e Reformas",
+    "Oficina Interna",
+    "Operacional",
+    "Parcerias Estratégicas / Franquias",
+    "Planejamento Operacional",
+    "Produção",
+    "Projetos Estratégicos",
+    "Projetos e Expansão",
+    "Provisões Jurídicas",
+    "Qualidade / Compliance Operacional",
+    "RH",
+    "Recrutamento e Seleção",
+    "Reembolsos e Adiantamentos",
+    "Relacionamento com Cliente",
+    "Saúde e Segurança do Trabalho",
+    "Sede / Escritório Central",
+    "Segurança Logística",
+    "Suporte Técnico",
+    "TI",
+    "Tecnologia",
+    "Tesouraria",
+    "Transferência / Roteirização",
+    "Transportadoras Parceiras",
+    "Treinamento e Desenvolvimento",
+    "Vendas Diretas",
+    "Viagens Corporativas",
+  ];
+
   const coins = [
     "Lançar Despesa",
     "Pagamento de Colaboradores",
@@ -94,7 +251,27 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
   const [filteredDocuments, setFilteredDocuments] = useState("");
   const [filteredCoin, setFilteredCoin] = useState("");
   const [filteredCostType, setFilteredCostType] = useState("");
+  const [valor, setValor] = useState(data.amount); // centavos!
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    // 1. só dígitos
+    const digits = e.target.value.replace(/\D/g, "");
+    // 2. se nada digitado, fica 0
+    const cents = digits === "" ? 0 : parseInt(digits, 10);
+    setValor(cents);
+    setData({ ...data, amount: cents });
+  }
+  const formatBRL = (valueInCents: number) =>
+    new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(valueInCents / 100);
+  const categoryOptions =
+    data.costType && categoriesByCostType[data.costType as CostType]
+      ? categoriesByCostType[data.costType as CostType].filter(({ type }) =>
+          type.toLowerCase().includes(filteredCategories.toLowerCase()),
+        )
+      : [];
   return (
     <div className="flex-1">
       {/* -------------------------
@@ -103,31 +280,21 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
       <div className="flex w-full flex-row items-center justify-between">
         <span className="font-medium text-zinc-600">Tipo de Lançamento:</span>
         <div className="mt-2 flex gap-2">
-          <div className="bg-primary/40 relative flex overflow-hidden rounded-lg p-2">
-            {/* Slider */}
+          <div className="bg-primary/40 relative flex flex-row overflow-hidden rounded-lg p-2">
             <div
-              className={`absolute inset-y-0 left-0 w-1/2 transform items-center justify-center transition-transform duration-300 ${
-                data.entryType === "TOTAL"
-                  ? "translate-x-full pr-2"
-                  : "translate-x-0 pl-2"
-              }`}
+              className={`absolute top-0 bottom-0 left-0 flex w-1/2 transform items-center justify-center transition-transform duration-300 ${data.entryType === "TOTAL" ? "translate-x-full pr-2" : "translate-x-0 pl-2"}`}
             >
-              <div className="bg-primary h-[80%] w-[95%] rounded-lg" />
+              <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
             </div>
-            {/* Buttons */}
             <button
               onClick={() => setData({ ...data, entryType: "PARTIAL" })}
-              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${
-                data.entryType === "PARTIAL" ? "text-white" : "text-white/80"
-              }`}
+              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "PARTIAL" ? "text-white/80" : "text-white"}`}
             >
               PARCIAL
             </button>
             <button
               onClick={() => setData({ ...data, entryType: "TOTAL" })}
-              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${
-                data.entryType === "TOTAL" ? "text-white" : "text-white/80"
-              }`}
+              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "TOTAL" ? "text-white" : "text-white/80"}`}
             >
               TOTAL
             </button>
@@ -234,9 +401,12 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
               <DollarSign size={16} className="text-primary" />
             </div>
             <div className="flex h-full flex-1 items-center text-center">
-              <span className="flex-1 text-xl font-semibold">
-                {data.amount ? formatBRL(data.amount) : "R$ 0,00"}
-              </span>
+              <input
+                value={formatBRL(valor)}
+                onChange={handleChange}
+                placeholder="R$ 0,00"
+                className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+              />
             </div>
             <div className="flex h-full w-6"></div>
           </div>
@@ -366,18 +536,22 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Categoria</span>
           <DropdownMenu>
-            <DropdownMenuTrigger className="w-full focus:outline-none">
+            <DropdownMenuTrigger
+              className="w-full focus:outline-none"
+              disabled={!data.costType}
+            >
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <div className="flex h-full w-6">
                   <Settings size={16} className="text-primary" />
                 </div>
                 <div className="flex h-full flex-1 items-center">
                   <span className="flex flex-1 flex-col text-left font-semibold">
-                    {data.category || "Selecione"}
-                    {!data.category && (
+                    {!data.costType ? (
                       <span className="text-md font-normal text-zinc-400">
-                        Selecione
+                        Selecione um tipo de custo para escolher
                       </span>
+                    ) : (
+                      data.category || "Selecione"
                     )}
                   </span>
                 </div>
@@ -393,7 +567,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
               <div className="mt-2 mb-2 px-8">
                 <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
                   <input
-                    value={filteredCategories}
+                    value={filteredCategories || ""}
                     onChange={(e) => setFilteredCategories(e.target.value)}
                     placeholder="Pesquisar a Categoria"
                     className="flex-1 focus:outline-none"
@@ -402,33 +576,25 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-8">
-                {categories.filter((item) =>
-                  item.toLowerCase().includes(filteredCategories.toLowerCase()),
-                ).length === 0 && (
+                {categoryOptions.length === 0 && (
                   <div className="col-span-2 p-2 text-center text-sm text-zinc-600">
                     Nenhum item encontrado
                   </div>
                 )}
-                {categories
-                  .filter((item) =>
-                    item
-                      .toLowerCase()
-                      .includes(filteredCategories.toLowerCase()),
-                  )
-                  .map((item) => (
-                    <DropdownMenuItem
-                      key={item}
-                      onClick={() => setData({ ...data, category: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {data.category === item && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
+                {categoryOptions?.map(({ type }) => (
+                  <DropdownMenuItem
+                    key={type}
+                    onClick={() => setData({ ...data, category: type })}
+                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                  >
+                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                      {type}
+                      {data.category === type && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
+                    </div>
+                  </DropdownMenuItem>
+                ))}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -503,7 +669,10 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
         {/* --------------------- CONTA CONTÁBIL --------------------- */}
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Conta Contábil</span>
-          <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+          <div
+            onClick={() => setIsOpenContabilidadeModal(true)}
+            className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+          >
             <div className="flex h-full w-6">
               <MapPin size={16} className="text-primary" />
             </div>

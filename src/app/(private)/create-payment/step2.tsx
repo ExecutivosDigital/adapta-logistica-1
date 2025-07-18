@@ -14,65 +14,38 @@ import {
   FileText,
   Search,
 } from "lucide-react";
+import { useState } from "react";
 import { DataType } from "./page";
+
 interface Props {
   data: DataType;
   setData: (value: DataType) => void;
 }
-// export function Step2({ data, setData }: Props) {
-export function Step2({}: Props) {
-  const CreditCardList = [
-    {
-      id: 1,
-      name: "Itaú - C/c **333",
-    },
-    {
-      id: 2,
-      name: "Itaú Invest. - **222",
-    },
-    {
-      id: 3,
-      name: "Credito Itaú - Final 4455",
-    },
-    {
-      id: 4,
-      name: "lorem",
-    },
-    {
-      id: 5,
-      name: "lorem",
-    },
-    {
-      id: 6,
-      name: "lorem",
-    },
-    {
-      id: 7,
-      name: "lorem",
-    },
+
+export function Step2({ data, setData }: Props) {
+  /* -------------------------------------------------------------------------- */
+  /*                                STATIC LISTS                                */
+  /* -------------------------------------------------------------------------- */
+  const creditCards = [
+    "Itaú - C/c **333",
+    "Itaú Invest. - **222",
+    "Credito Itaú - Final 4455",
+    "Bradesco - C/c **999",
+    "Nubank - **5555",
   ];
-  const PaymentFormList = [
-    { id: 0, name: "PIX" },
-    {
-      id: 1,
-      name: "Boleto",
-    },
-    {
-      id: 2,
-      name: "Cartão de Crédito",
-    },
-    {
-      id: 3,
-      name: "Deposito",
-    },
-    {
-      id: 4,
-      name: "Transferecia Bancária",
-    },
-    { id: 5, name: "Dinheiro em Mãos" },
-    { id: 6, name: "Fatura " },
-    { id: 7, name: "lorem" },
+
+  const paymentForms = [
+    "PIX",
+    "Boleto",
+    "Cartão de Crédito",
+    "Depósito",
+    "Transferência Bancária",
+    "Dinheiro em Mãos",
+    "Fatura",
   ];
+
+  const paymentTerms = ["Total no Ato", "Parcelado", "Recorrente"];
+
   const installments = [
     "2 Pagamentos",
     "3 Pagamentos",
@@ -85,133 +58,240 @@ export function Step2({}: Props) {
     "10 Pagamentos",
     "11 Pagamentos",
     "12 Pagamentos",
-    "Outra - Digita aqui",
+    "Outra - Digite aqui",
   ];
+
+  /* -------------------------------------------------------------------------- */
+  /*                               FILTER STATES                                */
+  /* -------------------------------------------------------------------------- */
+  const [filterCard, setFilterCard] = useState("");
+  const [filterPaymentForm, setFilterPaymentForm] = useState("");
+  const [filterInstallments, setFilterInstallments] = useState("");
+
+  /* -------------------------------------------------------------------------- */
+  /*                              HELPER HANDLERS                               */
+  /* -------------------------------------------------------------------------- */
+  const handleSelectCard = (value: string) => {
+    const [bank, account] = value.split(" - ");
+    setData({
+      ...data,
+      paymentMethod: {
+        bank: bank?.trim() ?? value,
+        account: account?.trim() ?? "",
+      },
+    });
+  };
+
+  const handleSelectPaymentForm = (value: string) => {
+    setData({ ...data, paymentForm: value });
+  };
+
+  const handleSelectPaymentTerm = (value: string) => {
+    setData({ ...data, paymentTerms: value });
+  };
+
+  const handleSelectInstallment = (value: string) => {
+    setData({ ...data, paymentDetails: value });
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                 RENDERING                                  */
+  /* -------------------------------------------------------------------------- */
   return (
     <div className="flex-1">
       <div className="grid grid-cols-2 gap-4 text-sm text-zinc-700">
-        {/* Pagamento via */}
+        {/* --------------------- PAGAMENTO VIA --------------------- */}
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Pagamento via</span>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <div className="flex h-full w-6">
                   <CreditCard className="text-primary" size={16} />
                 </div>
-                <div className="flex flex-1 flex-col">
-                  <span>Método de Pagamento</span>
-                  <span className="text-zinc-400">Itaú – C/c **333</span>
+                <div className="flex flex-1 flex-col text-left">
+                  <span>
+                    {data.paymentMethod.bank || "Método de Pagamento"}
+                  </span>
+                  <span className="text-zinc-400">
+                    {data.paymentMethod.account || "Selecione"}
+                  </span>
                 </div>
                 <div className="flex h-full w-6 justify-end">
                   <Edit className="text-primary" size={16} />
                 </div>
               </div>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent
               side="right"
               className="z-[999] mt-4 max-h-[600px] overflow-y-auto"
             >
+              {/* Search */}
               <div className="mt-2 mb-2 px-8">
-                <div className="text-primary border-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2">
-                  <div className="flex-1">Pesquisar Cartão de Credito</div>
-                  <Search />
+                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+                  <input
+                    value={filterCard}
+                    onChange={(e) => setFilterCard(e.target.value)}
+                    placeholder="Pesquisar Conta / Cartão"
+                    className="flex-1 bg-transparent outline-none"
+                  />
+                  <Search size={14} />
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-8">
-                {CreditCardList.map((categoria, index) => (
-                  <DropdownMenuItem
-                    key={index}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {categoria.name}
-                      <div className="border-primary h-4 w-4 rounded-md border"></div>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
+
+              <div className="grid grid-cols-1 gap-2">
+                {creditCards
+                  .filter((c) =>
+                    c.toLowerCase().includes(filterCard.toLowerCase()),
+                  )
+                  .map((card) => (
+                    <DropdownMenuItem
+                      key={card}
+                      onClick={() => handleSelectCard(card)}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {card}
+                        {data.paymentMethod.bank +
+                          " - " +
+                          data.paymentMethod.account ===
+                          card && (
+                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                {creditCards.filter((c) =>
+                  c.toLowerCase().includes(filterCard.toLowerCase()),
+                ).length === 0 && (
+                  <div className="p-2 text-center text-sm text-zinc-600">
+                    Nenhum item encontrado
+                  </div>
+                )}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
 
-        {/* Forma de Pagamento */}
+        {/* --------------------- FORMA DE PAGAMENTO --------------------- */}
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Forma de Pagamento</span>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <div className="flex h-full w-6">
                   <DollarSign className="text-primary" size={16} />
                 </div>
-                <div className="flex-1 text-lg text-zinc-500">Selecione</div>
+                <div className="flex-1 text-lg font-semibold text-zinc-700">
+                  {data.paymentForm || "Selecione"}
+                </div>
                 <div className="flex h-full w-6 justify-end">
                   <Edit className="text-primary" size={16} />
                 </div>
               </div>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent
               side="right"
               className="z-[999] mt-4 max-h-[600px] overflow-y-auto"
             >
               <div className="mt-2 mb-2 px-8">
-                <div className="text-primary border-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2">
-                  <div className="flex-1">Pesquisar a Forma de Pagamento</div>
-                  <Search />
+                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+                  <input
+                    value={filterPaymentForm}
+                    onChange={(e) => setFilterPaymentForm(e.target.value)}
+                    placeholder="Pesquisar Forma de Pagamento"
+                    className="flex-1 bg-transparent outline-none"
+                  />
+                  <Search size={14} />
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-8">
-                {PaymentFormList.map((categoria, index) => (
+              {paymentForms
+                .filter((f) =>
+                  f.toLowerCase().includes(filterPaymentForm.toLowerCase()),
+                )
+                .map((form) => (
                   <DropdownMenuItem
-                    key={index}
+                    key={form}
+                    onClick={() => handleSelectPaymentForm(form)}
                     className="hover:bg-primary/20 cursor-pointer transition duration-300"
                   >
                     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {categoria.name}
-                      <div className="border-primary h-4 w-4 rounded-md border"></div>
+                      {form}
+                      {data.paymentForm === form && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
                     </div>
                   </DropdownMenuItem>
                 ))}
-              </div>
+              {paymentForms.filter((f) =>
+                f.toLowerCase().includes(filterPaymentForm.toLowerCase()),
+              ).length === 0 && (
+                <div className="p-2 text-center text-sm text-zinc-600">
+                  Nenhum item encontrado
+                </div>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
 
-        {/* Número no Documento */}
+        {/* --------------------- NÚMERO NO DOCUMENTO --------------------- */}
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Número no Documento</span>
           <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
             <DollarSign className="text-primary" size={16} />
-            <span className="text-lg text-zinc-500">0023232323232323 22</span>
+            <input
+              value={data.documentNumber}
+              onChange={(e) =>
+                setData({ ...data, documentNumber: e.target.value })
+              }
+              placeholder="Digite o número"
+              className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+            />
           </div>
         </label>
 
-        {/* Datas: Emissão e Vencimento */}
+        {/* --------------------- DATAS --------------------- */}
         <div className="grid grid-cols-2 gap-4">
           <label className="flex flex-col gap-1">
             <span className="text-zinc-600">Data Emissão</span>
             <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
               <Calendar className="text-primary" size={16} />
-              <span className="text-lg text-zinc-500">25/03/2025</span>
+              <input
+                type="date"
+                value={data.issueDate}
+                onChange={(e) =>
+                  setData({ ...data, issueDate: e.target.value })
+                }
+                className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+              />
             </div>
           </label>
           <label className="flex flex-col gap-1">
             <span className="text-zinc-600">Data Vencimento</span>
             <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
               <Calendar className="text-primary" size={16} />
-              <span className="text-lg text-zinc-500">25/03/2025</span>
+              <input
+                type="date"
+                value={data.dueDate}
+                onChange={(e) => setData({ ...data, dueDate: e.target.value })}
+                className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+              />
             </div>
           </label>
         </div>
 
-        {/* Condições de Pagamento */}
+        {/* --------------------- CONDIÇÕES DE PAGAMENTO --------------------- */}
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Condições de Pagamento</span>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <FileText className="text-primary" size={16} />
-                <span className="text-lg text-zinc-500">Selecione</span>
+                <span className="flex-1 text-lg font-semibold text-zinc-700">
+                  {data.paymentTerms || "Selecione"}
+                </span>
                 <Edit className="text-primary ml-auto" size={16} />
               </div>
             </DropdownMenuTrigger>
@@ -219,38 +299,34 @@ export function Step2({}: Props) {
               side="bottom"
               className="z-[999] max-h-[600px] min-w-80 overflow-y-auto"
             >
-              <div className="grid grid-cols-1 gap-8">
-                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              {paymentTerms.map((term) => (
+                <DropdownMenuItem
+                  key={term}
+                  onClick={() => handleSelectPaymentTerm(term)}
+                  className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                >
                   <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                    Total no Ato
-                    <div className="border-primary h-4 w-4 rounded-md border"></div>
+                    {term}
+                    {data.paymentTerms === term && (
+                      <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                    )}
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                  <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                    Parcelado
-                    <div className="border-primary h-4 w-4 rounded-md border"></div>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                  <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                    Recorrente
-                    <div className="border-primary h-4 w-4 rounded-md border"></div>
-                  </div>
-                </DropdownMenuItem>
-              </div>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
 
-        {/* Detalhes do Pagamento */}
+        {/* --------------------- DETALHES DO PAGAMENTO --------------------- */}
         <label className="flex flex-col gap-1">
           <span className="text-zinc-600">Detalhes do Pagamento</span>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <DollarSign className="text-primary" size={16} />
-                <span className="text-lg text-zinc-500">Selecione</span>
+                <span className="flex-1 text-lg font-semibold text-zinc-700">
+                  {data.paymentDetails || "Selecione"}
+                </span>
                 <Edit className="text-primary ml-auto" size={16} />
               </div>
             </DropdownMenuTrigger>
@@ -258,29 +334,56 @@ export function Step2({}: Props) {
               side="right"
               className="z-[999] mt-4 max-h-[600px] min-w-80 overflow-y-auto"
             >
-              <div className="grid grid-cols-1 gap-8">
-                {installments.map((categoria, index) => (
+              <div className="mt-2 mb-2 px-8">
+                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+                  <input
+                    value={filterInstallments}
+                    onChange={(e) => setFilterInstallments(e.target.value)}
+                    placeholder="Pesquisar Detalhes"
+                    className="flex-1 bg-transparent outline-none"
+                  />
+                  <Search size={14} />
+                </div>
+              </div>
+              {installments
+                .filter((ins) =>
+                  ins.toLowerCase().includes(filterInstallments.toLowerCase()),
+                )
+                .map((ins) => (
                   <DropdownMenuItem
-                    key={index}
+                    key={ins}
+                    onClick={() => handleSelectInstallment(ins)}
                     className="hover:bg-primary/20 cursor-pointer transition duration-300"
                   >
                     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {categoria}
-                      <div className="border-primary h-4 w-4 rounded-md border"></div>
+                      {ins}
+                      {data.paymentDetails === ins && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
                     </div>
                   </DropdownMenuItem>
                 ))}
-              </div>
+              {installments.filter((ins) =>
+                ins.toLowerCase().includes(filterInstallments.toLowerCase()),
+              ).length === 0 && (
+                <div className="p-2 text-center text-sm text-zinc-600">
+                  Nenhum item encontrado
+                </div>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
 
-        {/* Descrição */}
+        {/* --------------------- DESCRIÇÃO --------------------- */}
         <div className="col-span-2 flex flex-col gap-1">
           <span className="text-zinc-600">Descrição</span>
           <div className="flex min-h-[96px] items-start gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
             <AlignLeft className="text-primary mt-1" size={16} />
             <textarea
+              value={data.description}
+              onChange={(e) =>
+                setData({ ...data, description: e.target.value })
+              }
               placeholder="Digite sua observação"
               className="w-full resize-none border-none bg-transparent text-sm text-zinc-600 outline-none"
             />

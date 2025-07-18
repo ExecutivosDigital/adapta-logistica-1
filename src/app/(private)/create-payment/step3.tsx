@@ -12,7 +12,7 @@ import { useState } from "react";
 import { DataType } from "./page";
 interface TechField {
   id: string;
-  number: string;
+  number: number;
   type: string;
   date: string;
 }
@@ -20,20 +20,18 @@ interface Props {
   data: DataType;
   setData: (value: DataType) => void;
 }
-// export function Step3({ data, setData }: Props) {
-export function Step3({}: Props) {
+export function Step3({ data, setData }: Props) {
   const [invoices, setInvoices] = useState<TechField[]>([
-    { id: crypto.randomUUID(), number: "", type: "", date: "" },
+    { id: crypto.randomUUID(), number: 0, type: "", date: "" },
   ]);
 
   /* ------------------------------ helpers ---------------------------- */
   const addTechField = () =>
     setInvoices((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), number: "", type: "", date: "" },
+      { id: crypto.randomUUID(), number: 0, type: "", date: "" },
     ]);
 
-  /* ------------------------------ dropdown util ---------------------- */
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
 
@@ -49,6 +47,29 @@ export function Step3({}: Props) {
     "Nome Y",
     "Nome Z",
   ];
+  const [filteredResponsible, setFilteredResponsible] = useState("");
+  const [valor, setValor] = useState(invoices[0].number); // centavos!
+  const [amount, setAmount] = useState(data.amount);
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    // 1. só dígitos
+    const digits = e.target.value.replace(/\D/g, "");
+    // 2. se nada digitado, fica 0
+    const cents = digits === "" ? 0 : parseInt(digits, 10);
+    setValor(cents);
+  }
+  function handleChangeAmount(e: React.ChangeEvent<HTMLInputElement>) {
+    // 1. só dígitos
+    const digits = e.target.value.replace(/\D/g, "");
+    // 2. se nada digitado, fica 0
+    const cents = digits === "" ? 0 : parseInt(digits, 10);
+    setAmount(cents);
+    setData({ ...data, amount: cents });
+  }
+  const formatBRL = (valueInCents: number) =>
+    new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(valueInCents / 100);
   return (
     <div className="flex-1">
       <div className="grid grid-cols-2 gap-4 text-sm text-zinc-700">
@@ -60,8 +81,12 @@ export function Step3({}: Props) {
             </div>
             <div className="flex h-full flex-1 items-center text-center">
               <span className="font-semi-bold flex-1 text-xl">
-                {" "}
-                R$ 100.000,00
+                <input
+                  value={formatBRL(amount)}
+                  onChange={handleChangeAmount}
+                  placeholder="R$ 0,00"
+                  className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+                />
               </span>
             </div>
             <div className="flex h-full w-6"></div>
@@ -79,8 +104,7 @@ export function Step3({}: Props) {
                 </div>
                 <div className="flex h-full flex-1 items-center">
                   <span className="font-semi-bold flex-1 text-lg">
-                    {" "}
-                    Selecione o Responsável
+                    {data.approval ? data.approval : "Selecione"}
                   </span>
                 </div>
                 <div className="flex h-full w-6 justify-end">
@@ -93,25 +117,43 @@ export function Step3({}: Props) {
               className="z-[999] mt-4 max-h-[600px] overflow-y-auto"
             >
               <div className="mt-2 mb-2 px-8">
-                <div className="text-primary border-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2">
-                  <div className="flex-1">Pesquisar Responsável</div>
-                  <Search />
+                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+                  <input
+                    value={filteredResponsible}
+                    onChange={(e) => setFilteredResponsible(e.target.value)}
+                    placeholder="Pesquisar Conta / Cartão"
+                    className="flex-1 bg-transparent outline-none"
+                  />
+                  <Search size={14} />
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-8">
-                {collaborators.map((categoria, index) => (
-                  <DropdownMenuItem
-                    key={index}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div
-                      className={`flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2 ${categoria.includes("*") && "font-semibold underline"}`}
+
+              <div className="grid grid-cols-1 gap-2">
+                {collaborators
+                  .filter((c) =>
+                    c.toLowerCase().includes(filteredResponsible.toLowerCase()),
+                  )
+                  .map((c) => (
+                    <DropdownMenuItem
+                      key={c}
+                      onClick={() => setData({ ...data, approval: c })}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
                     >
-                      {categoria}
-                      <div className="border-primary h-4 w-4 rounded-md border"></div>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {c}
+                        {data.approval + " - " + data.approval === c && (
+                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                {collaborators.filter((c) =>
+                  c.toLowerCase().includes(filteredResponsible.toLowerCase()),
+                ).length === 0 && (
+                  <div className="p-2 text-center text-sm text-zinc-600">
+                    Nenhum item encontrado
+                  </div>
+                )}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -131,14 +173,8 @@ export function Step3({}: Props) {
             <div className="flex flex-col text-[13px] font-medium text-zinc-600">
               <span className="">{idx + 1} - Pagamento</span>
               <input
-                value={field.number}
-                onChange={(e) =>
-                  setInvoices((prev) =>
-                    prev.map((f, i) =>
-                      i === idx ? { ...f, number: e.target.value } : f,
-                    ),
-                  )
-                }
+                value={formatBRL(valor)}
+                onChange={handleChange}
                 placeholder="R$ 0,00"
                 className={`rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.number ? "border-primary" : "border-zinc-200"}`}
               />
@@ -187,8 +223,10 @@ export function Step3({}: Props) {
             {/* valor */}
             <div className="flex flex-col text-[13px] font-medium text-zinc-600">
               <span className="">Data</span>
+
               <input
                 value={field.date}
+                type="date"
                 onChange={(e) =>
                   setInvoices((prev) =>
                     prev.map((f, i) =>
