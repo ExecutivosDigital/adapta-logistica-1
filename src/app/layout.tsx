@@ -1,6 +1,7 @@
 import { ContextProviders } from "@/context/ContextProviders";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -24,7 +25,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <ContextProviders>
-        <body className={`${poppins.variable}`}>{children}</body>
+        <body className={`${poppins.variable}`}>
+          {children}
+          <Toaster
+            position="top-center"
+            toastOptions={{ duration: 5000, className: "z-[1000000]" }}
+          />
+        </body>
       </ContextProviders>
     </html>
   );

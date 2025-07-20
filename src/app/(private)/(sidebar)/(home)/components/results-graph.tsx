@@ -109,7 +109,7 @@ export function HomeResultsGraph() {
       },
       responsive: [
         {
-          breakpoint: 2160,
+          breakpoint: 4000,
           options: {
             chart: {
               height: 200,

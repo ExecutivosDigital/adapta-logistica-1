@@ -5,9 +5,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/utils/cn";
-import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 
+import { Calendar } from "@/components/ui/calendar";
 import { ChevronDown, DollarSign, Edit, Plus, Search } from "lucide-react";
+import moment from "moment";
 import { useState } from "react";
 import { DataType } from "./page";
 interface TechField {
@@ -35,8 +36,6 @@ export function Step3({ data, setData }: Props) {
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
 
-  const dropdownItem =
-    "cursor-pointer rounded px-4 py-2 w-full text-sm transition duration-300 hover:bg-primary/20";
   const collaborators = [
     "Giovanni",
     "Alex Marin",
@@ -85,7 +84,7 @@ export function Step3({ data, setData }: Props) {
                   value={formatBRL(amount)}
                   onChange={handleChangeAmount}
                   placeholder="R$ 0,00"
-                  className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+                  className="flex-1 bg-transparent text-center text-lg text-zinc-700 outline-none"
                 />
               </span>
             </div>
@@ -103,7 +102,7 @@ export function Step3({ data, setData }: Props) {
                   <DollarSign size={16} className="text-primary" />
                 </div>
                 <div className="flex h-full flex-1 items-center">
-                  <span className="font-semi-bold flex-1 text-lg">
+                  <span className="flex-1 text-lg">
                     {data.approval ? data.approval : "Selecione"}
                   </span>
                 </div>
@@ -114,18 +113,18 @@ export function Step3({ data, setData }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               side="right"
-              className="z-[999] mt-4 max-h-[600px] overflow-y-auto"
+              sideOffset={0}
+              align="start"
+              className="z-[999] w-72 border-zinc-200"
             >
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
-                  <input
-                    value={filteredResponsible}
-                    onChange={(e) => setFilteredResponsible(e.target.value)}
-                    placeholder="Pesquisar Conta / Cartão"
-                    className="flex-1 bg-transparent outline-none"
-                  />
-                  <Search size={14} />
-                </div>
+              <div className="border-primary text-primary mx-auto flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+                <input
+                  value={filteredResponsible}
+                  onChange={(e) => setFilteredResponsible(e.target.value)}
+                  placeholder="Pesquisar Conta / Cartão"
+                  className="flex-1 focus:outline-none"
+                />
+                <Search size={14} />
               </div>
 
               <div className="grid grid-cols-1 gap-2">
@@ -199,22 +198,27 @@ export function Step3({ data, setData }: Props) {
                     <ChevronDown size={16} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-40">
-                  <DropdownMenuArrow />
-                  {["Pix", "Boleto", "Cartão"].map((opt) => (
+                <DropdownMenuContent
+                  side="bottom"
+                  sideOffset={0}
+                  className="z-[999] w-[var(--radix-dropdown-menu-trigger-width)] border-zinc-200"
+                >
+                  {["Pix", "Boleto", "Cartão"].map((item) => (
                     <DropdownMenuItem
-                      key={opt}
-                      className={dropdownItem}
+                      key={item}
                       onSelect={(e) => {
                         e.preventDefault();
                         setInvoices((prev) =>
                           prev.map((f, i) =>
-                            i === idx ? { ...f, type: opt } : f,
+                            i === idx ? { ...f, type: item } : f,
                           ),
                         );
                       }}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
                     >
-                      {opt}
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {item}
+                      </div>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -222,21 +226,43 @@ export function Step3({ data, setData }: Props) {
             </div>
             {/* valor */}
             <div className="flex flex-col text-[13px] font-medium text-zinc-600">
-              <span className="">Data</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div>
+                    <span className="">Data</span>
 
-              <input
-                value={field.date}
-                type="date"
-                onChange={(e) =>
-                  setInvoices((prev) =>
-                    prev.map((f, i) =>
-                      i === idx ? { ...f, date: e.target.value } : f,
-                    ),
-                  )
-                }
-                placeholder="Ex.: 100L"
-                className={`rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
-              />
+                    <div
+                      className={`relative rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
+                    >
+                      {field.date
+                        ? moment(field.date).format("DD/MM/YYYY")
+                        : moment().format("DD/MM/YYYY")}
+                      <ChevronDown className="absolute top-1/2 right-2 h-4 -translate-y-1/2" />
+                    </div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="right"
+                  sideOffset={0}
+                  align="start"
+                  className="z-[999] w-72 border-zinc-200"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={moment(field.date).toDate()}
+                    onSelect={(e) =>
+                      setInvoices((prev) =>
+                        prev.map((f, i) =>
+                          i === idx
+                            ? { ...f, date: moment(e).format("YYYY-MM-DD") }
+                            : f,
+                        ),
+                      )
+                    }
+                    initialFocus
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}
@@ -246,7 +272,7 @@ export function Step3({ data, setData }: Props) {
           onClick={addTechField}
           className="flex h-5 items-center gap-1 rounded-lg border border-zinc-300 p-4 px-3 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-50"
         >
-          <Plus size={14} /> Adicionar nova parcela
+          <Plus size={14} /> Adicionar novo Pagamento
         </button>
 
         <div className="mt-6 h-px bg-zinc-200/60" />

@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { AccontsType, Accounts } from "./acconts";
 import { Step1 } from "./step1";
 import { Step2 } from "./step2";
@@ -22,6 +23,7 @@ import { Step4 } from "./step4";
 import { Step4Second } from "./step4Second";
 
 export interface DataType {
+  totalValue: number;
   entryType: "TOTAL" | "PARTIAL";
   supplier: {
     name: string;
@@ -32,7 +34,11 @@ export interface DataType {
   currency: string;
   costType: string;
   category: string;
-  costCenter: string;
+  costCenters: {
+    name: string;
+    value: string;
+    locked?: boolean;
+  }[];
   accountingAccount: {
     code: string;
     description: string;
@@ -56,6 +62,7 @@ export default function CreateBusinessUnitPage() {
   const router = useRouter();
 
   const [data, setData] = useState<DataType>({
+    totalValue: 100000,
     entryType: "TOTAL", // 'TOTAL' or 'PARTIAL'
     supplier: {
       name: "",
@@ -66,7 +73,7 @@ export default function CreateBusinessUnitPage() {
     currency: "",
     costType: "",
     category: "",
-    costCenter: "",
+    costCenters: [],
     accountingAccount: {
       code: "",
       description: "",
@@ -87,36 +94,36 @@ export default function CreateBusinessUnitPage() {
   });
   /* render */
 
-  const [isOpenClientModal, setIsOpenClientModal] = useState(false);
+  const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
   const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
     useState(false);
-  const clients = [
+  const suppliers = [
     {
-      name: "Cliente 1",
+      name: "Fornecedor 1",
       cnpj: "11.111.111/0001-11",
       expirationDate: "01/01/2025",
       status: "ATIVO",
     },
     {
-      name: "Cliente 2",
+      name: "Fornecedor 2",
       cnpj: "22.222.222/0002-22",
       expirationDate: "02/02/2025",
       status: "INATIVO",
     },
     {
-      name: "Cliente 3",
+      name: "Fornecedor 3",
       cnpj: "33.333.333/0003-33",
       expirationDate: "03/03/2025",
       status: "ATIVO",
     },
     {
-      name: "Cliente 4",
+      name: "Fornecedor 4",
       cnpj: "44.444.444/0004-44",
       expirationDate: "04/04/2025",
       status: "INATIVO",
     },
     {
-      name: "Cliente 5",
+      name: "Fornecedor 5",
       cnpj: "55.555.555/0005-55",
       expirationDate: "05/05/2025",
       status: "ATIVO",
@@ -129,7 +136,7 @@ export default function CreateBusinessUnitPage() {
     name: "",
     cnpj: "",
   });
-  const [filteredClients, setFilteredClients] = useState("");
+  const [filteredSuppliers, setFilteredSuppliers] = useState("");
   const [filteredContabilAccounts, setFilteredContabilAccounts] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<AccontsType>({
     contaContabil: "",
@@ -197,10 +204,8 @@ export default function CreateBusinessUnitPage() {
     setCurrentPage(1);
   }, [filteredContabilAccounts]);
 
-  console.log("steps: ", steps);
-
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex min-h-screen flex-col overflow-hidden">
       {/* HEADER -------------------------------------------------------- */}
       <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
         <Image
@@ -213,25 +218,35 @@ export default function CreateBusinessUnitPage() {
         />
 
         <button
-          onClick={() => router.back()}
-          className="absolute top-4 right-8 flex items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+          onClick={() => setSteps((s) => s - 1)}
+          className={cn(
+            "absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50",
+            steps === 1 && "hidden",
+          )}
         >
-          Encerrar
+          <ChevronLeft size={16} />
+          Voltar
+        </button>
+        <button
+          onClick={() => router.back()}
+          className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+        >
+          Abortar
           <X size={16} />
         </button>
       </header>
 
       <main className="flex flex-1 overflow-y-auto">
         <Modal
-          show={isOpenClientModal}
-          onHide={() => setIsOpenClientModal(false)}
+          show={isOpenSupplierModal}
+          onHide={() => setIsOpenSupplierModal(false)}
           className="w-[720px] border-none bg-transparent shadow-none"
         >
-          <div className="w-[720px] overflow-hidden rounded-xl bg-white shadow-xl">
+          <div className="scrollbar-hide w-[720px] overflow-scroll rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
             <div className="bg-primary flex items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
-                Lista de Clientes e/ou Grupos Empresariais no Sistema
+                Lista de Fornecedores no Sistema
               </h2>
               <button className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl">
                 ⋮
@@ -241,13 +256,13 @@ export default function CreateBusinessUnitPage() {
             {/* Campo de busca */}
             <div className="flex flex-row items-center gap-2 px-6 py-4">
               <label className="mb-2 block text-xl text-[#6C7386]">
-                Selecione o Cliente Pagador:
+                Selecione o Fornecedor:
               </label>
               <div className="bg-primary/20 border-primary relative flex flex-1 items-center rounded-md border px-4 py-2">
                 <input
                   type="text"
-                  value={filteredClients}
-                  onChange={(e) => setFilteredClients(e.target.value)}
+                  value={filteredSuppliers}
+                  onChange={(e) => setFilteredSuppliers(e.target.value)}
                   placeholder="Digite o CNPJ, CPF ou clique"
                   className="w-full flex-1 px-2 text-sm outline-none focus:outline-none"
                 />
@@ -257,40 +272,40 @@ export default function CreateBusinessUnitPage() {
               </div>
             </div>
 
-            {/* Lista de clientes */}
+            {/* Lista de fornecedors */}
             <ul className="space-y-4 px-6">
-              {clients.filter(
-                (cliente) =>
-                  cliente.cnpj.includes(filteredClients) ||
-                  cliente.name
+              {suppliers.filter(
+                (fornecedor) =>
+                  fornecedor.cnpj.includes(filteredSuppliers) ||
+                  fornecedor.name
                     .toLowerCase()
-                    .includes(filteredClients.toLowerCase()),
+                    .includes(filteredSuppliers.toLowerCase()),
               ).length === 0 && (
                 <li className="flex cursor-pointer items-center justify-between border-b border-zinc-200 pb-2">
                   <div className="flex items-center gap-3">
                     <div className="bg-primary h-4 w-4 rounded-full" />
                     <div className="flex flex-col text-sm">
                       <span className="text-zinc-800">
-                        Nenhum cliente encontrado
+                        Nenhum Fornecedor Encontrado
                       </span>
                     </div>
                   </div>
                 </li>
               )}
-              {clients
+              {suppliers
                 .filter(
-                  (cliente) =>
-                    cliente.cnpj.includes(filteredClients) ||
-                    cliente.name
+                  (fornecedor) =>
+                    fornecedor.cnpj.includes(filteredSuppliers) ||
+                    fornecedor.name
                       .toLowerCase()
-                      .includes(filteredClients.toLowerCase()),
+                      .includes(filteredSuppliers.toLowerCase()),
                 )
-                .map((cliente, index) => (
+                .map((fornecedor, index) => (
                   <li
-                    onClick={() => setSelectedClient(cliente)}
+                    onClick={() => setSelectedClient(fornecedor)}
                     key={index}
-                    className={`flex cursor-pointer items-center justify-between rounded-lg border-b border-zinc-200 p-2 ${
-                      selectedClient.cnpj === cliente.cnpj
+                    className={`hover:bg-primary/20 flex cursor-pointer items-center justify-between rounded-lg border-b border-zinc-200 p-2 transition duration-200 ${
+                      selectedClient.cnpj === fornecedor.cnpj
                         ? "bg-primary/20"
                         : ""
                     }`}
@@ -298,23 +313,23 @@ export default function CreateBusinessUnitPage() {
                     <div className="flex items-center gap-3">
                       <div className="bg-primary h-4 w-4 rounded-full" />
                       <div className="flex flex-col text-sm">
-                        <span className="text-zinc-800">{cliente.name}</span>
+                        <span className="text-zinc-800">{fornecedor.name}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="flex flex-col text-sm">
                         <span className="font-semibold text-zinc-900">
-                          {cliente.cnpj}
+                          {fornecedor.cnpj}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-6 text-sm">
                       <div className="text-primary flex items-center gap-1 font-medium">
                         <span>🪙</span>
-                        <span>{cliente.expirationDate}</span>
+                        <span>{fornecedor.expirationDate}</span>
                       </div>
                       <span className="rounded-md border border-emerald-500 bg-emerald-600/20 px-3 py-1 font-semibold text-emerald-600">
-                        {cliente.status}
+                        {fornecedor.status}
                       </span>
                     </div>
                   </li>
@@ -340,17 +355,17 @@ export default function CreateBusinessUnitPage() {
 
             {/* Botões de ação */}
             <div className="flex justify-between border-t border-zinc-200 px-6 py-4">
-              <button className="text-primary rounded-md border border-zinc-200 px-6 py-2 font-bold">
+              <button className="text-primary cursor-pointer rounded-md border border-zinc-200 px-6 py-2 font-bold">
                 Cancelar
               </button>
               <button
                 onClick={() => {
                   setData({ ...data, supplier: selectedClient });
-                  setIsOpenClientModal(false);
+                  setIsOpenSupplierModal(false);
                 }}
-                className="text-primary flex items-center gap-2 rounded-md border border-zinc-200 px-6 py-2 font-bold"
+                className="text-primary hover:bg-primary hover:border-primary flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-6 py-2 font-bold transition duration-200 hover:text-white"
               >
-                Avançar →
+                Selecionar →
               </button>
             </div>
           </div>
@@ -360,7 +375,7 @@ export default function CreateBusinessUnitPage() {
           onHide={() => setIsOpenContabilAccountModal(false)}
           className="w-[720px] border-none bg-transparent shadow-none"
         >
-          <div className="w-[720px] overflow-hidden rounded-xl bg-white shadow-xl">
+          <div className="scrollbar-hide w-[720px] overflow-scroll rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
             <div className="bg-primary flex items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
@@ -495,17 +510,17 @@ export default function CreateBusinessUnitPage() {
                 }}
                 className="bg-primary rounded-md px-6 py-2 font-bold text-white disabled:opacity-50"
               >
-                Avançar →
+                Selecionar →
               </button>
             </div>
           </div>
         </Modal>
         <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
           <div className="flex w-full justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
               <ChevronLeft
                 onClick={() => setSteps((s) => s - 1)}
-                className={cn("", steps === 1 && "hidden")}
+                className={cn("cursor-pointer", steps === 1 && "hidden")}
               />
               <div className="flex flex-col">
                 <h2 className="text-xl font-semibold">Fatura À Pagar</h2>
@@ -523,7 +538,10 @@ export default function CreateBusinessUnitPage() {
                   </div>
                   R$
                 </span>
-                100.000,00
+                {data.totalValue.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </h2>
               <span className="flex items-center gap-1 text-sm text-zinc-600">
                 Preço da Fatura
@@ -535,7 +553,7 @@ export default function CreateBusinessUnitPage() {
             <Step1
               data={data}
               setData={setData}
-              setIsOpenClientModal={setIsOpenClientModal}
+              setIsOpenSupplierModal={setIsOpenSupplierModal}
               setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
             />
           ) : steps === 2 ? (
@@ -546,7 +564,7 @@ export default function CreateBusinessUnitPage() {
             <Step4 data={data} setData={setData} />
           )}
           {steps !== 4 && (
-            <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
+            <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
               <button
                 onClick={() => router.back()}
                 className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
@@ -571,11 +589,7 @@ export default function CreateBusinessUnitPage() {
 
         {steps === 4 ? (
           <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
-            <Step4Second
-              data={data}
-              setData={setData}
-              setIsOpenClientModal={setIsOpenClientModal}
-            />
+            <Step4Second data={data} setData={setData} />
           </section>
         ) : (
           <section className="bg-primary/10 flex flex-1 items-center justify-center p-4">
@@ -625,11 +639,16 @@ export default function CreateBusinessUnitPage() {
 
           <OrangeButton
             className="h-9 w-[132px]"
-            onClick={() => setSteps(steps + 1)}
+            onClick={() => {
+              toast.success("À Pagar criado com sucesso!");
+              setTimeout(() => {
+                router.push("/");
+              }, 1000);
+            }}
             icon={<ChevronDown size={16} className="-rotate-90" />}
             iconPosition="right"
           >
-            Continuar
+            Salvar
           </OrangeButton>
         </footer>
       )}

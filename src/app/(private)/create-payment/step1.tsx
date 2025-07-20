@@ -7,6 +7,7 @@ import {
 
 import {
   Building2,
+  Check,
   ChevronRight,
   DollarSign,
   Edit,
@@ -14,12 +15,15 @@ import {
   Search,
   Settings,
   Tag,
+  X,
 } from "lucide-react";
 import { useState } from "react";
+import { CategoryModal } from "./components/category-modal";
+import { CostCentersList } from "./components/cost-centers-list";
 import { DataType } from "./page";
 
 interface Props {
-  setIsOpenClientModal: (value: boolean) => void;
+  setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;
   data: DataType;
   setData: (value: DataType) => void;
@@ -43,100 +47,143 @@ type Category = {
  */
 
 export function Step1({
-  setIsOpenClientModal,
+  setIsOpenSupplierModal,
   data,
   setData,
   setIsOpenContabilidadeModal,
 }: Props) {
   const categoriesByCostType: Record<CostType, Category[]> = {
     "Custo Fixo": [
-      { type: "Aluguel", category: "Custo Fixo" },
-      { type: "Energia Elétrica", category: "Custo Fixo" },
-      { type: "Água", category: "Custo Fixo" },
+      { type: "Aluguel / Condomínio / IPTU", category: "Custo Fixo" },
+      { type: "Água e Esgoto", category: "Custo Fixo" },
       { type: "Internet", category: "Custo Fixo" },
-      { type: "Telefone", category: "Custo Fixo" },
-      { type: "Salários Administrativos", category: "Custo Fixo" },
-      { type: "Segurança Patrimonial", category: "Custo Fixo" },
-      { type: "Contabilidade", category: "Custo Fixo" },
-      { type: "Licenças de Software", category: "Custo Fixo" },
-      { type: "Limpeza e Conservação", category: "Custo Fixo" },
+      { type: "Telefonia e Similares", category: "Custo Fixo" },
+      { type: "Energia", category: "Custo Fixo" },
+      { type: "Seguros Patrimoniais", category: "Custo Fixo" },
+      { type: "Licenças e Software", category: "Custo Fixo" },
+      { type: "Seguros Empresariais Gerais", category: "Custo Fixo" },
+      { type: "Seguros de Carga", category: "Custo Fixo" },
+      { type: "Folha Administrativa", category: "Custo Fixo" },
+      { type: "Custos - Contabilidade", category: "Custo Fixo" },
+      { type: "Taxas Bancárias", category: "Custo Fixo" },
+      { type: "Serviços Terceirizados", category: "Custo Fixo" },
+      { type: "Material de Escritório", category: "Custo Fixo" },
+      { type: "Manutenção Preventiva", category: "Custo Fixo" },
+      { type: "Material Limpeza", category: "Custo Fixo" },
+      { type: "Outros - Descreva", category: "Custo Fixo" },
     ],
     "Custo Variável": [
-      { type: "Comissões de Venda", category: "Custo Variável" },
-      { type: "Bonificações", category: "Custo Variável" },
-      { type: "Embalagens", category: "Custo Variável" },
-      { type: "Materiais de Expedição", category: "Custo Variável" },
+      { type: "Custos Bancários", category: "Custo Variável" },
+      { type: "Combustível", category: "Custo Variável" },
+      { type: "Pedágios", category: "Custo Variável" },
+      { type: "Frete Subcontratado", category: "Custo Variável" },
+      { type: "Adiantamento", category: "Custo Variável" },
       { type: "Horas Extras Operacionais", category: "Custo Variável" },
-      { type: "Custos com Terceirizados", category: "Custo Variável" },
-      { type: "Combustível (uso variável)", category: "Custo Variável" },
-      { type: "Materiais de Consumo", category: "Custo Variável" },
+      { type: "Deslocamento entre Filiais", category: "Custo Variável" },
+      { type: "Manutenção Corretiva", category: "Custo Variável" },
+      { type: "Multas e Penalidades", category: "Custo Variável" },
+      { type: "Armazenagem", category: "Custo Variável" },
+      { type: "Transbordo / Redespacho", category: "Custo Variável" },
+      { type: "Carga e Descarga Terceirizada", category: "Custo Variável" },
+      { type: "Material de Expedição", category: "Custo Variável" },
+      { type: "Locação de Equipamentos", category: "Custo Variável" },
+      { type: "Serviços Avulsos", category: "Custo Variável" },
+      { type: "Ger. de Risco por Operação", category: "Custo Variável" },
+      { type: "Falhas de Entrega", category: "Custo Variável" },
+      { type: "Despesas Administrativas", category: "Custo Variável" },
+      { type: "Falhas Operacionais", category: "Custo Variável" },
+      { type: "Falhas Jurídicas", category: "Custo Variável" },
+      { type: "Outros", category: "Custo Variável" },
     ],
     "Impostos e Tributos": [
       { type: "IRPJ", category: "Impostos e Tributos" },
       { type: "CSLL", category: "Impostos e Tributos" },
-      { type: "IRRF", category: "Impostos e Tributos" },
-      { type: "IPI", category: "Impostos e Tributos" },
-      { type: "II", category: "Impostos e Tributos" },
-      { type: "PIS/PASEP", category: "Impostos e Tributos" },
+      { type: "PIS", category: "Impostos e Tributos" },
       { type: "COFINS", category: "Impostos e Tributos" },
-      { type: "IOF", category: "Impostos e Tributos" },
-      { type: "Multa", category: "Impostos e Tributos" },
-      { type: "Ganhos de Capital", category: "Impostos e Tributos" },
-      { type: "Renda Fixa PF", category: "Impostos e Tributos" },
-      { type: "Renda Fixa PJ", category: "Impostos e Tributos" },
-      { type: "Rendimentos em Bolsa", category: "Impostos e Tributos" },
-      { type: "SISCOMEX", category: "Impostos e Tributos" },
-      { type: "INSS", category: "Impostos e Tributos" },
+      { type: "ISS", category: "Impostos e Tributos" },
+      { type: "ICMS ST", category: "Impostos e Tributos" },
+      { type: "ICMS DIFAL", category: "Impostos e Tributos" },
+      { type: "INSS Patronal", category: "Impostos e Tributos" },
       { type: "FGTS", category: "Impostos e Tributos" },
-      { type: "DARF", category: "Impostos e Tributos" },
-      { type: "Simples", category: "Impostos e Tributos" },
-      { type: "CPRB", category: "Impostos e Tributos" },
+      { type: "IRRF", category: "Impostos e Tributos" },
+      { type: "DPVAT", category: "Impostos e Tributos" },
+      { type: "ANTT / RNTRC / Fiscalização", category: "Impostos e Tributos" },
+      { type: "Taxas Municipais", category: "Impostos e Tributos" },
+      { type: "Taxas Estaduais", category: "Impostos e Tributos" },
+      { type: "Parc. Tributos Federais", category: "Impostos e Tributos" },
+      {
+        type: "Parc. Tributos Estado / Munic.",
+        category: "Impostos e Tributos",
+      },
+      {
+        type: "Multas e Juros por Atraso Fiscal",
+        category: "Impostos e Tributos",
+      },
+      { type: "Outros Tributos - Descreva", category: "Impostos e Tributos" },
     ],
     "Custo de Vendas / Operação Logística": [
       {
-        type: "Frete Contratado",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Frete Coleta",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Frete Redespacho",
+        type: "Frete Subcontratado",
         category: "Custo de Vendas / Operação Logística",
       },
       { type: "Combustível", category: "Custo de Vendas / Operação Logística" },
-      { type: "Pedágio", category: "Custo de Vendas / Operação Logística" },
-      { type: "GRIS", category: "Custo de Vendas / Operação Logística" },
-      { type: "Advalorem", category: "Custo de Vendas / Operação Logística" },
+      { type: "Pedágios", category: "Custo de Vendas / Operação Logística" },
       {
         type: "Seguro de Carga",
         category: "Custo de Vendas / Operação Logística",
       },
-      { type: "Coleta", category: "Custo de Vendas / Operação Logística" },
       {
-        type: "Taxas de Entrega",
+        type: "Gerenciamento de Risco",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      { type: "Armazenagem", category: "Custo de Vendas / Operação Logística" },
+      {
+        type: "Ajudas de Custo",
         category: "Custo de Vendas / Operação Logística",
       },
       {
-        type: "Manutenção de Frota",
+        type: "Motoristas Agregados",
         category: "Custo de Vendas / Operação Logística",
       },
       {
-        type: "Pneus e Peças",
+        type: "Escolta / Especial",
         category: "Custo de Vendas / Operação Logística",
       },
       {
-        type: "Serviços de Logística Terceirizados",
+        type: "Locação de Equipamentos",
         category: "Custo de Vendas / Operação Logística",
       },
+      {
+        type: "Transbordo / Redespacho",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Carga e Descarga Terceirizada",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Devolução de Mercadoria",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      {
+        type: "Projetos Pontuais",
+        category: "Custo de Vendas / Operação Logística",
+      },
+      { type: "Outros", category: "Custo de Vendas / Operação Logística" },
     ],
     "Capex (Investimentos)": [
-      { type: "Compra de Equipamentos", category: "Capex (Investimentos)" },
-      { type: "Aquisição de Imobilizado", category: "Capex (Investimentos)" },
-      { type: "Construção / Obra", category: "Capex (Investimentos)" },
-      { type: "Investimento em Tecnologia", category: "Capex (Investimentos)" },
-      { type: "Reforma de Infraestrutura", category: "Capex (Investimentos)" },
+      { type: "Compra de Veículos", category: "Capex (Investimentos)" },
+      {
+        type: "Aquisição - Máquinass e Equip.",
+        category: "Capex (Investimentos)",
+      },
+      { type: "Galpão / CD", category: "Capex (Investimentos)" },
+      { type: "Reformas e Infraestrutura", category: "Capex (Investimentos)" },
+      { type: "Sistemas e Softwares", category: "Capex (Investimentos)" },
+      { type: "Mobiliários", category: "Capex (Investimentos)" },
+      { type: "Obras", category: "Capex (Investimentos)" },
+      { type: "Projetos de Expansão", category: "Capex (Investimentos)" },
+      { type: "Investimentos Financeiro", category: "Capex (Investimentos)" },
     ],
     "Reembolsos / Adiantamentos": [
       {
@@ -167,6 +214,7 @@ export function Step1({
     "Capex (Investimentos)",
     "Reembolsos / Adiantamentos",
   ];
+
   const costCenters = [
     "Centro de Custo",
     "Abastecimento Interno",
@@ -236,22 +284,116 @@ export function Step1({
     "Viagens Corporativas",
   ];
 
-  const coins = [
-    "Lançar Despesa",
-    "Pagamento de Colaboradores",
-    "Desp. Recorrentes",
-  ];
+  const coins = ["Real", "Dollar", "Euro", "Yen"];
+
   const documents = [
-    "Lançar Despesa",
-    "Pagamento de Colaboradores",
-    "Desp. Recorrentes",
+    "Boleto",
+    "Nota Fiscal",
+    "Contrato",
+    "Ordem de Serviço",
+    "Fatura",
+    "Lorem",
+    "Lorem",
+    "Lorem",
   ];
+
   const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState("");
   const [filteredCoin, setFilteredCoin] = useState("");
   const [filteredCostType, setFilteredCostType] = useState("");
   const [valor, setValor] = useState(data.amount); // centavos!
+  const [selectedCostCenters, setSelectedCostCenters] = useState<
+    { name: string; value: string; locked?: boolean }[]
+  >([]);
+  const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
+    useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const handleCostCenterToggle = (costCenterName: string) => {
+    const isSelected = selectedCostCenters.some(
+      (cc) => cc.name === costCenterName,
+    );
+
+    let updatedSelectedCenters;
+    let updatedCostCenters;
+
+    if (isSelected) {
+      // Remove the cost center
+      updatedSelectedCenters = selectedCostCenters.filter(
+        (cc) => cc.name !== costCenterName,
+      );
+      updatedCostCenters = data.costCenters.filter(
+        (cc) => cc.name !== costCenterName,
+      );
+    } else {
+      // Add the cost center
+      const newCostCenter = {
+        name: costCenterName,
+        value: "0.00",
+        locked: false,
+      };
+      updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
+      updatedCostCenters = [...data.costCenters, newCostCenter];
+    }
+
+    setSelectedCostCenters(updatedSelectedCenters);
+
+    // Apply the same distribution logic as distributeValueEvenly
+    if (updatedCostCenters.length > 0) {
+      const lockedCenters = updatedCostCenters.filter(
+        (center) => center.locked,
+      );
+      const unlockedCenters = updatedCostCenters.filter(
+        (center) => !center.locked,
+      );
+
+      const lockedTotal = lockedCenters.reduce(
+        (sum, center) => sum + (parseFloat(center.value) || 0),
+        0,
+      );
+
+      const remainingValue = data.totalValue - lockedTotal;
+
+      if (unlockedCenters.length > 0 && remainingValue >= 0) {
+        // Convert to cents to avoid floating point issues
+        const remainingCents = Math.round(remainingValue * 100);
+        const baseValueCents = Math.floor(
+          remainingCents / unlockedCenters.length,
+        );
+        const remainder = remainingCents % unlockedCenters.length;
+
+        const finalUpdatedCostCenters = updatedCostCenters.map(
+          (center, index) => {
+            if (center.locked) {
+              return center;
+            }
+
+            // Find the position of this center in the unlocked centers array
+            const unlockedIndex = unlockedCenters.findIndex(
+              (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
+            );
+
+            // Distribute remainder to first N centers (where N = remainder)
+            const extraCent = unlockedIndex < remainder ? 1 : 0;
+            const finalValueCents = baseValueCents + extraCent;
+            const finalValue = (finalValueCents / 100).toFixed(2);
+
+            return {
+              ...center,
+              value: finalValue,
+            };
+          },
+        );
+
+        setData({ ...data, costCenters: finalUpdatedCostCenters });
+      } else {
+        setData({ ...data, costCenters: updatedCostCenters });
+      }
+    } else {
+      setData({ ...data, costCenters: [] });
+    }
+  };
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     // 1. só dígitos
@@ -261,101 +403,117 @@ export function Step1({
     setValor(cents);
     setData({ ...data, amount: cents });
   }
+
   const formatBRL = (valueInCents: number) =>
     new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(valueInCents / 100);
+
   const categoryOptions =
     data.costType && categoriesByCostType[data.costType as CostType]
       ? categoriesByCostType[data.costType as CostType].filter(({ type }) =>
           type.toLowerCase().includes(filteredCategories.toLowerCase()),
         )
       : [];
+
   return (
-    <div className="flex-1">
-      {/* -------------------------
-       *  TOGGLE TIPO DE LANÇAMENTO
-       * ------------------------*/}
-      <div className="flex w-full flex-row items-center justify-between">
-        <span className="font-medium text-zinc-600">Tipo de Lançamento:</span>
-        <div className="mt-2 flex gap-2">
-          <div className="bg-primary/40 relative flex flex-row overflow-hidden rounded-lg p-2">
-            <div
-              className={`absolute top-0 bottom-0 left-0 flex w-1/2 transform items-center justify-center transition-transform duration-300 ${data.entryType === "TOTAL" ? "translate-x-full pr-2" : "translate-x-0 pl-2"}`}
-            >
-              <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
-            </div>
-            <button
-              onClick={() => setData({ ...data, entryType: "PARTIAL" })}
-              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "PARTIAL" ? "text-white/80" : "text-white"}`}
-            >
-              PARCIAL
-            </button>
-            <button
-              onClick={() => setData({ ...data, entryType: "TOTAL" })}
-              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "TOTAL" ? "text-white" : "text-white/80"}`}
-            >
-              TOTAL
-            </button>
-          </div>
-        </div>
-        {/* Invisible span just to keep spacing */}
-        <span className="invisible font-medium text-transparent">
-          Tipo de Lançamento:
-        </span>
-      </div>
-
-      <div className="my-4 h-px bg-zinc-200/60" />
-
-      {/* -------------------------
-       *  GRID DE INFORMAÇÕES
-       * ------------------------*/}
-      <div className="grid grid-cols-2 gap-4 text-sm text-zinc-700">
-        {/* --------------------- FORNECEDOR --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Fornecedor</span>
-          <button
-            onClick={() => setIsOpenClientModal(true)}
-            className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
-          >
-            <div className="flex h-full w-6">
-              <MapPin size={16} className="text-primary" />
-            </div>
-            <div className="flex flex-1 flex-col text-left">
-              <span className="flex-1">
-                {data.supplier.name || "Selecione"}
-              </span>
-              <span className="text-zinc-400">{data.supplier.cnpj || "-"}</span>
-            </div>
-            <div className="flex h-full w-6 justify-end">
-              <Edit size={16} className="text-primary" />
-            </div>
-          </button>
-        </label>
-
-        {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Tipo de Documento</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <DollarSign size={16} className="text-primary" />
-                </div>
-                <div className="flex h-full flex-1 items-center">
-                  <span className="flex-1 text-lg font-semibold">
-                    {data.documentType || "Selecione"}
-                  </span>
-                </div>
-                <div className="flex h-full w-6 justify-end">
-                  <Edit size={16} className="text-primary" />
-                </div>
+    <>
+      <div className="flex-1">
+        {/* -------------------------
+         *  TOGGLE TIPO DE LANÇAMENTO
+         * ------------------------*/}
+        <div className="flex w-full flex-row items-center justify-between">
+          <span className="font-medium text-zinc-600">Tipo de Lançamento:</span>
+          <div className="mt-2 flex gap-2">
+            <div className="bg-primary/40 relative flex flex-row overflow-hidden rounded-lg p-2">
+              <div
+                className={`absolute top-0 bottom-0 left-0 flex w-1/2 transform items-center justify-center transition-transform duration-300 ${data.entryType === "TOTAL" ? "translate-x-full pr-2" : "translate-x-0 pl-2"}`}
+              >
+                <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom" className="z-[999]">
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+              <button
+                onClick={() => setData({ ...data, entryType: "PARTIAL" })}
+                className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "TOTAL" ? "text-white/80" : "font-semibold text-white"}`}
+              >
+                PARCIAL
+              </button>
+              <button
+                onClick={() => setData({ ...data, entryType: "TOTAL" })}
+                className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "TOTAL" ? "font-semibold text-white" : "text-white/80"}`}
+              >
+                TOTAL
+              </button>
+            </div>
+          </div>
+          {/* Invisible span just to keep spacing */}
+          <span className="invisible font-medium text-transparent">
+            Tipo de Lançamento:
+          </span>
+        </div>
+
+        <div className="my-4 h-px bg-zinc-200/60" />
+
+        {/* -------------------------
+         *  GRID DE INFORMAÇÕES
+         * ------------------------*/}
+        <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
+          {/* --------------------- FORNECEDOR --------------------- */}
+          <label className="col-span-8 flex flex-col gap-1">
+            <span className="text-zinc-600">Fornecedor</span>
+            <button
+              onClick={() => setIsOpenSupplierModal(true)}
+              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+            >
+              <div className="flex h-full w-6">
+                <MapPin size={16} className="text-primary" />
+              </div>
+              <div className="flex flex-1 flex-col">
+                <span className="flex-1 text-lg">
+                  {data.supplier.name || "Selecione"}
+                </span>
+                <span className="text-zinc-400">
+                  {data.supplier.cnpj || ""}
+                </span>
+              </div>
+              <div className="flex h-full w-6 justify-end">
+                <Edit size={16} className="text-primary" />
+              </div>
+            </button>
+          </label>
+
+          {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
+          <label className="col-span-4 flex flex-col gap-1">
+            <span className="text-zinc-600">Tipo de Documento</span>
+            <DropdownMenu
+              open={isDocumentTypeDropdownOpen}
+              onOpenChange={setIsDocumentTypeDropdownOpen}
+            >
+              <DropdownMenuTrigger className="w-full focus:outline-none">
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                  <div className="flex h-full w-6">
+                    <DollarSign size={16} className="text-primary" />
+                  </div>
+                  <div className="flex h-full flex-1 items-center">
+                    <span className="flex-1 text-lg">
+                      {data.documentType || "Selecione"}
+                    </span>
+                  </div>
+                  <div className="flex h-full w-6 justify-end">
+                    <Edit size={16} className="text-primary" />
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="bottom"
+                sideOffset={0}
+                className="z-[999] w-72 border-zinc-200"
+              >
+                <X
+                  className="text-primary ml-auto cursor-pointer"
+                  onClick={() => setIsDocumentTypeDropdownOpen(false)}
+                />
+                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
                     value={filteredDocuments}
                     onChange={(e) => setFilteredDocuments(e.target.value)}
@@ -364,76 +522,82 @@ export function Step1({
                   />
                   <Search size={14} />
                 </div>
-              </div>
-              {filteredDocuments.length > 0 && (
-                <div className="p-2 text-center text-sm text-zinc-600">
-                  Nenhum item encontrado
-                </div>
-              )}
-              {documents
-                .filter((item) =>
+                {documents.filter((item) =>
                   item.toLowerCase().includes(filteredDocuments.toLowerCase()),
-                )
-                .map((item) => (
-                  <DropdownMenuItem
-                    key={item}
-                    onClick={() => setData({ ...data, documentType: item })}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {item}
-                      {/* Check icon */}
-                      {data.documentType === item && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </label>
+                ).length === 0 && (
+                  <div className="p-2 text-center text-sm text-zinc-600">
+                    Nenhum item encontrado
+                  </div>
+                )}
+                {documents
+                  .filter((item) =>
+                    item
+                      .toLowerCase()
+                      .includes(filteredDocuments.toLowerCase()),
+                  )
+                  .map((item, index) => (
+                    <DropdownMenuItem
+                      key={index}
+                      onClick={() => setData({ ...data, documentType: item })}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {item}
+                        {/* Check icon */}
+                        {data.documentType === item && (
+                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </label>
 
-        {/* --------------------- VALOR --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Valor no Documento</span>
-          <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-            <div className="flex h-full w-6">
-              <DollarSign size={16} className="text-primary" />
-            </div>
-            <div className="flex h-full flex-1 items-center text-center">
-              <input
-                value={formatBRL(valor)}
-                onChange={handleChange}
-                placeholder="R$ 0,00"
-                className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
-              />
-            </div>
-            <div className="flex h-full w-6"></div>
-          </div>
-        </label>
-
-        {/* --------------------- MOEDA --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Moeda</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <DollarSign size={16} className="text-primary" />
-                </div>
-                <div className="flex h-full flex-1 items-center">
-                  <span className="flex-1 text-lg font-semibold">
-                    {data.currency || "Selecione"}
-                  </span>
-                </div>
-                <div className="flex h-full w-6 justify-end">
-                  <Edit size={16} className="text-primary" />
-                </div>
+          {/* --------------------- VALOR --------------------- */}
+          <label className="col-span-8 flex flex-col gap-1">
+            <span className="text-zinc-600">Valor no Documento</span>
+            <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+              <div className="flex h-full w-6">
+                <DollarSign size={16} className="text-primary" />
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom" className="z-[999]">
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+              <div className="flex h-full flex-1 items-center justify-center text-center">
+                <input
+                  value={formatBRL(valor)}
+                  onChange={handleChange}
+                  placeholder="R$ 0,00"
+                  className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                />
+              </div>
+              <div className="flex h-full w-6"></div>
+            </div>
+          </label>
+
+          {/* --------------------- MOEDA --------------------- */}
+          <label className="col-span-4 flex flex-col gap-1">
+            <span className="text-zinc-600">Moeda</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full focus:outline-none">
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                  <div className="flex h-full w-6">
+                    <DollarSign size={16} className="text-primary" />
+                  </div>
+                  <div className="flex h-full flex-1 items-center">
+                    <span className="flex-1 text-lg">
+                      {data.currency || "Selecione"}
+                    </span>
+                  </div>
+                  <div className="flex h-full w-6 justify-end">
+                    <Edit size={16} className="text-primary" />
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="bottom"
+                sideOffset={0}
+                className="z-[999] w-72 border-zinc-200"
+              >
+                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
                     value={filteredCoin}
                     onChange={(e) => setFilteredCoin(e.target.value)}
@@ -442,56 +606,61 @@ export function Step1({
                   />
                   <Search size={14} />
                 </div>
-              </div>
-              {filteredCoin.length > 0 && (
-                <div className="p-2 text-center text-sm text-zinc-600">
-                  Nenhum item encontrado
-                </div>
-              )}
-              {coins
-                .filter((item) =>
+                {coins.filter((item) =>
                   item.toLowerCase().includes(filteredCoin.toLowerCase()),
-                )
-                .map((item) => (
-                  <DropdownMenuItem
-                    key={item}
-                    onClick={() => setData({ ...data, currency: item })}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {item}
-                      {data.currency === item && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </label>
+                ).length === 0 && (
+                  <div className="p-2 text-center text-sm text-zinc-600">
+                    Nenhum item encontrado
+                  </div>
+                )}
+                {coins
+                  .filter((item) =>
+                    item.toLowerCase().includes(filteredCoin.toLowerCase()),
+                  )
+                  .map((item) => (
+                    <DropdownMenuItem
+                      key={item}
+                      onClick={() => setData({ ...data, currency: item })}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {item}
+                        {data.currency === item && (
+                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </label>
 
-        {/* --------------------- TIPO DE CUSTO --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Tipo de Custo</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <Tag size={16} className="text-primary" />
+          {/* --------------------- TIPO DE CUSTO --------------------- */}
+          <label className="col-span-4 flex flex-col gap-1">
+            <span className="text-zinc-600">Tipo de Custo</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full focus:outline-none">
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                  <div className="flex h-full w-6">
+                    <Tag size={16} className="text-primary" />
+                  </div>
+                  <div className="flex h-full flex-1 items-center">
+                    <span className="flex flex-1 flex-col text-lg">
+                      {data.costType || "Selecione"}
+                    </span>
+                  </div>
+                  <div className="flex h-full w-6 justify-end">
+                    <Edit size={16} className="text-primary" />
+                  </div>
                 </div>
-                <div className="flex h-full flex-1 items-center">
-                  <span className="flex flex-1 flex-col font-semibold">
-                    {data.costType || "Selecione"}
-                  </span>
-                </div>
-                <div className="flex h-full w-6 justify-end">
-                  <Edit size={16} className="text-primary" />
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" className="z-[999]">
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="right"
+                align="end"
+                sideOffset={0}
+                className="z-[999] w-72 border-zinc-200"
+              >
+                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
                     value={filteredCostType}
                     onChange={(e) => setFilteredCostType(e.target.value)}
@@ -501,195 +670,203 @@ export function Step1({
 
                   <Search size={14} />
                 </div>
-              </div>
 
-              {costTypes.filter((item) =>
-                item.toLowerCase().includes(filteredCostType.toLowerCase()),
-              ).length === 0 && (
-                <div className="col-span-2 p-2 text-center text-sm text-zinc-600">
-                  Nenhum item encontrado
-                </div>
-              )}
-              {costTypes
-                .filter((item) =>
+                {costTypes.filter((item) =>
                   item.toLowerCase().includes(filteredCostType.toLowerCase()),
-                )
-                .map((item) => (
-                  <DropdownMenuItem
-                    key={item}
-                    onClick={() => setData({ ...data, costType: item })}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {item}
-                      {data.costType === item && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </label>
-
-        {/* --------------------- CATEGORIA --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Categoria</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className="w-full focus:outline-none"
-              disabled={!data.costType}
-            >
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <Settings size={16} className="text-primary" />
-                </div>
-                <div className="flex h-full flex-1 items-center">
-                  <span className="flex flex-1 flex-col text-left font-semibold">
-                    {!data.costType ? (
-                      <span className="text-md font-normal text-zinc-400">
-                        Selecione um tipo de custo para escolher
-                      </span>
-                    ) : (
-                      data.category || "Selecione"
-                    )}
-                  </span>
-                </div>
-                <div className="flex h-full w-6 items-center">
-                  <ChevronRight className="text-primary" />
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="right"
-              className="z-[999] max-h-[600px] overflow-y-auto"
-            >
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
-                  <input
-                    value={filteredCategories || ""}
-                    onChange={(e) => setFilteredCategories(e.target.value)}
-                    placeholder="Pesquisar a Categoria"
-                    className="flex-1 focus:outline-none"
-                  />
-                  <Search size={14} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-8">
-                {categoryOptions.length === 0 && (
+                ).length === 0 && (
                   <div className="col-span-2 p-2 text-center text-sm text-zinc-600">
                     Nenhum item encontrado
                   </div>
                 )}
-                {categoryOptions?.map(({ type }) => (
-                  <DropdownMenuItem
-                    key={type}
-                    onClick={() => setData({ ...data, category: type })}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {type}
-                      {data.category === type && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </label>
+                {costTypes
+                  .filter((item) =>
+                    item.toLowerCase().includes(filteredCostType.toLowerCase()),
+                  )
+                  .map((item) => (
+                    <DropdownMenuItem
+                      key={item}
+                      onClick={() => setData({ ...data, costType: item })}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {item}
+                        {data.costType === item && (
+                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </label>
 
-        {/* --------------------- CENTRO DE CUSTO --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Centro de Custos</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <Building2 size={16} className="text-primary" />
-                </div>
-                <div className="flex h-full flex-1 items-center">
-                  <span className="flex flex-1 flex-col text-left font-semibold">
-                    {data.costCenter || "Selecione"}
-                    {!data.costCenter && (
-                      <span className="text-md font-normal text-zinc-400">
-                        Selecionar
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="flex h-full w-6 justify-end">
-                  <Edit size={16} className="text-primary" />
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="top"
-              className="z-[999] max-h-[600px] overflow-y-auto"
+          {/* --------------------- CATEGORIA --------------------- */}
+          <label className="col-span-8 flex flex-col gap-1">
+            <span className="text-zinc-600">Categoria</span>
+
+            <div
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
             >
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+              <div className="flex h-full w-6">
+                <Settings size={16} className="text-primary" />
+              </div>
+              <div className="flex h-full flex-1 items-center">
+                <span className="flex flex-1 flex-col text-center text-lg">
+                  {!data.costType ? (
+                    <span className="text-md font-normal text-zinc-400">
+                      Selecione um tipo de custo para escolher
+                    </span>
+                  ) : (
+                    data.category || "Selecione"
+                  )}
+                </span>
+              </div>
+              <div className="flex h-full w-6 items-center">
+                <ChevronRight className="text-primary" />
+              </div>
+            </div>
+          </label>
+
+          {/* --------------------- CENTRO DE CUSTO --------------------- */}
+          <label className="col-span-6 flex flex-col gap-1">
+            <span className="text-zinc-600">Centro de Custos</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full focus:outline-none">
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                  <div className="flex h-full w-6">
+                    <Building2 size={16} className="text-primary" />
+                  </div>
+                  <div className="flex h-full flex-1 items-center">
+                    <span className="flex flex-1 flex-col text-left">
+                      {selectedCostCenters.length > 0
+                        ? `${selectedCostCenters.length} selecionado${selectedCostCenters.length > 1 ? "s" : ""}`
+                        : "Selecione"}
+                      {selectedCostCenters.length === 0 && (
+                        <span className="text-sm text-zinc-500">
+                          Selecionar
+                        </span>
+                      )}
+                      {selectedCostCenters.length > 0 && (
+                        <span className="truncate text-sm text-zinc-500">
+                          {selectedCostCenters
+                            .slice(0, 2)
+                            .map((cc) => cc.name)
+                            .join(", ")}
+                          {selectedCostCenters.length > 2 &&
+                            ` +${selectedCostCenters.length - 2}`}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex h-full w-6 justify-end">
+                    <Edit size={16} className="text-primary" />
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="right"
+                align="end"
+                className="z-[999] max-h-[500px] overflow-y-auto rounded-lg border-zinc-200"
+              >
+                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
                     value={filteredCostCenters}
                     onChange={(e) => setFilteredCostCenters(e.target.value)}
                     placeholder="Pesquisar Centro de Custos"
                     className="flex-1 focus:outline-none"
                   />
-
                   <Search size={14} />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-8">
-                {costCenters
-                  .filter((item) =>
-                    item
-                      .toLowerCase()
-                      .includes(filteredCostCenters.toLowerCase()),
-                  )
-                  .map((item) => (
-                    <DropdownMenuItem
-                      key={item}
-                      onClick={() => setData({ ...data, costCenter: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {data.costCenter === item && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </label>
 
-        {/* --------------------- CONTA CONTÁBIL --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Conta Contábil</span>
-          <div
-            onClick={() => setIsOpenContabilidadeModal(true)}
-            className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
-          >
-            <div className="flex h-full w-6">
-              <MapPin size={16} className="text-primary" />
+                {/* Add clear all button */}
+                {selectedCostCenters.length > 0 && (
+                  <div className="px-8 pb-2">
+                    <button
+                      onClick={() => {
+                        setSelectedCostCenters([]);
+                        setData({ ...data, costCenters: [] });
+                      }}
+                      className="text-sm text-red-500 hover:text-red-700"
+                    >
+                      Limpar seleção
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex flex-col">
+                  {costCenters
+                    .filter((item) =>
+                      item
+                        .toLowerCase()
+                        .includes(filteredCostCenters.toLowerCase()),
+                    )
+                    .map((item) => (
+                      <DropdownMenuItem
+                        key={item}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleCostCenterToggle(item);
+                        }}
+                        className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                      >
+                        <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                          {item}
+                          {selectedCostCenters.some(
+                            (cc) => cc.name === item,
+                          ) && (
+                            <div className="border-primary bg-primary flex h-4 w-4 items-center justify-center rounded-md border">
+                              <Check size={12} className="text-white" />
+                            </div>
+                          )}
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </label>
+
+          {/* --------------------- CONTA CONTÁBIL --------------------- */}
+          <label className="col-span-6 flex flex-col gap-1">
+            <span className="text-zinc-600">Conta Contábil</span>
+            <div
+              onClick={() => setIsOpenContabilidadeModal(true)}
+              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+            >
+              <div className="flex h-full w-6">
+                <MapPin size={16} className="text-primary" />
+              </div>
+              <div className="flex flex-1 flex-col text-left">
+                <span className="flex-1">
+                  {data.accountingAccount.code || "-"}
+                </span>
+                <span className="text-zinc-400">
+                  {data.accountingAccount.description || "Selecione"}
+                </span>
+              </div>
+              <div className="flex h-full w-6 justify-end">
+                <Edit size={16} className="text-primary" />
+              </div>
             </div>
-            <div className="flex flex-1 flex-col text-left">
-              <span className="flex-1">
-                {data.accountingAccount.code || "-"}
-              </span>
-              <span className="text-zinc-400">
-                {data.accountingAccount.description || "Selecione"}
-              </span>
-            </div>
-            <div className="flex h-full w-6 justify-end">
-              <Edit size={16} className="text-primary" />
-            </div>
-          </div>
-        </label>
+          </label>
+        </div>
+        {data.costCenters.length > 0 && (
+          <CostCentersList data={data} setData={setData} />
+        )}
       </div>
-    </div>
+      {isCategoryModalOpen && (
+        <CategoryModal
+          show={isCategoryModalOpen}
+          onHide={() => setIsCategoryModalOpen(false)}
+          filteredCategories={filteredCategories}
+          setFilteredCategories={setFilteredCategories}
+          categoryOptions={categoryOptions}
+          data={data}
+          setData={setData}
+        />
+      )}
+    </>
   );
 }

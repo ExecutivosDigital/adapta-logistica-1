@@ -5,15 +5,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { Calendar } from "@/components/ui/calendar";
 import {
   AlignLeft,
-  Calendar,
+  CalendarIcon,
   CreditCard,
   DollarSign,
   Edit,
   FileText,
   Search,
 } from "lucide-react";
+import moment from "moment";
 import { useState } from "react";
 import { DataType } from "./page";
 
@@ -99,9 +101,9 @@ export function Step2({ data, setData }: Props) {
   /* -------------------------------------------------------------------------- */
   return (
     <div className="flex-1">
-      <div className="grid grid-cols-2 gap-4 text-sm text-zinc-700">
+      <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
         {/* --------------------- PAGAMENTO VIA --------------------- */}
-        <label className="flex flex-col gap-1">
+        <label className="col-span-8 flex flex-col gap-1">
           <span className="text-zinc-600">Pagamento via</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
@@ -125,21 +127,20 @@ export function Step2({ data, setData }: Props) {
 
             <DropdownMenuContent
               side="right"
-              className="z-[999] mt-4 max-h-[600px] overflow-y-auto"
+              sideOffset={0}
+              align="start"
+              className="z-[999] w-72 border-zinc-200"
             >
               {/* Search */}
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
-                  <input
-                    value={filterCard}
-                    onChange={(e) => setFilterCard(e.target.value)}
-                    placeholder="Pesquisar Conta / Cartão"
-                    className="flex-1 bg-transparent outline-none"
-                  />
-                  <Search size={14} />
-                </div>
+              <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                <input
+                  value={filterCard}
+                  onChange={(e) => setFilterCard(e.target.value)}
+                  placeholder="Pesquisar Conta / Cartão"
+                  className="flex-1 focus:outline-none"
+                />
+                <Search size={14} />
               </div>
-
               <div className="grid grid-cols-1 gap-2">
                 {creditCards
                   .filter((c) =>
@@ -175,7 +176,7 @@ export function Step2({ data, setData }: Props) {
         </label>
 
         {/* --------------------- FORMA DE PAGAMENTO --------------------- */}
-        <label className="flex flex-col gap-1">
+        <label className="col-span-4 flex flex-col gap-1">
           <span className="text-zinc-600">Forma de Pagamento</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
@@ -183,7 +184,7 @@ export function Step2({ data, setData }: Props) {
                 <div className="flex h-full w-6">
                   <DollarSign className="text-primary" size={16} />
                 </div>
-                <div className="flex-1 text-lg font-semibold text-zinc-700">
+                <div className="flex-1 text-lg text-zinc-700">
                   {data.paymentForm || "Selecione"}
                 </div>
                 <div className="flex h-full w-6 justify-end">
@@ -194,18 +195,17 @@ export function Step2({ data, setData }: Props) {
 
             <DropdownMenuContent
               side="right"
-              className="z-[999] mt-4 max-h-[600px] overflow-y-auto"
+              align="start"
+              className="z-[999] w-72 border-zinc-200"
             >
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
-                  <input
-                    value={filterPaymentForm}
-                    onChange={(e) => setFilterPaymentForm(e.target.value)}
-                    placeholder="Pesquisar Forma de Pagamento"
-                    className="flex-1 bg-transparent outline-none"
-                  />
-                  <Search size={14} />
-                </div>
+              <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                <input
+                  value={filterPaymentForm}
+                  onChange={(e) => setFilterPaymentForm(e.target.value)}
+                  placeholder="Pesquisar Forma de Pagamento"
+                  className="flex-1 focus:outline-none"
+                />
+                <Search size={14} />
               </div>
               {paymentForms
                 .filter((f) =>
@@ -236,68 +236,117 @@ export function Step2({ data, setData }: Props) {
           </DropdownMenu>
         </label>
 
-        {/* --------------------- NÚMERO NO DOCUMENTO --------------------- */}
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Número no Documento</span>
-          <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-            <DollarSign className="text-primary" size={16} />
-            <input
-              value={data.documentNumber}
-              onChange={(e) =>
-                setData({ ...data, documentNumber: e.target.value })
-              }
-              placeholder="Digite o número"
-              className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
-            />
-          </div>
-        </label>
-
-        {/* --------------------- DATAS --------------------- */}
-        <div className="grid grid-cols-2 gap-4">
-          <label className="flex flex-col gap-1">
-            <span className="text-zinc-600">Data Emissão</span>
+        <div className="col-span-12 grid grid-cols-11 gap-4">
+          {/* --------------------- NÚMERO NO DOCUMENTO --------------------- */}
+          <label className="col-span-5 flex flex-col gap-1">
+            <span className="text-zinc-600">Número no Documento</span>
             <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-              <Calendar className="text-primary" size={16} />
+              <DollarSign className="text-primary" size={16} />
               <input
-                type="date"
-                value={data.issueDate}
+                value={data.documentNumber}
                 onChange={(e) =>
-                  setData({ ...data, issueDate: e.target.value })
+                  setData({ ...data, documentNumber: e.target.value })
                 }
-                className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+                placeholder="Digite o número"
+                className="flex-1 bg-transparent text-center text-lg text-zinc-700 outline-none"
               />
             </div>
           </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-zinc-600">Data Vencimento</span>
-            <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-              <Calendar className="text-primary" size={16} />
-              <input
-                type="date"
-                value={data.dueDate}
-                onChange={(e) => setData({ ...data, dueDate: e.target.value })}
-                className="flex-1 bg-transparent text-lg text-zinc-700 outline-none"
+
+          {/* --------------------- DATAS --------------------- */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <label className="col-span-3 flex flex-col gap-1">
+                <span className="text-zinc-600">Data Emissão</span>
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
+                  <div className="flex h-full w-6">
+                    <CalendarIcon className="text-primary" size={16} />
+                  </div>
+                  <div className="flex-1 text-lg text-zinc-700">
+                    {data.issueDate
+                      ? moment(data.issueDate).format("DD/MM/YYYY")
+                      : moment().format("DD/MM/YYYY")}
+                  </div>
+                  <div className="flex h-full w-6 justify-end">
+                    <Edit className="text-primary" size={16} />
+                  </div>
+                </div>
+              </label>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="right"
+              sideOffset={0}
+              align="start"
+              className="z-[999] w-72 border-zinc-200"
+            >
+              <Calendar
+                mode="single"
+                selected={moment(data.issueDate).toDate()}
+                onSelect={(date) => {
+                  if (date) {
+                    setData({ ...data, issueDate: moment(date).format() });
+                  }
+                }}
               />
-            </div>
-          </label>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <label className="col-span-3 flex flex-col gap-1">
+                <span className="text-zinc-600">Data Vencimento</span>
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
+                  <div className="flex h-full w-6">
+                    <CalendarIcon className="text-primary" size={16} />
+                  </div>
+                  <div className="flex-1 text-lg text-zinc-700">
+                    {data.dueDate
+                      ? moment(data.dueDate).format("DD/MM/YYYY")
+                      : moment().format("DD/MM/YYYY")}
+                  </div>
+                  <div className="flex h-full w-6 justify-end">
+                    <Edit className="text-primary" size={16} />
+                  </div>
+                </div>
+              </label>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="right"
+              sideOffset={0}
+              align="start"
+              className="z-[999] w-72 border-zinc-200"
+            >
+              <Calendar
+                mode="single"
+                selected={moment(data.dueDate).toDate()}
+                onSelect={(date) => {
+                  if (date) {
+                    setData({ ...data, dueDate: moment(date).format() });
+                  }
+                }}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* --------------------- CONDIÇÕES DE PAGAMENTO --------------------- */}
-        <label className="flex flex-col gap-1">
+        <label className="col-span-4 flex flex-col gap-1">
           <span className="text-zinc-600">Condições de Pagamento</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <FileText className="text-primary" size={16} />
-                <span className="flex-1 text-lg font-semibold text-zinc-700">
+                <span className="flex-1 text-lg text-zinc-700">
                   {data.paymentTerms || "Selecione"}
                 </span>
                 <Edit className="text-primary ml-auto" size={16} />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              side="bottom"
-              className="z-[999] max-h-[600px] min-w-80 overflow-y-auto"
+              side="right"
+              sideOffset={0}
+              align="end"
+              className="z-[999] w-72 border-zinc-200"
             >
               {paymentTerms.map((term) => (
                 <DropdownMenuItem
@@ -318,13 +367,13 @@ export function Step2({ data, setData }: Props) {
         </label>
 
         {/* --------------------- DETALHES DO PAGAMENTO --------------------- */}
-        <label className="flex flex-col gap-1">
+        <label className="col-span-8 flex flex-col gap-1">
           <span className="text-zinc-600">Detalhes do Pagamento</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <DollarSign className="text-primary" size={16} />
-                <span className="flex-1 text-lg font-semibold text-zinc-700">
+                <span className="flex-1 text-lg text-zinc-700">
                   {data.paymentDetails || "Selecione"}
                 </span>
                 <Edit className="text-primary ml-auto" size={16} />
@@ -332,18 +381,17 @@ export function Step2({ data, setData }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               side="right"
-              className="z-[999] mt-4 max-h-[600px] min-w-80 overflow-y-auto"
+              sideOffset={0}
+              className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
             >
-              <div className="mt-2 mb-2 px-8">
-                <div className="border-primary text-primary flex h-8 w-full items-center justify-between gap-4 rounded-lg border p-2 text-sm">
-                  <input
-                    value={filterInstallments}
-                    onChange={(e) => setFilterInstallments(e.target.value)}
-                    placeholder="Pesquisar Detalhes"
-                    className="flex-1 bg-transparent outline-none"
-                  />
-                  <Search size={14} />
-                </div>
+              <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                <input
+                  value={filterInstallments}
+                  onChange={(e) => setFilterInstallments(e.target.value)}
+                  placeholder="Pesquisar Detalhes"
+                  className="flex-1 focus:outline-none"
+                />
+                <Search size={14} />
               </div>
               {installments
                 .filter((ins) =>
@@ -375,7 +423,7 @@ export function Step2({ data, setData }: Props) {
         </label>
 
         {/* --------------------- DESCRIÇÃO --------------------- */}
-        <div className="col-span-2 flex flex-col gap-1">
+        <div className="col-span-12 flex flex-col gap-1">
           <span className="text-zinc-600">Descrição</span>
           <div className="flex min-h-[96px] items-start gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
             <AlignLeft className="text-primary mt-1" size={16} />
