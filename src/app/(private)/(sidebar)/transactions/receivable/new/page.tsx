@@ -12,11 +12,13 @@ import {
 import { cn } from "@/utils/cn";
 import {
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   CircleCheck,
   ClipboardList,
   Images,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import Stepper from "./components/steper";
 
@@ -51,11 +53,13 @@ type SortDirection = "asc" | "desc" | null;
 type SortableColumn = "ctrc" | "document" | "status" | "operation" | null;
 
 export default function NewReceivable() {
+  const router = useRouter();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [selectedSwitch, setSelectedSwitch] = useState<string>("1");
 
   const steps = [
     { label: "Selecionar Pagador", value: "solicitacao" },
@@ -307,6 +311,71 @@ export default function NewReceivable() {
         className="mb-4"
       />
 
+      <div className="flex h-12 w-full items-center justify-between border-b border-b-zinc-200">
+        <div className="flex h-full items-center gap-4">
+          <div
+            className={cn(
+              "flex h-full cursor-pointer items-center gap-8 border-b border-b-transparent transition duration-200",
+              selectedSwitch === "1" && "border-b-primary",
+            )}
+            onClick={() => setSelectedSwitch("1")}
+          >
+            <span
+              className={cn(
+                "text-sm transition duration-200",
+                selectedSwitch === "1" && "text-primary font-semibold",
+              )}
+            >
+              Documentos
+            </span>
+            <div className="bg-primary/20 text-primary flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm font-semibold">
+              4
+            </div>
+          </div>
+          <div
+            className={cn(
+              "flex h-full cursor-pointer items-center gap-8 border-b border-b-transparent transition duration-200",
+              selectedSwitch === "2" && "border-b-primary",
+            )}
+            onClick={() => setSelectedSwitch("2")}
+          >
+            <span
+              className={cn(
+                "text-sm transition duration-200",
+                selectedSwitch === "2" && "text-primary font-semibold",
+              )}
+            >
+              Lorem
+            </span>
+            <div className="bg-primary/20 text-primary flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm font-semibold">
+              4
+            </div>
+          </div>
+          <div
+            className={cn(
+              "flex h-full cursor-pointer items-center gap-8 border-b border-b-transparent transition duration-200",
+              selectedSwitch === "3" && "border-b-primary",
+            )}
+            onClick={() => setSelectedSwitch("3")}
+          >
+            <span
+              className={cn(
+                "text-sm transition duration-200",
+                selectedSwitch === "3" && "text-primary font-semibold",
+              )}
+            >
+              Lorem
+            </span>
+          </div>
+        </div>
+        <OrangeButton
+          className="h-8"
+          onClick={() => router.push("/create-receivable")}
+        >
+          Continuar
+          <ChevronRight />
+        </OrangeButton>
+      </div>
       <Table className="border-collapse">
         <TableHeader>
           <TableRow className="gap-1">

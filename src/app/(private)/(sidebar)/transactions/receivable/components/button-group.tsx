@@ -6,7 +6,7 @@ import { useState } from "react";
 import { NewReceivableModal } from "./new-receivable-modal";
 
 export function ReceivableButtonGroup() {
-  const [showNewReceivableModal, setShowNewReceivableModal] = useState(true);
+  const [showNewReceivableModal, setShowNewReceivableModal] = useState(false);
   const [buttons, setButtons] = useState([
     {
       id: "1",

@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/utils/cn";
 import {
   ArrowRight,
   CircleDollarSign,
@@ -14,6 +15,7 @@ import {
   Search,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface NewReceivableModalProps {
   show: boolean;
@@ -22,6 +24,7 @@ interface NewReceivableModalProps {
 
 export function NewReceivableModal({ show, onHide }: NewReceivableModalProps) {
   const router = useRouter();
+  const [selected, setSelected] = useState<number | null>(null);
 
   const clientList = [
     {
@@ -88,7 +91,11 @@ export function NewReceivableModal({ show, onHide }: NewReceivableModalProps) {
         {clientList.map((client) => (
           <div
             key={client.id}
-            className="flex w-full items-center justify-between border-b border-b-zinc-200 py-2"
+            className={cn(
+              "hover:bg-primary/20 flex w-full cursor-pointer items-center justify-between border-b border-b-zinc-200 py-2 transition duration-200",
+              selected === Number(client.id) && "bg-primary/20",
+            )}
+            onClick={() => setSelected(Number(client.id))}
           >
             <span>{client.name}</span>
             <span className="font-semibold">{client.cnpj}</span>
