@@ -103,7 +103,7 @@ const NAV: { heading: string; items: Item[] }[] = [
       {
         label: "Organização",
         icon: "/icons/sidebar-org.png",
-        href: "#",
+        href: "/register/branches-list",
       },
     ],
   },
