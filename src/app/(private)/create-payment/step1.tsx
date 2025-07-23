@@ -1,27 +1,29 @@
+import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Building2,
+  CalendarIcon,
   Check,
-  ChevronRight,
   DollarSign,
   Edit,
+  FileText,
   MapPin,
   Search,
-  Settings,
-  Tag,
   X,
 } from "lucide-react";
+import moment from "moment";
 import { useState } from "react";
 import { CategoryModal } from "./components/category-modal";
 import { CostCentersList } from "./components/cost-centers-list";
 import { DataType } from "./page";
 
+import "moment/locale/pt-BR";
+moment.locale("pt-BR");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;
@@ -37,14 +39,9 @@ type CostType =
   | "Reembolsos / Adiantamentos";
 
 type Category = {
-  /** Descrição da categoria a ser mostrada ao usuário */
   type: string;
-  /** Deve SEMPRE repetir o CostType correspondente, para facilitar filtros  */
   category: CostType;
 };
-/**
- * Helper to format BRL currency while we keep the raw number in state.
- */
 
 export function Step1({
   setIsOpenSupplierModal,
@@ -206,15 +203,6 @@ export function Step1({
     ],
   };
 
-  const costTypes = [
-    "Custo Fixo",
-    "Custo Variável",
-    "Custo de Vendas / Operação Logística",
-    "Impostos e Tributos",
-    "Capex (Investimentos)",
-    "Reembolsos / Adiantamentos",
-  ];
-
   const costCenters = [
     "Centro de Custo",
     "Abastecimento Interno",
@@ -284,8 +272,6 @@ export function Step1({
     "Viagens Corporativas",
   ];
 
-  const coins = ["Real", "Dollar", "Euro", "Yen"];
-
   const documents = [
     "Boleto",
     "Nota Fiscal",
@@ -297,11 +283,26 @@ export function Step1({
     "Lorem",
   ];
 
+  const installments = [
+    "2 Pagamentos",
+    "3 Pagamentos",
+    "4 Pagamentos",
+    "5 Pagamentos",
+    "6 Pagamentos",
+    "7 Pagamentos",
+    "8 Pagamentos",
+    "9 Pagamentos",
+    "10 Pagamentos",
+    "11 Pagamentos",
+    "12 Pagamentos",
+    "Outra - Digite aqui",
+  ];
+
+  const paymentTerms = ["Total no Ato", "Parcelado", "Recorrente"];
+
   const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState("");
-  const [filteredCoin, setFilteredCoin] = useState("");
-  const [filteredCostType, setFilteredCostType] = useState("");
   const [valor, setValor] = useState(data.amount); // centavos!
   const [selectedCostCenters, setSelectedCostCenters] = useState<
     { name: string; value: string; locked?: boolean }[]
@@ -309,6 +310,7 @@ export function Step1({
   const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
     useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [filterInstallments, setFilterInstallments] = useState("");
 
   const handleCostCenterToggle = (costCenterName: string) => {
     const isSelected = selectedCostCenters.some(
@@ -420,47 +422,46 @@ export function Step1({
   return (
     <>
       <div className="flex-1">
-        {/* -------------------------
-         *  TOGGLE TIPO DE LANÇAMENTO
-         * ------------------------*/}
-        <div className="flex w-full flex-row items-center justify-between">
-          <span className="font-medium text-zinc-600">Tipo de Lançamento:</span>
+        <div className="flex w-full flex-row items-center justify-center">
           <div className="mt-2 flex gap-2">
-            <div className="bg-primary/40 relative flex flex-row overflow-hidden rounded-lg p-2">
+            <div className="bg-primary/40 relative flex w-96 flex-row overflow-hidden rounded-lg p-2">
               <div
-                className={`absolute top-0 bottom-0 left-0 flex w-1/2 transform items-center justify-center transition-transform duration-300 ${data.entryType === "TOTAL" ? "translate-x-full pr-2" : "translate-x-0 pl-2"}`}
+                className={`absolute top-0 bottom-0 left-0 flex w-1/3 transform items-center justify-center transition-transform duration-300 ${data.entryType === "DESPESAS" ? "translate-x-0 pl-2" : data.entryType === "IMPOSTOS" ? "translate-x-full" : "translate-x-[200%] pr-2"}`}
               >
                 <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
               </div>
               <button
-                onClick={() => setData({ ...data, entryType: "PARTIAL" })}
-                className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "TOTAL" ? "text-white/80" : "font-semibold text-white"}`}
+                onClick={() => setData({ ...data, entryType: "DESPESAS" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "DESPESAS" ? "font-semibold text-white" : "text-white/80"}`}
               >
-                PARCIAL
+                DESPESAS
               </button>
               <button
-                onClick={() => setData({ ...data, entryType: "TOTAL" })}
-                className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "TOTAL" ? "font-semibold text-white" : "text-white/80"}`}
+                onClick={() => setData({ ...data, entryType: "IMPOSTOS" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "IMPOSTOS" ? "font-semibold text-white" : "text-white/80"}`}
               >
-                TOTAL
+                IMPOSTOS
+              </button>
+              <button
+                onClick={() => setData({ ...data, entryType: "C. VENDAS" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "C. VENDAS" ? "font-semibold text-white" : "text-white/80"}`}
+              >
+                <span className="w-max">C. VENDAS</span>
               </button>
             </div>
           </div>
-          {/* Invisible span just to keep spacing */}
-          <span className="invisible font-medium text-transparent">
-            Tipo de Lançamento:
-          </span>
         </div>
-
         <div className="my-4 h-px bg-zinc-200/60" />
-
-        {/* -------------------------
-         *  GRID DE INFORMAÇÕES
-         * ------------------------*/}
         <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
           {/* --------------------- FORNECEDOR --------------------- */}
           <label className="col-span-8 flex flex-col gap-1">
-            <span className="text-zinc-600">Fornecedor</span>
+            <span className="text-zinc-600">
+              {data.entryType === "DESPESAS"
+                ? "Fornecedor"
+                : data.entryType === "IMPOSTOS"
+                  ? "Sefaz"
+                  : "Parceiro"}
+            </span>
             <button
               onClick={() => setIsOpenSupplierModal(true)}
               className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
@@ -484,7 +485,13 @@ export function Step1({
 
           {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
           <label className="col-span-4 flex flex-col gap-1">
-            <span className="text-zinc-600">Tipo de Documento</span>
+            <span className="text-zinc-600">
+              {data.entryType === "DESPESAS"
+                ? "Tipo de Lançamento"
+                : data.entryType === "IMPOSTOS"
+                  ? "Imposto - Código"
+                  : "Tipo de Lançamento"}
+            </span>
             <DropdownMenu
               open={isDocumentTypeDropdownOpen}
               onOpenChange={setIsDocumentTypeDropdownOpen}
@@ -554,178 +561,178 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- VALOR --------------------- */}
-          <label className="col-span-8 flex flex-col gap-1">
-            <span className="text-zinc-600">Valor no Documento</span>
-            <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-              <div className="flex h-full w-6">
-                <DollarSign size={16} className="text-primary" />
+          <div className="col-span-12 grid grid-cols-11 gap-4">
+            <label className="col-span-5 flex flex-col gap-1">
+              <span className="text-zinc-600">Valor</span>
+              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                <div className="flex h-full w-6">
+                  <DollarSign size={16} className="text-primary" />
+                </div>
+                <div className="flex h-full flex-1 items-center justify-center text-center">
+                  <input
+                    value={formatBRL(valor)}
+                    onChange={handleChange}
+                    placeholder="R$ 0,00"
+                    className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                  />
+                </div>
+                <div className="flex h-full w-6"></div>
               </div>
-              <div className="flex h-full flex-1 items-center justify-center text-center">
-                <input
-                  value={formatBRL(valor)}
-                  onChange={handleChange}
-                  placeholder="R$ 0,00"
-                  className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
-                />
-              </div>
-              <div className="flex h-full w-6"></div>
-            </div>
-          </label>
+            </label>
 
-          {/* --------------------- MOEDA --------------------- */}
+            {/* --------------------- DATAS --------------------- */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <label className="col-span-3 flex flex-col gap-1">
+                  <span className="text-zinc-600">Mês Referência</span>
+                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
+                    <div className="flex h-full w-6">
+                      <CalendarIcon className="text-primary" size={16} />
+                    </div>
+                    <div className="flex-1 text-lg text-zinc-700">
+                      {data.issueDate
+                        ? moment(data.issueDate).format("MMM")
+                        : moment().format("MMMM")}
+                    </div>
+                    <div className="flex h-full w-6 justify-end">
+                      <Edit className="text-primary" size={16} />
+                    </div>
+                  </div>
+                </label>
+              </DropdownMenuTrigger>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <label className="col-span-3 flex flex-col gap-1">
+                  <span className="text-zinc-600">Vencimento</span>
+                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
+                    <div className="flex h-full w-6">
+                      <CalendarIcon className="text-primary" size={16} />
+                    </div>
+                    <div className="flex-1 text-lg text-zinc-700">
+                      {data.dueDate
+                        ? moment(data.dueDate).format("DD/MM/YYYY")
+                        : moment().format("DD/MM/YYYY")}
+                    </div>
+                    <div className="flex h-full w-6 justify-end">
+                      <Edit className="text-primary" size={16} />
+                    </div>
+                  </div>
+                </label>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="right"
+                sideOffset={0}
+                align="start"
+                className="z-[999] w-72 border-zinc-200"
+              >
+                <Calendar
+                  mode="single"
+                  selected={moment(data.dueDate).toDate()}
+                  onSelect={(date) => {
+                    if (date) {
+                      setData({ ...data, dueDate: moment(date).format() });
+                    }
+                  }}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* --------------------- CONDIÇÕES DE PAGAMENTO --------------------- */}
           <label className="col-span-4 flex flex-col gap-1">
-            <span className="text-zinc-600">Moeda</span>
+            <span className="text-zinc-600">Condições de Pagamento</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
                 <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <DollarSign size={16} className="text-primary" />
-                  </div>
-                  <div className="flex h-full flex-1 items-center">
-                    <span className="flex-1 text-lg">
-                      {data.currency || "Selecione"}
-                    </span>
-                  </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
+                  <FileText className="text-primary" size={16} />
+                  <span className="flex-1 text-lg text-zinc-700">
+                    {data.paymentTerms || "Selecione"}
+                  </span>
+                  <Edit className="text-primary ml-auto" size={16} />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="bottom"
+                side="right"
                 sideOffset={0}
+                align="end"
                 className="z-[999] w-72 border-zinc-200"
+              >
+                {paymentTerms.map((term) => (
+                  <DropdownMenuItem
+                    key={term}
+                    onClick={() => setData({ ...data, paymentTerms: term })}
+                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                  >
+                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                      {term}
+                      {data.paymentTerms === term && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </label>
+
+          {/* --------------------- DETALHES DO PAGAMENTO --------------------- */}
+          <label className="col-span-8 flex flex-col gap-1">
+            <span className="text-zinc-600">Detalhes do Pagamento</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full focus:outline-none">
+                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                  <DollarSign className="text-primary" size={16} />
+                  <span className="flex-1 text-lg text-zinc-700">
+                    {data.paymentDetails || "Selecione"}
+                  </span>
+                  <Edit className="text-primary ml-auto" size={16} />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="right"
+                sideOffset={0}
+                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
-                    value={filteredCoin}
-                    onChange={(e) => setFilteredCoin(e.target.value)}
-                    placeholder="Pesquisar Moeda"
+                    value={filterInstallments}
+                    onChange={(e) => setFilterInstallments(e.target.value)}
+                    placeholder="Pesquisar Detalhes"
                     className="flex-1 focus:outline-none"
                   />
                   <Search size={14} />
                 </div>
-                {coins.filter((item) =>
-                  item.toLowerCase().includes(filteredCoin.toLowerCase()),
+                {installments
+                  .filter((ins) =>
+                    ins
+                      .toLowerCase()
+                      .includes(filterInstallments.toLowerCase()),
+                  )
+                  .map((ins) => (
+                    <DropdownMenuItem
+                      key={ins}
+                      onClick={() => setData({ ...data, paymentDetails: ins })}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {ins}
+                        {data.paymentDetails === ins && (
+                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                {installments.filter((ins) =>
+                  ins.toLowerCase().includes(filterInstallments.toLowerCase()),
                 ).length === 0 && (
                   <div className="p-2 text-center text-sm text-zinc-600">
                     Nenhum item encontrado
                   </div>
                 )}
-                {coins
-                  .filter((item) =>
-                    item.toLowerCase().includes(filteredCoin.toLowerCase()),
-                  )
-                  .map((item) => (
-                    <DropdownMenuItem
-                      key={item}
-                      onClick={() => setData({ ...data, currency: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {data.currency === item && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          </label>
-
-          {/* --------------------- TIPO DE CUSTO --------------------- */}
-          <label className="col-span-4 flex flex-col gap-1">
-            <span className="text-zinc-600">Tipo de Custo</span>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <Tag size={16} className="text-primary" />
-                  </div>
-                  <div className="flex h-full flex-1 items-center">
-                    <span className="flex flex-1 flex-col text-lg">
-                      {data.costType || "Selecione"}
-                    </span>
-                  </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="right"
-                align="end"
-                sideOffset={0}
-                className="z-[999] w-72 border-zinc-200"
-              >
-                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
-                  <input
-                    value={filteredCostType}
-                    onChange={(e) => setFilteredCostType(e.target.value)}
-                    placeholder="Pesquisar tipo de Custo"
-                    className="flex-1 focus:outline-none"
-                  />
-
-                  <Search size={14} />
-                </div>
-
-                {costTypes.filter((item) =>
-                  item.toLowerCase().includes(filteredCostType.toLowerCase()),
-                ).length === 0 && (
-                  <div className="col-span-2 p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
-                {costTypes
-                  .filter((item) =>
-                    item.toLowerCase().includes(filteredCostType.toLowerCase()),
-                  )
-                  .map((item) => (
-                    <DropdownMenuItem
-                      key={item}
-                      onClick={() => setData({ ...data, costType: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {data.costType === item && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </label>
-
-          {/* --------------------- CATEGORIA --------------------- */}
-          <label className="col-span-8 flex flex-col gap-1">
-            <span className="text-zinc-600">Categoria</span>
-
-            <div
-              onClick={() => setIsCategoryModalOpen(true)}
-              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
-            >
-              <div className="flex h-full w-6">
-                <Settings size={16} className="text-primary" />
-              </div>
-              <div className="flex h-full flex-1 items-center">
-                <span className="flex flex-1 flex-col text-center text-lg">
-                  {!data.costType ? (
-                    <span className="text-md font-normal text-zinc-400">
-                      Selecione um tipo de custo para escolher
-                    </span>
-                  ) : (
-                    data.category || "Selecione"
-                  )}
-                </span>
-              </div>
-              <div className="flex h-full w-6 items-center">
-                <ChevronRight className="text-primary" />
-              </div>
-            </div>
           </label>
 
           {/* --------------------- CENTRO DE CUSTO --------------------- */}

@@ -64,7 +64,7 @@ export function Step2({
       >
         {hasBrokenIndividualRules ? "Alterações Necessárias:" : "Liberação"}
       </span>
-      <span className="font-semibold text-zinc-400">
+      <span className="text-zinc-600">
         {hasBrokenIndividualRules
           ? "Divida a nota em duas faturas com valores menores que R$ 50.000,00 cada, ou ajuste o valor desta fatura para se enquadrar no limite permitido."
           : "Todas as Requisições de Recebimento deste cliente estão sendo respeitadas."}

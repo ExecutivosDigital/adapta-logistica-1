@@ -27,15 +27,13 @@ export function CategoryModal({
     <Modal
       show={show}
       onHide={onHide}
-      className="h-[85vh] w-[50vw] border-none px-8" // Use fixed height again
+      className="h-[85vh] w-[50vw] border-none px-8"
     >
       <X
         className="text-primary absolute top-2 right-2 ml-auto cursor-pointer"
         onClick={onHide}
       />
       <div className="flex h-full w-full flex-col gap-4 pt-6">
-        {" "}
-        {/* Add pt-6 for X button space */}
         <div className="border-primary text-primary flex h-8 w-full flex-shrink-0 items-center justify-between gap-4 rounded-lg border p-2 text-sm">
           <input
             value={filteredCategories || ""}

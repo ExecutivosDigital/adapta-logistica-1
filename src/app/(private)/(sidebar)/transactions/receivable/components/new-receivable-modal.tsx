@@ -73,9 +73,7 @@ export function NewReceivableModal({ show, onHide }: NewReceivableModalProps) {
       </div>
       <div className="flex flex-col gap-4 border-b border-b-zinc-200 px-8 py-4">
         <div className="flex items-center gap-4">
-          <span className="font-semibold text-zinc-400">
-            Selecione o Cliente Pagador:
-          </span>
+          <span className="text-zinc-600">Selecione o Cliente Pagador:</span>
           <label
             htmlFor="search"
             className="outline-primary bg-primary/20 flex w-[400px] items-center justify-between rounded-md px-4 py-1 outline placeholder:text-zinc-400"

@@ -4,6 +4,7 @@ import { DateValue } from "@internationalized/date";
 import { Check, X } from "lucide-react";
 import moment from "moment";
 import "moment/locale/pt-br";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -34,6 +35,7 @@ interface CalendarSlotInfo {
 }
 
 const CalendarApp = () => {
+  const router = useRouter();
   const [calevents, setCalEvents] = useState<EvType[]>(Events);
   const [open, setOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
@@ -58,17 +60,17 @@ const CalendarApp = () => {
     setEnd(slotInfo.end);
   };
 
-  const editEvent = (event: EvType) => {
-    setOpen(true);
-    const newEditEvent = calevents.find((elem) => elem.title === event.title);
-    if (!newEditEvent) return;
+  // const editEvent = (event: EvType) => {
+  //   setOpen(true);
+  //   const newEditEvent = calevents.find((elem) => elem.title === event.title);
+  //   if (!newEditEvent) return;
 
-    setTitle(newEditEvent.title);
-    setColor(newEditEvent.color || "primary");
-    setStart(newEditEvent.start || null);
-    setEnd(newEditEvent.end || null);
-    setUpdate(event);
-  };
+  //   setTitle(newEditEvent.title);
+  //   setColor(newEditEvent.color || "primary");
+  //   setStart(newEditEvent.start || null);
+  //   setEnd(newEditEvent.end || null);
+  //   setUpdate(event);
+  // };
 
   const updateEvent = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -160,7 +162,8 @@ const CalendarApp = () => {
               <CustomToolbar {...props} addNewEvent={() => setOpen(true)} />
             ),
           }}
-          onSelectEvent={(event: EvType) => editEvent(event)}
+          // onSelectEvent={(event: EvType) => editEvent(event)}
+          onSelectEvent={() => router.push("/purchase-approval/1")}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onSelectSlot={(slotInfo: any) => addNewEventAlert(slotInfo)}
           eventPropGetter={(event: EvType) => eventColors(event)}

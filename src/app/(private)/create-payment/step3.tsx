@@ -7,7 +7,15 @@ import {
 import { cn } from "@/utils/cn";
 
 import { Calendar } from "@/components/ui/calendar";
-import { ChevronDown, DollarSign, Edit, Plus, Search } from "lucide-react";
+import {
+  ChevronDown,
+  DollarSign,
+  Edit,
+  EllipsisVertical,
+  GripVertical,
+  Plus,
+  Search,
+} from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { DataType } from "./page";
@@ -36,17 +44,17 @@ export function Step3({ data, setData }: Props) {
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
 
-  const collaborators = [
-    "Giovanni",
-    "Alex Marin",
-    "Paulo Yure",
-    "Matheus Arceno",
-    "Jair - Só Chamada Urgente*",
-    "Nome X",
-    "Nome Y",
-    "Nome Z",
+  const paymentForms = [
+    "PIX",
+    "Boleto",
+    "Cartão de Crédito",
+    "Depósito",
+    "Transferência Bancária",
+    "Dinheiro em Mãos",
+    "Fatura",
   ];
-  const [filteredResponsible, setFilteredResponsible] = useState("");
+
+  const [filterPaymentForm, setFilterPaymentForm] = useState("");
   const [valor, setValor] = useState(invoices[0].number); // centavos!
   const [amount, setAmount] = useState(data.amount);
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -71,8 +79,8 @@ export function Step3({ data, setData }: Props) {
     }).format(valueInCents / 100);
   return (
     <div className="flex-1">
-      <div className="grid grid-cols-2 gap-4 text-sm text-zinc-700">
-        <label className="flex flex-col gap-1">
+      <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
+        <label className="col-span-8 flex flex-col gap-1">
           <span className="text-zinc-600">Valor no Documento</span>
           <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
             <div className="flex h-full w-6">
@@ -92,68 +100,62 @@ export function Step3({ data, setData }: Props) {
           </div>
         </label>
 
-        <label className="flex flex-col gap-1">
-          <span className="text-zinc-600">Aprovação</span>
-
+        <label className="col-span-4 flex flex-col gap-1">
+          <span className="text-zinc-600">Tipo de Lançamento</span>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <div className="flex h-full w-6">
-                  <DollarSign size={16} className="text-primary" />
+                  <DollarSign className="text-primary" size={16} />
                 </div>
-                <div className="flex h-full flex-1 items-center">
-                  <span className="flex-1 text-lg">
-                    {data.approval ? data.approval : "Selecione"}
-                  </span>
+                <div className="flex-1 text-lg text-zinc-700">
+                  {data.paymentForm || "Selecione"}
                 </div>
                 <div className="flex h-full w-6 justify-end">
-                  <Edit size={16} className="text-primary" />
+                  <Edit className="text-primary" size={16} />
                 </div>
               </div>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent
               side="right"
-              sideOffset={0}
               align="start"
               className="z-[999] w-72 border-zinc-200"
             >
-              <div className="border-primary text-primary mx-auto flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2 text-sm">
+              <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                 <input
-                  value={filteredResponsible}
-                  onChange={(e) => setFilteredResponsible(e.target.value)}
-                  placeholder="Pesquisar Conta / Cartão"
+                  value={filterPaymentForm}
+                  onChange={(e) => setFilterPaymentForm(e.target.value)}
+                  placeholder="Pesquisar Forma de Pagamento"
                   className="flex-1 focus:outline-none"
                 />
                 <Search size={14} />
               </div>
-
-              <div className="grid grid-cols-1 gap-2">
-                {collaborators
-                  .filter((c) =>
-                    c.toLowerCase().includes(filteredResponsible.toLowerCase()),
-                  )
-                  .map((c) => (
-                    <DropdownMenuItem
-                      key={c}
-                      onClick={() => setData({ ...data, approval: c })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {c}
-                        {data.approval + " - " + data.approval === c && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                {collaborators.filter((c) =>
-                  c.toLowerCase().includes(filteredResponsible.toLowerCase()),
-                ).length === 0 && (
-                  <div className="p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
-              </div>
+              {paymentForms
+                .filter((f) =>
+                  f.toLowerCase().includes(filterPaymentForm.toLowerCase()),
+                )
+                .map((form) => (
+                  <DropdownMenuItem
+                    key={form}
+                    onClick={() => setData({ ...data, paymentForm: form })}
+                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                  >
+                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                      {form}
+                      {data.paymentForm === form && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              {paymentForms.filter((f) =>
+                f.toLowerCase().includes(filterPaymentForm.toLowerCase()),
+              ).length === 0 && (
+                <div className="p-2 text-center text-sm text-zinc-600">
+                  Nenhum item encontrado
+                </div>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
@@ -162,25 +164,24 @@ export function Step3({ data, setData }: Props) {
       <div>
         <h3 className="mb-4 text-base font-semibold">Detalhes do Pagamento</h3>
 
-        {/* cabeçalhos grid */}
-
         {invoices.map((field, idx) => (
           <div
             key={field.id}
-            className="mb-4 grid grid-cols-[repeat(3,1fr)_auto] items-center gap-4"
+            className="mb-4 grid grid-cols-12 items-center gap-4"
           >
-            <div className="flex flex-col text-[13px] font-medium text-zinc-600">
-              <span className="">{idx + 1} - Pagamento</span>
-              <input
-                value={formatBRL(valor)}
-                onChange={handleChange}
-                placeholder="R$ 0,00"
-                className={`rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.number ? "border-primary" : "border-zinc-200"}`}
-              />
+            <div className="col-span-6 flex items-center gap-2">
+              <GripVertical className="mt-5" />
+              <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
+                <span className="">{idx + 1} - Pagamento</span>
+                <input
+                  value={formatBRL(valor)}
+                  onChange={handleChange}
+                  placeholder="R$ 0,00"
+                  className={`h-16 w-full rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.number ? "border-primary" : "border-zinc-200"}`}
+                />
+              </div>
             </div>
-
-            {/* tipo (Dropdown) */}
-            <div className="flex flex-col text-[13px] font-medium text-zinc-600">
+            <div className="col-span-2 flex flex-col text-[13px] font-medium text-zinc-600">
               <span className="">Forma</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -188,7 +189,7 @@ export function Step3({ data, setData }: Props) {
                     type="button"
                     className={cn(
                       buttonBase,
-                      "h-10 justify-between px-3 py-2",
+                      "h-16 justify-between rounded-2xl px-3 py-2",
                       field.type
                         ? "border-primary text-zinc-700"
                         : "border-zinc-200 text-zinc-500",
@@ -224,15 +225,14 @@ export function Step3({ data, setData }: Props) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            {/* valor */}
-            <div className="flex flex-col text-[13px] font-medium text-zinc-600">
+            <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div>
                     <span className="">Data</span>
 
                     <div
-                      className={`relative rounded-lg border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
+                      className={`relative flex h-16 items-center rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
                     >
                       {field.date
                         ? moment(field.date).format("DD/MM/YYYY")
@@ -263,6 +263,9 @@ export function Step3({ data, setData }: Props) {
                   />
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+            <div className="border-primary col-span-1 mt-5 flex h-16 items-center justify-center rounded-2xl border">
+              <EllipsisVertical className="text-zinc-600" />
             </div>
           </div>
         ))}

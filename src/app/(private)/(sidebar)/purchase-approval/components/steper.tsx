@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/utils/cn";
 import React from "react";
 
 interface Step {
@@ -51,9 +52,11 @@ const Stepper: React.FC<StepperProps> = ({
                 }`}
               />
               <span
-                className={`absolute top-6 mt-2 text-center text-xs whitespace-nowrap select-none ${
-                  isCompleted ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={cn(
+                  "absolute top-6 mt-2 text-center text-xs whitespace-nowrap select-none",
+                  isCompleted ? "text-gray-800" : "text-gray-400",
+                  idx === 0 ? "left-0" : idx === steps.length - 1 && "right-0",
+                )}
               >
                 {step.label}
               </span>

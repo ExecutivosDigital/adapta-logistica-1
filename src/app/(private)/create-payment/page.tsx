@@ -17,14 +17,11 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { AccontsType, Accounts } from "./acconts";
 import { Step1 } from "./step1";
-import { Step2 } from "./step2";
 import { Step3 } from "./step3";
-import { Step4 } from "./step4";
-import { Step4Second } from "./step4Second";
 
 export interface DataType {
   totalValue: number;
-  entryType: "TOTAL" | "PARTIAL";
+  entryType: "DESPESAS" | "IMPOSTOS" | "C. VENDAS";
   supplier: {
     name: string;
     cnpj: string;
@@ -63,7 +60,7 @@ export default function CreateBusinessUnitPage() {
 
   const [data, setData] = useState<DataType>({
     totalValue: 100000,
-    entryType: "TOTAL", // 'TOTAL' or 'PARTIAL'
+    entryType: "DESPESAS",
     supplier: {
       name: "",
       cnpj: "",
@@ -557,13 +554,11 @@ export default function CreateBusinessUnitPage() {
               setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
             />
           ) : steps === 2 ? (
-            <Step2 data={data} setData={setData} />
-          ) : steps === 3 ? (
             <Step3 data={data} setData={setData} />
           ) : (
-            <Step4 data={data} setData={setData} />
+            <></>
           )}
-          {steps !== 4 && (
+          {steps === 1 ? (
             <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
               <button
                 onClick={() => router.back()}
@@ -581,77 +576,68 @@ export default function CreateBusinessUnitPage() {
                 Continuar
               </OrangeButton>
             </footer>
+          ) : steps === 2 ? (
+            <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
+              <button
+                onClick={() => router.back()}
+                className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+              >
+                Salvar e sair
+              </button>
+
+              <OrangeButton
+                className="h-9 w-[132px]"
+                onClick={() => {
+                  toast.success("À Pagar criado com sucesso!");
+                  setTimeout(() => {
+                    router.push("/calendar");
+                  }, 1000);
+                }}
+                icon={<ChevronDown size={16} className="-rotate-90" />}
+                iconPosition="right"
+              >
+                Salvar
+              </OrangeButton>
+            </footer>
+          ) : (
+            <></>
           )}
         </section>
 
-        {/* DIVISOR vertical */}
         <div className="w-px bg-orange-200" />
 
-        {steps === 4 ? (
-          <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
-            <Step4Second data={data} setData={setData} />
-          </section>
-        ) : (
-          <section className="bg-primary/10 flex flex-1 items-center justify-center p-4">
-            {!isShowingDocument ? (
-              <div
-                onClick={() => setIsShowingDocument(true)}
-                className="border-primary flex h-[80%] w-[80%] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8"
-                style={{ borderWidth: "2px", borderSpacing: "80px" }}
-              >
-                <div className="border-primary flex h-16 w-16 items-center justify-center rounded-full border">
-                  <span className="text-primary text-3xl font-light">+</span>
-                </div>
-                <div className="mt-2 text-center">
-                  <p className="text-primary font-medium">
-                    Upload de Documento
-                  </p>
-                  <p className="text-primary/70 text-sm">
-                    Arraste e solte o arquivo aqui ou adicione do seu
-                    dispositivo
-                    <br />
-                    PDF ou PNG
-                  </p>
-                </div>
+        <section className="bg-primary/10 flex flex-1 items-center justify-center p-4">
+          {!isShowingDocument ? (
+            <div
+              onClick={() => setIsShowingDocument(true)}
+              className="border-primary flex h-[80%] w-[80%] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8"
+              style={{ borderWidth: "2px", borderSpacing: "80px" }}
+            >
+              <div className="border-primary flex h-16 w-16 items-center justify-center rounded-full border">
+                <span className="text-primary text-3xl font-light">+</span>
               </div>
-            ) : (
-              <div className="h-full w-full overflow-y-auto">
-                <Image
-                  src="/doc.png"
-                  width={500}
-                  height={500}
-                  className="h-max w-full"
-                  alt=""
-                />
+              <div className="mt-2 text-center">
+                <p className="text-primary font-medium">Upload de Documento</p>
+                <p className="text-primary/70 text-sm">
+                  Arraste e solte o arquivo aqui ou adicione do seu dispositivo
+                  <br />
+                  PDF ou PNG
+                </p>
               </div>
-            )}
-          </section>
-        )}
+            </div>
+          ) : (
+            <div className="h-full w-full overflow-y-auto">
+              <Image
+                src="/doc.png"
+                width={500}
+                height={500}
+                className="h-max w-full"
+                alt=""
+              />
+            </div>
+          )}
+        </section>
       </main>
-      {steps === 4 && (
-        <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
-          <button
-            onClick={() => router.back()}
-            className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
-          >
-            Salvar e sair
-          </button>
-
-          <OrangeButton
-            className="h-9 w-[132px]"
-            onClick={() => {
-              toast.success("À Pagar criado com sucesso!");
-              setTimeout(() => {
-                router.push("/");
-              }, 1000);
-            }}
-            icon={<ChevronDown size={16} className="-rotate-90" />}
-            iconPosition="right"
-          >
-            Salvar
-          </OrangeButton>
-        </footer>
-      )}
 
       {/* FOOTER -------------------------------------------------------- */}
     </div>
