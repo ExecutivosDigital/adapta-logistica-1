@@ -228,6 +228,7 @@ const CalendarApp = () => {
   };
 
   const eventColors = (event: RBCEvent) => {
+    console.log("event", event);
     if ("isSummary" in event) {
       const isEnt = event.movementType === "Entrada";
       return {
@@ -241,7 +242,16 @@ const CalendarApp = () => {
     }
 
     const isEntrada = event.movementType === "Entrada";
-    const bg = isEntrada ? "#E9FFF0" : "#FFECEC";
+    const bg =
+      event.status === "Aprovado aguardando comprovante"
+        ? "#86efac"
+        : event.status === "Rejeitado"
+          ? "#fca5a5"
+          : event.status === "Baixado"
+            ? "#d1d5db"
+            : event.status === "Aprovação"
+              ? "#93c5fd"
+              : "#fde047";
     const border = isEntrada ? "#0BB34B" : "#D93025";
     return {
       style: {

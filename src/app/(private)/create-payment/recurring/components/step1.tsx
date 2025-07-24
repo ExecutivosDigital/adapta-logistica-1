@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataType } from "../page";
 import { CostCentersList } from "./cost-centers-list";
 
@@ -126,7 +126,18 @@ export function Step1({
     "10 Pagamentos",
     "11 Pagamentos",
     "12 Pagamentos",
-    "Outra - Digite aqui",
+    "13 Pagamentos",
+    "14 Pagamentos",
+    "15 Pagamentos",
+    "16 Pagamentos",
+    "17 Pagamentos",
+    "18 Pagamentos",
+    "19 Pagamentos",
+    "20 Pagamentos",
+    "21 Pagamentos",
+    "22 Pagamentos",
+    "23 Pagamentos",
+    "24 Pagamentos",
   ];
 
   const paymentTerms = ["Total no Ato", "Parcelado", "Recorrente"];
@@ -139,6 +150,14 @@ export function Step1({
   const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
     useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
+  const [otherInstallments, setOtherInstallments] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (otherInstallments && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [otherInstallments]);
 
   const handleCostCenterToggle = (costCenterName: string) => {
     const isSelected = selectedCostCenters.some(
@@ -396,7 +415,16 @@ export function Step1({
                   .map((ins) => (
                     <DropdownMenuItem
                       key={ins}
-                      onClick={() => setData({ ...data, paymentDetails: ins })}
+                      onClick={(e) => {
+                        if (ins !== "Outra - Digite aqui") {
+                          setOtherInstallments(false);
+                          setData({ ...data, paymentDetails: ins });
+                        } else {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setOtherInstallments(true);
+                        }
+                      }}
                       className="hover:bg-primary/20 cursor-pointer transition duration-300"
                     >
                       <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
@@ -407,6 +435,47 @@ export function Step1({
                       </div>
                     </DropdownMenuItem>
                   ))}
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setOtherInstallments(true);
+                  }}
+                  className="hover:bg-primary/20 relative h-10 cursor-pointer px-2 py-2 transition duration-300"
+                >
+                  {otherInstallments ? (
+                    <input
+                      ref={inputRef}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                      onBlur={(e) => {
+                        // Prevent losing focus unless clicking outside dropdown
+                        if (
+                          e.relatedTarget &&
+                          !e.relatedTarget.closest('[role="menu"]')
+                        ) {
+                          // Only blur if clicking completely outside
+                        } else {
+                          e.target.focus();
+                        }
+                      }}
+                      onChange={(e) =>
+                        setData({ ...data, paymentDetails: e.target.value })
+                      }
+                      value={data.paymentDetails}
+                      className="absolute top-0 h-full w-full p-1 py-2 focus:outline-none"
+                    />
+                  ) : (
+                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                      Outra - Digite aqui
+                      {otherInstallments && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
+                    </div>
+                  )}
+                </DropdownMenuItem>
                 {installments.filter((ins) =>
                   ins.toLowerCase().includes(filterInstallments.toLowerCase()),
                 ).length === 0 && (

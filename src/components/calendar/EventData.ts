@@ -227,7 +227,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovação",
+    status: "Rejeitado",
     movementType: "Saida",
     value: "R$ 980,00",
     name: "Venda pontual",

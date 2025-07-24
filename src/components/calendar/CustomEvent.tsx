@@ -23,15 +23,7 @@ export function CustomEvent({ event, onView }: Props) {
   return (
     <button
       onClick={() => viewHandler("week")}
-      className={cn(
-        "flex flex-row justify-between rounded-r-sm",
-        //   {
-        //   "bg-green-300": event.status === "Aprovado aguardando comprovante",
-        //   "bg-red-300": event.status === "Rejeitado",
-        //   "bg-gray-300": event.status === "Baixado",
-        //   "bg-blue-300": event.status === "Aprovação",
-        // }
-      )}
+      className={cn("flex flex-row justify-between rounded-r-sm")}
     >
       <div className="flex flex-1 flex-col">
         <span className="text-xs">{event.name}</span>

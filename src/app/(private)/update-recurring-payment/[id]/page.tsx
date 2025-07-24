@@ -340,9 +340,9 @@ export default function UpdateRecurringPayment() {
           <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
             <button
               onClick={() => router.back()}
-              className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+              className="h-9 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
             >
-              Salvar e sair
+              Sair
             </button>
 
             <OrangeButton
@@ -356,7 +356,7 @@ export default function UpdateRecurringPayment() {
               icon={<ChevronDown size={16} className="-rotate-90" />}
               iconPosition="right"
             >
-              Enviar p/ Aprovação
+              Salvar
             </OrangeButton>
           </footer>
         </section>

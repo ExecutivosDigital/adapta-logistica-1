@@ -1,6 +1,12 @@
 /* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
 import {
@@ -8,6 +14,7 @@ import {
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  EllipsisVertical,
   Search,
   X,
 } from "lucide-react";
@@ -144,17 +151,24 @@ export default function RecurringPaymentApproval() {
           className="h-16 w-auto"
           priority
         />
-
-        <button
-          onClick={() => setSteps((s) => s - 1)}
-          className={cn(
-            "absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50",
-            steps === 1 && "hidden",
-          )}
-        >
-          <ChevronLeft size={16} />
-          Voltar
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 p-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 focus:outline-none">
+              <EllipsisVertical size={16} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="start" className="bg-white">
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
+              Reportar Erro
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
+              Negar Lançamento
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
+              Lorem
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <button
           onClick={() => router.back()}
           className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
@@ -376,7 +390,7 @@ export default function RecurringPaymentApproval() {
           onClick={() => router.back()}
           className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
         >
-          Rejeitar
+          Salvar e Sair
         </button>
 
         <OrangeButton
