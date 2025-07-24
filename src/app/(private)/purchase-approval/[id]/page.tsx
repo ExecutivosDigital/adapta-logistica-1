@@ -1,4 +1,5 @@
 "use client";
+import { OrangeButton } from "@/components/OrangeButton";
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
@@ -150,368 +151,394 @@ export default function FinalPurchaseApproval() {
         </header>
 
         <main className="flex flex-1 overflow-y-auto">
-          <section className="flex flex-1 flex-col py-4">
-            <div className="flex w-full justify-between px-6">
-              <h2 className="text-xl font-semibold">Aprovação - À Pagar</h2>
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-zinc-600">12/06/2025</span>
-                <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
+          <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
+            <div className="flex-1">
+              <div className="flex w-full justify-between px-6">
+                <h2 className="text-xl font-semibold">Aprovação - À Pagar</h2>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-zinc-600">12/06/2025</span>
+                  <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
+                </div>
               </div>
-            </div>
-            <div className="my-4 h-px w-full bg-zinc-200" />
-            <div className="grid grid-cols-12 gap-4 px-6 text-sm text-zinc-700">
-              {/* --------------------- FORNECEDOR --------------------- */}
-              <label className="col-span-8 flex flex-col gap-1">
-                <span className="text-zinc-600">
-                  {data.entryType === "DESPESAS"
-                    ? "Fornecedor"
-                    : data.entryType === "IMPOSTOS"
-                      ? "Sefaz"
-                      : "Parceiro"}
-                </span>
-                <button
-                  onClick={() => setIsOpenSupplierModal(true)}
-                  className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
-                >
-                  <div className="flex h-full w-6">
-                    <MapPin size={16} className="text-primary" />
-                  </div>
-                  <div className="flex flex-1 flex-col">
-                    <span className="flex-1 text-lg">
-                      {data.supplier.name || "Selecione"}
-                    </span>
-                    <span className="text-zinc-400">
-                      {data.supplier.cnpj || ""}
-                    </span>
-                  </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
-                </button>
-              </label>
-
-              {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
-              <label className="col-span-4 flex flex-col gap-1">
-                <span className="text-zinc-600">
-                  {data.entryType === "DESPESAS"
-                    ? "Tipo de Lançamento"
-                    : data.entryType === "IMPOSTOS"
-                      ? "Imposto - Código"
-                      : "Tipo de Lançamento"}
-                </span>
-                <DropdownMenu
-                  open={isDocumentTypeDropdownOpen}
-                  onOpenChange={setIsDocumentTypeDropdownOpen}
-                >
-                  <DropdownMenuTrigger className="w-full focus:outline-none">
-                    <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                      <div className="flex h-full w-6">
-                        <DollarSign size={16} className="text-primary" />
-                      </div>
-                      <div className="flex h-full flex-1 items-center">
-                        <span className="flex-1 text-lg">
-                          {data.documentType || "Selecione"}
-                        </span>
-                      </div>
-                      <div className="flex h-full w-6 justify-end">
-                        <Edit size={16} className="text-primary" />
-                      </div>
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    side="bottom"
-                    sideOffset={0}
-                    className="z-[999] w-72 border-zinc-200"
+              <div className="my-4 h-px w-full bg-zinc-200" />
+              <div className="grid grid-cols-12 gap-4 px-6 text-sm text-zinc-700">
+                {/* --------------------- FORNECEDOR --------------------- */}
+                <label className="col-span-8 flex flex-col gap-1">
+                  <span className="text-zinc-600">
+                    {data.entryType === "DESPESAS"
+                      ? "Fornecedor"
+                      : data.entryType === "IMPOSTOS"
+                        ? "Sefaz"
+                        : "Parceiro"}
+                  </span>
+                  <button
+                    onClick={() => setIsOpenSupplierModal(true)}
+                    className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
                   >
-                    <X
-                      className="text-primary ml-auto cursor-pointer"
-                      onClick={() => setIsDocumentTypeDropdownOpen(false)}
-                    />
-                    <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
-                      <input
-                        value={filteredDocuments}
-                        onChange={(e) => setFilteredDocuments(e.target.value)}
-                        placeholder="Pesquisar tipos de Documentos"
-                        className="flex-1 focus:outline-none"
-                      />
-                      <Search size={14} />
+                    <div className="flex h-full w-6">
+                      <MapPin size={16} className="text-primary" />
                     </div>
-                    {documents.filter((item) =>
-                      item
-                        .toLowerCase()
-                        .includes(filteredDocuments.toLowerCase()),
-                    ).length === 0 && (
-                      <div className="p-2 text-center text-sm text-zinc-600">
-                        Nenhum item encontrado
+                    <div className="flex flex-1 flex-col">
+                      <span className="flex-1 text-lg">
+                        {data.supplier.name || "Selecione"}
+                      </span>
+                      <span className="text-zinc-400">
+                        {data.supplier.cnpj || ""}
+                      </span>
+                    </div>
+                    <div className="flex h-full w-6 justify-end">
+                      <Edit size={16} className="text-primary" />
+                    </div>
+                  </button>
+                </label>
+
+                {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
+                <label className="col-span-4 flex flex-col gap-1">
+                  <span className="text-zinc-600">
+                    {data.entryType === "DESPESAS"
+                      ? "Tipo de Lançamento"
+                      : data.entryType === "IMPOSTOS"
+                        ? "Imposto - Código"
+                        : "Tipo de Lançamento"}
+                  </span>
+                  <DropdownMenu
+                    open={isDocumentTypeDropdownOpen}
+                    onOpenChange={setIsDocumentTypeDropdownOpen}
+                  >
+                    <DropdownMenuTrigger className="w-full focus:outline-none">
+                      <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                        <div className="flex h-full w-6">
+                          <DollarSign size={16} className="text-primary" />
+                        </div>
+                        <div className="flex h-full flex-1 items-center">
+                          <span className="flex-1 text-lg">
+                            {data.documentType || "Selecione"}
+                          </span>
+                        </div>
+                        <div className="flex h-full w-6 justify-end">
+                          <Edit size={16} className="text-primary" />
+                        </div>
                       </div>
-                    )}
-                    {documents
-                      .filter((item) =>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="bottom"
+                      sideOffset={0}
+                      className="z-[999] w-72 border-zinc-200"
+                    >
+                      <X
+                        className="text-primary ml-auto cursor-pointer"
+                        onClick={() => setIsDocumentTypeDropdownOpen(false)}
+                      />
+                      <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                        <input
+                          value={filteredDocuments}
+                          onChange={(e) => setFilteredDocuments(e.target.value)}
+                          placeholder="Pesquisar tipos de Documentos"
+                          className="flex-1 focus:outline-none"
+                        />
+                        <Search size={14} />
+                      </div>
+                      {documents.filter((item) =>
                         item
                           .toLowerCase()
                           .includes(filteredDocuments.toLowerCase()),
-                      )
-                      .map((item, index) => (
-                        <DropdownMenuItem
-                          key={index}
-                          onClick={() =>
-                            setData({ ...data, documentType: item })
-                          }
-                          className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                        >
-                          <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                            {item}
-                            {/* Check icon */}
-                            {data.documentType === item && (
-                              <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                            )}
-                          </div>
-                        </DropdownMenuItem>
-                      ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </label>
-
-              <div className="col-span-12 grid grid-cols-11 gap-4">
-                <label className="col-span-5 flex flex-col gap-1">
-                  <span className="text-zinc-600">Valor</span>
-                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                    <div className="flex h-full w-6">
-                      <DollarSign size={16} className="text-primary" />
-                    </div>
-                    <div className="flex h-full flex-1 items-center justify-center text-center">
-                      <input
-                        placeholder="R$ 0,00"
-                        className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
-                      />
-                    </div>
-                    <div className="flex h-full w-6"></div>
-                  </div>
-                </label>
-
-                {/* --------------------- DATAS --------------------- */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <label className="col-span-3 flex flex-col gap-1">
-                      <span className="text-zinc-600">Mês Referência</span>
-                      <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                        <div className="flex h-full w-6">
-                          <CalendarIcon className="text-primary" size={16} />
+                      ).length === 0 && (
+                        <div className="p-2 text-center text-sm text-zinc-600">
+                          Nenhum item encontrado
                         </div>
-                        <div className="flex-1 text-lg text-zinc-700">
-                          {data.issueDate
-                            ? moment(data.issueDate).format("MMM")
-                            : moment().format("MMMM")}
-                        </div>
-                        <div className="flex h-full w-6 justify-end">
-                          <Edit className="text-primary" size={16} />
-                        </div>
-                      </div>
-                    </label>
-                  </DropdownMenuTrigger>
-                </DropdownMenu>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <label className="col-span-3 flex flex-col gap-1">
-                      <span className="text-zinc-600">Vencimento</span>
-                      <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                        <div className="flex h-full w-6">
-                          <CalendarIcon className="text-primary" size={16} />
-                        </div>
-                        <div className="flex-1 text-lg text-zinc-700">
-                          {data.dueDate
-                            ? moment(data.dueDate).format("DD/MM/YYYY")
-                            : moment().format("DD/MM/YYYY")}
-                        </div>
-                        <div className="flex h-full w-6 justify-end">
-                          <Edit className="text-primary" size={16} />
-                        </div>
-                      </div>
-                    </label>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    side="right"
-                    sideOffset={0}
-                    align="start"
-                    className="z-[999] w-72 border-zinc-200"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={moment(data.dueDate).toDate()}
-                      onSelect={(date) => {
-                        if (date) {
-                          setData({ ...data, dueDate: moment(date).format() });
-                        }
-                      }}
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-
-            <div className="my-4 h-px w-full bg-zinc-200" />
-            <div className="grid grid-cols-12 gap-4 px-6 text-sm text-zinc-700">
-              <label className="col-span-8 flex flex-col gap-1">
-                <span className="text-zinc-600">Método de Pagamento</span>
-                <button className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <MapPin size={16} className="text-primary" />
-                  </div>
-                  <div className="flex flex-1 flex-col">
-                    <span className="flex-1 text-lg">
-                      {data.supplier.name || "Selecione"}
-                    </span>
-                    <span className="text-zinc-400">
-                      {data.supplier.cnpj || ""}
-                    </span>
-                  </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
-                </button>
-              </label>
-
-              <label className="col-span-4 flex flex-col gap-1">
-                <span className="text-zinc-600">Conta de Pagamento</span>
-                <DropdownMenu
-                  open={isDocumentTypeDropdownOpen}
-                  onOpenChange={setIsDocumentTypeDropdownOpen}
-                >
-                  <DropdownMenuTrigger className="w-full focus:outline-none">
-                    <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                      <div className="flex h-full w-6">
-                        <DollarSign size={16} className="text-primary" />
-                      </div>
-                      <div className="flex h-full flex-1 items-center">
-                        <span className="flex-1 text-lg">
-                          {data.documentType || "Selecione"}
-                        </span>
-                      </div>
-                      <div className="flex h-full w-6 justify-end">
-                        <Edit size={16} className="text-primary" />
-                      </div>
-                    </div>
-                  </DropdownMenuTrigger>
-                </DropdownMenu>
-              </label>
-            </div>
-            <div className="my-4 h-px w-full bg-zinc-200" />
-
-            <div className="px-6">
-              <h3 className="mb-4 text-base font-semibold">
-                Detalhes do Pagamento
-              </h3>
-
-              {invoices.map((field, idx) => (
-                <div
-                  key={field.id}
-                  className="mb-4 grid grid-cols-12 items-center gap-4"
-                >
-                  <div className="col-span-6 flex items-center gap-2">
-                    <GripVertical className="mt-5" />
-                    <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
-                      <span className="">{idx + 1} - Pagamento</span>
-                      <input
-                        placeholder="R$ 0,00"
-                        className={`h-16 w-full rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.number ? "border-primary" : "border-zinc-200"}`}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2 flex flex-col text-[13px] font-medium text-zinc-600">
-                    <span className="">Forma</span>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          type="button"
-                          className={cn(
-                            "relative flex w-full items-center gap-2 rounded-lg border px-3 py-3 text-sm transition",
-                            "h-16 justify-between rounded-2xl px-3 py-2",
-                            field.type
-                              ? "border-primary text-zinc-700"
-                              : "border-zinc-200 text-zinc-500",
-                          )}
-                        >
-                          {field.type || "Tipo"}
-                          <ChevronDown size={16} />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        side="bottom"
-                        sideOffset={0}
-                        className="z-[999] w-[var(--radix-dropdown-menu-trigger-width)] border-zinc-200"
-                      >
-                        {["Pix", "Boleto", "Cartão"].map((item) => (
+                      )}
+                      {documents
+                        .filter((item) =>
+                          item
+                            .toLowerCase()
+                            .includes(filteredDocuments.toLowerCase()),
+                        )
+                        .map((item, index) => (
                           <DropdownMenuItem
-                            key={item}
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              setInvoices((prev) =>
-                                prev.map((f, i) =>
-                                  i === idx ? { ...f, type: item } : f,
-                                ),
-                              );
-                            }}
+                            key={index}
+                            onClick={() =>
+                              setData({ ...data, documentType: item })
+                            }
                             className="hover:bg-primary/20 cursor-pointer transition duration-300"
                           >
                             <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
                               {item}
+                              {/* Check icon */}
+                              {data.documentType === item && (
+                                <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                              )}
                             </div>
                           </DropdownMenuItem>
                         ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <div>
-                          <span className="">Data</span>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </label>
 
-                          <div
-                            className={`relative flex h-16 items-center rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
-                          >
-                            {field.date
-                              ? moment(field.date).format("DD/MM/YYYY")
-                              : moment().format("DD/MM/YYYY")}
-                            <ChevronDown className="absolute top-1/2 right-2 h-4 -translate-y-1/2" />
+                <div className="col-span-12 grid grid-cols-11 gap-4">
+                  <label className="col-span-5 flex flex-col gap-1">
+                    <span className="text-zinc-600">Valor</span>
+                    <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                      <div className="flex h-full w-6">
+                        <DollarSign size={16} className="text-primary" />
+                      </div>
+                      <div className="flex h-full flex-1 items-center justify-center text-center">
+                        <input
+                          placeholder="R$ 0,00"
+                          className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                        />
+                      </div>
+                      <div className="flex h-full w-6"></div>
+                    </div>
+                  </label>
+
+                  {/* --------------------- DATAS --------------------- */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <label className="col-span-3 flex flex-col gap-1">
+                        <span className="text-zinc-600">Mês Referência</span>
+                        <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
+                          <div className="flex h-full w-6">
+                            <CalendarIcon className="text-primary" size={16} />
+                          </div>
+                          <div className="flex-1 text-lg text-zinc-700">
+                            {data.issueDate
+                              ? moment(data.issueDate).format("MMM")
+                              : moment().format("MMMM")}
+                          </div>
+                          <div className="flex h-full w-6 justify-end">
+                            <Edit className="text-primary" size={16} />
                           </div>
                         </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        side="right"
-                        sideOffset={0}
-                        align="start"
-                        className="z-[999] w-72 border-zinc-200"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={moment(field.date).toDate()}
-                          onSelect={(e) =>
-                            setInvoices((prev) =>
-                              prev.map((f, i) =>
-                                i === idx
-                                  ? {
-                                      ...f,
-                                      date: moment(e).format("YYYY-MM-DD"),
-                                    }
-                                  : f,
-                              ),
-                            )
-                          }
-                          initialFocus
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <div className="border-primary col-span-1 mt-5 flex h-16 items-center justify-center rounded-2xl border">
-                    <EllipsisVertical className="text-zinc-600" />
-                  </div>
-                </div>
-              ))}
+                      </label>
+                    </DropdownMenuTrigger>
+                  </DropdownMenu>
 
-              <div className="mt-6 h-px bg-zinc-200/60" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <label className="col-span-3 flex flex-col gap-1">
+                        <span className="text-zinc-600">Vencimento</span>
+                        <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
+                          <div className="flex h-full w-6">
+                            <CalendarIcon className="text-primary" size={16} />
+                          </div>
+                          <div className="flex-1 text-lg text-zinc-700">
+                            {data.dueDate
+                              ? moment(data.dueDate).format("DD/MM/YYYY")
+                              : moment().format("DD/MM/YYYY")}
+                          </div>
+                          <div className="flex h-full w-6 justify-end">
+                            <Edit className="text-primary" size={16} />
+                          </div>
+                        </div>
+                      </label>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="right"
+                      sideOffset={0}
+                      align="start"
+                      className="z-[999] w-72 border-zinc-200"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={moment(data.dueDate).toDate()}
+                        onSelect={(date) => {
+                          if (date) {
+                            setData({
+                              ...data,
+                              dueDate: moment(date).format(),
+                            });
+                          }
+                        }}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+
+              <div className="my-4 h-px w-full bg-zinc-200" />
+              <div className="grid grid-cols-12 gap-4 px-6 text-sm text-zinc-700">
+                <label className="col-span-8 flex flex-col gap-1">
+                  <span className="text-zinc-600">Método de Pagamento</span>
+                  <button className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                    <div className="flex h-full w-6">
+                      <MapPin size={16} className="text-primary" />
+                    </div>
+                    <div className="flex flex-1 flex-col">
+                      <span className="flex-1 text-lg">
+                        {data.supplier.name || "Selecione"}
+                      </span>
+                      <span className="text-zinc-400">
+                        {data.supplier.cnpj || ""}
+                      </span>
+                    </div>
+                    <div className="flex h-full w-6 justify-end">
+                      <Edit size={16} className="text-primary" />
+                    </div>
+                  </button>
+                </label>
+
+                <label className="col-span-4 flex flex-col gap-1">
+                  <span className="text-zinc-600">Conta de Pagamento</span>
+                  <DropdownMenu
+                    open={isDocumentTypeDropdownOpen}
+                    onOpenChange={setIsDocumentTypeDropdownOpen}
+                  >
+                    <DropdownMenuTrigger className="w-full focus:outline-none">
+                      <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                        <div className="flex h-full w-6">
+                          <DollarSign size={16} className="text-primary" />
+                        </div>
+                        <div className="flex h-full flex-1 items-center">
+                          <span className="flex-1 text-lg">
+                            {data.documentType || "Selecione"}
+                          </span>
+                        </div>
+                        <div className="flex h-full w-6 justify-end">
+                          <Edit size={16} className="text-primary" />
+                        </div>
+                      </div>
+                    </DropdownMenuTrigger>
+                  </DropdownMenu>
+                </label>
+              </div>
+              <div className="my-4 h-px w-full bg-zinc-200" />
+
+              <div className="px-6">
+                <h3 className="mb-4 text-base font-semibold">
+                  Detalhes do Pagamento
+                </h3>
+
+                {invoices.map((field, idx) => (
+                  <div
+                    key={field.id}
+                    className="mb-4 grid grid-cols-12 items-center gap-4"
+                  >
+                    <div className="col-span-6 flex items-center gap-2">
+                      <GripVertical className="mt-5" />
+                      <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
+                        <span className="">{idx + 1} - Pagamento</span>
+                        <input
+                          placeholder="R$ 0,00"
+                          className={`h-16 w-full rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.number ? "border-primary" : "border-zinc-200"}`}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-2 flex flex-col text-[13px] font-medium text-zinc-600">
+                      <span className="">Forma</span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className={cn(
+                              "relative flex w-full items-center gap-2 rounded-lg border px-3 py-3 text-sm transition",
+                              "h-16 justify-between rounded-2xl px-3 py-2",
+                              field.type
+                                ? "border-primary text-zinc-700"
+                                : "border-zinc-200 text-zinc-500",
+                            )}
+                          >
+                            {field.type || "Tipo"}
+                            <ChevronDown size={16} />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          side="bottom"
+                          sideOffset={0}
+                          className="z-[999] w-[var(--radix-dropdown-menu-trigger-width)] border-zinc-200"
+                        >
+                          {["Pix", "Boleto", "Cartão"].map((item) => (
+                            <DropdownMenuItem
+                              key={item}
+                              onSelect={(e) => {
+                                e.preventDefault();
+                                setInvoices((prev) =>
+                                  prev.map((f, i) =>
+                                    i === idx ? { ...f, type: item } : f,
+                                  ),
+                                );
+                              }}
+                              className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                            >
+                              <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                                {item}
+                              </div>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <div>
+                            <span className="">Data</span>
+
+                            <div
+                              className={`relative flex h-16 items-center rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
+                            >
+                              {field.date
+                                ? moment(field.date).format("DD/MM/YYYY")
+                                : moment().format("DD/MM/YYYY")}
+                              <ChevronDown className="absolute top-1/2 right-2 h-4 -translate-y-1/2" />
+                            </div>
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          side="right"
+                          sideOffset={0}
+                          align="start"
+                          className="z-[999] w-72 border-zinc-200"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={moment(field.date).toDate()}
+                            onSelect={(e) =>
+                              setInvoices((prev) =>
+                                prev.map((f, i) =>
+                                  i === idx
+                                    ? {
+                                        ...f,
+                                        date: moment(e).format("YYYY-MM-DD"),
+                                      }
+                                    : f,
+                                ),
+                              )
+                            }
+                            initialFocus
+                          />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="border-primary col-span-1 mt-5 flex h-16 items-center justify-center rounded-2xl border">
+                      <EllipsisVertical className="text-zinc-600" />
+                    </div>
+                  </div>
+                ))}
+
+                <div className="mt-6 h-px bg-zinc-200/60" />
+              </div>
             </div>
+            <footer className="mt-4 flex items-center justify-center gap-6 border-t border-orange-200 bg-white px-8 py-4">
+              <button
+                onClick={() => router.back()}
+                className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+              >
+                Salvar e sair
+              </button>
+
+              <OrangeButton
+                className="h-9 w-[132px]"
+                onClick={() => {
+                  setTimeout(() => {
+                    router.push("/calendar");
+                  }, 1000);
+                }}
+                icon={<ChevronDown size={16} className="-rotate-90" />}
+                iconPosition="right"
+              >
+                Concluír
+              </OrangeButton>
+            </footer>
           </section>
 
           {/* DIVISOR vertical */}

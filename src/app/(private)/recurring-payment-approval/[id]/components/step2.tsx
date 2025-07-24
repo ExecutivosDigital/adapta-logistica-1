@@ -4,32 +4,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/utils/cn";
 
 import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/utils/cn";
 import {
   ChevronDown,
+  CreditCard,
   DollarSign,
   Edit,
   EllipsisVertical,
   GripVertical,
   Plus,
-  Search,
 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
-import { DataType } from "./page";
+import { DataType } from "../page";
+
 interface TechField {
   id: string;
   number: number;
   type: string;
   date: string;
 }
+
 interface Props {
   data: DataType;
-  setData: (value: DataType) => void;
 }
-export function Step3({ data, setData }: Props) {
+
+export function Step2({ data }: Props) {
   const [invoices, setInvoices] = useState<TechField[]>([
     { id: crypto.randomUUID(), number: 0, type: "", date: "" },
   ]);
@@ -43,55 +45,33 @@ export function Step3({ data, setData }: Props) {
 
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
-
-  const paymentForms = [
-    "PIX",
-    "Boleto",
-    "Cartão de Crédito",
-    "Depósito",
-    "Transferência Bancária",
-    "Dinheiro em Mãos",
-    "Fatura",
-  ];
-
-  const [filterPaymentForm, setFilterPaymentForm] = useState("");
   const [valor, setValor] = useState(invoices[0].number); // centavos!
-  const [amount, setAmount] = useState(data.amount);
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // 1. só dígitos
     const digits = e.target.value.replace(/\D/g, "");
-    // 2. se nada digitado, fica 0
     const cents = digits === "" ? 0 : parseInt(digits, 10);
     setValor(cents);
   }
-  function handleChangeAmount(e: React.ChangeEvent<HTMLInputElement>) {
-    // 1. só dígitos
-    const digits = e.target.value.replace(/\D/g, "");
-    // 2. se nada digitado, fica 0
-    const cents = digits === "" ? 0 : parseInt(digits, 10);
-    setAmount(cents);
-    setData({ ...data, amount: cents });
-  }
+
   const formatBRL = (valueInCents: number) =>
     new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(valueInCents / 100);
+
   return (
     <div className="flex-1">
       <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
         <label className="col-span-8 flex flex-col gap-1">
-          <span className="text-zinc-600">Valor no Documento</span>
+          <span className="text-zinc-600">Pagamento Via</span>
           <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
             <div className="flex h-full w-6">
-              <DollarSign size={16} className="text-primary" />
+              <CreditCard size={16} className="text-primary" />
             </div>
             <div className="flex h-full flex-1 items-center text-center">
               <span className="font-semi-bold flex-1 text-xl">
                 <input
-                  value={formatBRL(amount)}
-                  onChange={handleChangeAmount}
-                  placeholder="R$ 0,00"
+                  placeholder="Método de Pagamento"
                   className="flex-1 bg-transparent text-center text-lg text-zinc-700 outline-none"
                 />
               </span>
@@ -116,50 +96,47 @@ export function Step3({ data, setData }: Props) {
                 </div>
               </div>
             </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              side="right"
-              align="start"
-              className="z-[999] w-72 border-zinc-200"
-            >
-              <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
-                <input
-                  value={filterPaymentForm}
-                  onChange={(e) => setFilterPaymentForm(e.target.value)}
-                  placeholder="Pesquisar Forma de Pagamento"
-                  className="flex-1 focus:outline-none"
-                />
-                <Search size={14} />
-              </div>
-              {paymentForms
-                .filter((f) =>
-                  f.toLowerCase().includes(filterPaymentForm.toLowerCase()),
-                )
-                .map((form) => (
-                  <DropdownMenuItem
-                    key={form}
-                    onClick={() => setData({ ...data, paymentForm: form })}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {form}
-                      {data.paymentForm === form && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              {paymentForms.filter((f) =>
-                f.toLowerCase().includes(filterPaymentForm.toLowerCase()),
-              ).length === 0 && (
-                <div className="p-2 text-center text-sm text-zinc-600">
-                  Nenhum item encontrado
-                </div>
-              )}
-            </DropdownMenuContent>
           </DropdownMenu>
         </label>
-        <div className="col-span-2 my-4 h-px bg-zinc-200/60" />
+
+        <label className="col-span-8 flex flex-col gap-1">
+          <span className="text-zinc-600">Número no Documento</span>
+          <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+            <div className="flex h-full w-6">
+              <CreditCard size={16} className="text-primary" />
+            </div>
+            <div className="flex h-full flex-1 items-center text-center">
+              <span className="font-semi-bold flex-1 text-xl">
+                <input
+                  placeholder="00232323232323232232 22"
+                  className="flex-1 bg-transparent text-center text-lg text-zinc-700 outline-none"
+                />
+              </span>
+            </div>
+            <div className="flex h-full w-6"></div>
+          </div>
+        </label>
+
+        <label className="col-span-4 flex flex-col gap-1">
+          <span className="text-zinc-600">Condições de Pagamento</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="w-full focus:outline-none">
+              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+                <div className="flex h-full w-6">
+                  <DollarSign className="text-primary" size={16} />
+                </div>
+                <div className="flex-1 text-lg text-zinc-700">
+                  {data.paymentForm || "Selecione"}
+                </div>
+                <div className="flex h-full w-6 justify-end">
+                  <Edit className="text-primary" size={16} />
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+        </label>
+
+        <div className="col-span-12 my-4 h-px bg-zinc-200/60" />
       </div>
       <div>
         <h3 className="mb-4 text-base font-semibold">Detalhes do Pagamento</h3>

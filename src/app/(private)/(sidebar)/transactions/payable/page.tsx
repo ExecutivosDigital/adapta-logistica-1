@@ -45,7 +45,10 @@ export default function Payable() {
                   <div className="border-primary h-4 w-4 rounded-md border"></div>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              <DropdownMenuItem
+                onClick={() => router.push("/create-payment/recurring")}
+                className="hover:bg-primary/20 cursor-pointer transition duration-300"
+              >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
                   Desp. Recorrentes
                   <div className="border-primary h-4 w-4 rounded-md border"></div>

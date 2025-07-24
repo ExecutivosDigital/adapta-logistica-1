@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
-import { DataType } from "./page";
+import { DataType } from "../page";
 
 interface Props {
   data: DataType;

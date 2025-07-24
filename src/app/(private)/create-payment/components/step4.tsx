@@ -10,7 +10,7 @@ import {
   Tag,
 } from "lucide-react";
 import moment from "moment";
-import { DataType } from "./page";
+import { DataType } from "../page";
 
 interface Props {
   data: DataType;

@@ -1,5 +1,5 @@
 import { AlignLeft, DollarSign, Edit, Mail, MapPin } from "lucide-react";
-import { DataType } from "./page";
+import { DataType } from "../page";
 interface Props {
   data: DataType;
   setData: (value: DataType) => void;
@@ -9,7 +9,6 @@ export function Step4Second({ data, setData }: Props) {
   return (
     <div className="flex h-full flex-1 flex-col justify-between">
       <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
-        {/* --------------------- PAGAMENTO VIA --------------------- */}
         <label className="col-span-8 flex flex-col gap-1">
           <span className="text-zinc-600">Fornecedor</span>
           <button className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
@@ -63,7 +62,6 @@ export function Step4Second({ data, setData }: Props) {
             </div>
           </button>
         </div>
-        {/* --------------------- DESCRIÇÃO --------------------- */}
       </div>
       <div className="mt-auto flex w-full flex-col">
         <div className="col-span-2 my-4 mt-auto h-px bg-zinc-200/60" />
