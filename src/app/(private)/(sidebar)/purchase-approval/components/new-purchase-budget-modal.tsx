@@ -1,5 +1,5 @@
 "use client";
-import { CalendarDays, Plus, X } from "lucide-react";
+import { CalendarDays, Check, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -120,9 +120,22 @@ export function NewPurchaseBudgetModal({
                   </div>
                 </div>
               </div>
-              <div className="flex h-20 w-full items-center justify-center border-t border-t-zinc-200 p-4 shadow-[0_-1px_10px_0_rgba(0,0,0,0.1)]">
-                <button className="bg-primary rounded-xl border border-transparent px-4 py-2 font-semibold text-white shadow-[1px_2px_4px_0_rgba(13,13,18,0.5)]">
-                  Enviar
+              <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-4">
+                <button
+                  onClick={onHide}
+                  className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-2"
+                >
+                  <X className="text-red-500" />
+                  Salvar e Sair
+                </button>
+                <button
+                  onClick={onHide}
+                  className="bg-primary flex h-10 items-center overflow-hidden rounded-lg font-semibold text-white shadow-sm"
+                >
+                  <span className="mr-4 ml-4">Enviar Solicitação</span>
+                  <div className="ml-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white">
+                    <Check className="text-green-500" />
+                  </div>
                 </button>
               </div>
             </div>

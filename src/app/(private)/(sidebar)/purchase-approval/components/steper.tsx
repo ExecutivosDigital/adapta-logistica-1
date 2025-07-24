@@ -1,5 +1,6 @@
 "use client";
 import { cn } from "@/utils/cn";
+import { Check } from "lucide-react";
 import React from "react";
 
 interface Step {
@@ -47,10 +48,12 @@ const Stepper: React.FC<StepperProps> = ({
                 disabled={onStepClick == null}
                 className={`focus:ring-primary-dark/40 h-6 w-6 rounded-full border transition-colors duration-300 focus:ring-2 focus:outline-none disabled:cursor-default ${
                   isCompleted
-                    ? "border-primary bg-primary"
+                    ? "border-primary bg-primary flex items-center justify-center text-white"
                     : "hover:border-primary-dark border-gray-300 bg-white"
                 }`}
-              />
+              >
+                {isCompleted && <Check size={16} />}
+              </button>
               <span
                 className={cn(
                   "absolute top-6 mt-2 text-center text-xs whitespace-nowrap select-none",

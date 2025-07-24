@@ -31,8 +31,10 @@ interface RowProps {
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn = "item";
-
-export function RequestTable() {
+interface TableProps {
+  openJustifyModal: () => void;
+}
+export function RequestTable({ openJustifyModal }: TableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const columns: ColumnProps[] = [
@@ -175,7 +177,7 @@ export function RequestTable() {
                     {row.tag && (
                       <span
                         className={cn(
-                          "rounded-md p-1 text-sm font-semibold",
+                          "min-w-44 rounded-md p-1 text-xs font-semibold",
                           row.tag === "extreme"
                             ? "bg-red-500 text-white"
                             : row.tag === "high"
@@ -212,9 +214,12 @@ export function RequestTable() {
                   </div>
                 </TableCell>
                 <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
-                  <span className="cursor-pointer font-semibold underline">
+                  <button
+                    onClick={openJustifyModal}
+                    className="cursor-pointer font-semibold underline"
+                  >
                     Ver Justificativa
-                  </span>
+                  </button>
                 </TableCell>
                 <TableCell className="h-full py-0.5 text-start text-sm font-normal whitespace-nowrap">
                   <div className="flex h-full w-full items-center">

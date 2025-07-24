@@ -26,6 +26,7 @@ import { Button } from "../ui/button";
 import { DatePicker } from "../ui/date-picker";
 import { Modal } from "../ui/Modal";
 import { CustomEvent } from "./CustomEvent"; // componente para eventos normais (dia/semana)
+import { CustomEventWeek } from "./CustomEventWeek";
 import { Events2 } from "./EventData"; // lista inicial de eventos
 import CustomToolbar from "./toolbar";
 
@@ -38,11 +39,7 @@ const localizer = momentLocalizer(moment);
 export interface EventType2 {
   type: "Recorrentes" | "Avulso" | "Colaborador";
   movementType: "Entrada" | "Saida";
-  status:
-    | "Aprovação"
-    | "Rejeitado"
-    | "Aprovado aguardando comprovante"
-    | "Baixado";
+  status: "À Pagar" | "Pendente" | "Atrasado" | "Pago";
   value: string | number; // mantive string, mas recomendo number
   name: string;
   installments?: string;
@@ -74,7 +71,6 @@ interface CalendarSlotInfo extends SlotInfo {
 }
 
 function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
-  const isEntrada = event.movementType === "Entrada";
   return (
     <TooltipProvider>
       <Tooltip>
@@ -86,20 +82,19 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
               padding: "2px 4px",
               borderRadius: 6,
               fontSize: 12,
-              color: isEntrada ? "#0BB34B" : "#D93025",
               lineHeight: 1.1,
             }}
             className="sum-card"
           >
             <div className="flex w-full flex-col text-[14px]">
               <span className="text-xs">{event.name}</span>
-              <div className="flex w-full flex-row gap-2">
-                <span className="">Quantidade:</span>
-                <span>{event.count}</span>
+              <div className="flex w-full flex-row items-center gap-2">
+                <span className="text-sm">Quantidade:</span>
+                <span className="font-bold">{event.count}</span>
               </div>
-              <div className="flex w-full flex-row gap-2">
-                <span>Total:</span>
-                <span className="flex-1">{event.formattedValue}</span>
+              <div className="flex w-full flex-row items-center gap-2">
+                <span className="text-sm">Total:</span>
+                <span className="flex-1 font-bold">{event.formattedValue}</span>
               </div>
             </div>
           </div>
@@ -208,7 +203,7 @@ const CalendarApp = () => {
     const newEvent: EventType2 = {
       type: "Avulso",
       movementType: "Entrada",
-      status: "Aprovação",
+      status: "Pendente",
       value: "0",
       name,
       start: start ?? new Date(),
@@ -233,7 +228,7 @@ const CalendarApp = () => {
       return {
         style: {
           backgroundColor: isEnt ? "#E9FFF0" : "#FFECEC",
-          color: isEnt ? "#0BB34B" : "#D93025",
+          color: isEnt ? "#0A8C3B" : "#D93025",
           padding: 0,
           marginTop: !isEnt && 10,
         },
@@ -242,7 +237,7 @@ const CalendarApp = () => {
 
     const isEntrada = event.movementType === "Entrada";
     const bg = isEntrada ? "#E9FFF0" : "#FFECEC";
-    const border = isEntrada ? "#0BB34B" : "#D93025";
+    const border = isEntrada ? "#0A8C3B" : "#D93025";
     return {
       style: {
         backgroundColor: bg,
@@ -397,7 +392,12 @@ const CalendarApp = () => {
           scrollToTime={new Date(1970, 1, 1, 6)}
           defaultDate={new Date()}
           components={{
-            event: view === Views.MONTH ? MonthSummaryEvent : CustomEvent,
+            event:
+              view === Views.MONTH
+                ? MonthSummaryEvent
+                : view === Views.WEEK
+                  ? CustomEventWeek
+                  : CustomEvent,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             toolbar: (props: any) => (
               <CustomToolbar {...props} addNewEvent={() => setOpen(true)} />

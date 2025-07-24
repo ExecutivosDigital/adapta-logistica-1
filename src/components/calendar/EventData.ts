@@ -6,11 +6,7 @@ const m = today.getMonth();
 export interface EventType2 {
   type: "Recorrentes" | "Avulso" | "Colaborador";
   movementType: "Entrada" | "Saida";
-  status:
-    | "Aprovação"
-    | "Rejeitado"
-    | "Aprovado aguardando comprovante"
-    | "Baixado";
+  status: "À Pagar" | "Pendente" | "Atrasado" | "Pago";
   value: string;
   name: string;
   installments?: string;
@@ -21,7 +17,7 @@ export interface EventType2 {
 export const Events2: EventType2[] = [
   {
     type: "Recorrentes",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 1.500,20",
     name: "Salário",
@@ -32,7 +28,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 300,00",
     name: "Assinatura software",
@@ -43,7 +39,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 1.200,54",
     name: "Comissão mensal",
@@ -53,7 +49,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 800,00",
     name: "Aluguel da sala",
@@ -64,7 +60,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 2.000,00",
     name: "Bônus de desempenho",
@@ -74,7 +70,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 450,00",
     name: "Internet corporativa",
@@ -84,7 +80,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 3.500,00",
     name: "Pagamento cliente X",
@@ -95,7 +91,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 1.000,00",
     name: "Manutenção técnica",
@@ -105,7 +101,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 700,00",
     name: "Investimento mensal",
@@ -116,7 +112,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 600,00",
     name: "Serviços terceirizados",
@@ -126,7 +122,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 950,00",
     name: "Retorno de aplicação",
@@ -136,7 +132,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 550,00",
     name: "Compra de materiais",
@@ -147,7 +143,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 1.300,00",
     name: "Reembolso fornecedor",
@@ -157,7 +153,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 250,00",
     name: "Transporte corporativo",
@@ -167,7 +163,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 1.750,00",
     name: "Receita de consultoria",
@@ -177,7 +173,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Saida",
     value: "R$ 680,00",
     name: "Conta de energia",
@@ -187,7 +183,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Entrada",
     value: "R$ 500,00",
     name: "Reembolso viagem",
@@ -197,7 +193,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 900,00",
     name: "Seguro patrimonial",
@@ -207,7 +203,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 2.200,00",
     name: "Venda de serviço",
@@ -217,7 +213,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Recorrentes",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Saida",
     value: "R$ 720,00",
     name: "Telefonia empresarial",
@@ -227,7 +223,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 980,00",
     name: "Venda pontual",
@@ -237,7 +233,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Entrada",
     value: "R$ 320,00",
     name: "Compra emergencial",
@@ -247,7 +243,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Saida",
     value: "R$ 1.250,00",
     name: "Freelancer pago",
@@ -257,7 +253,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 410,00",
     name: "Peças de reposição",
@@ -267,7 +263,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 600,00",
     name: "Serviço eventual",
@@ -277,7 +273,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Entrada",
     value: "R$ 150,00",
     name: "Táxi",
@@ -287,7 +283,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 2.000,00",
     name: "Projeto único",
@@ -297,7 +293,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 700,00",
     name: "Consultoria externa",
@@ -307,7 +303,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 1.100,00",
     name: "Receita extra",
@@ -317,7 +313,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 500,00",
     name: "Hospedagem evento",
@@ -327,7 +323,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 850,00",
     name: "Pagamento indevido",
@@ -337,7 +333,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 900,00",
     name: "Compra promocional",
@@ -347,7 +343,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 1.300,00",
     name: "Aporte avulso",
@@ -357,7 +353,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 200,00",
     name: "Material temporário",
@@ -367,7 +363,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 1.000,00",
     name: "Reembolso errado",
@@ -377,7 +373,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 650,00",
     name: "Compra fora do ciclo",
@@ -387,7 +383,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 1.700,00",
     name: "Venda avulsa",
@@ -397,7 +393,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 420,00",
     name: "Custos de urgência",
@@ -407,7 +403,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 560,00",
     name: "Recebimento inesperado",
@@ -417,7 +413,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Avulso",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 730,00",
     name: "Taxa emergencial",
@@ -427,7 +423,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 450,00",
     name: "Transporte excepcional",
@@ -437,7 +433,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 2.000,00",
     name: "Adiantamento salário",
@@ -447,7 +443,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Entrada",
     value: "R$ 900,00",
     name: "Erro folha anterior",
@@ -457,7 +453,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 800,00",
     name: "Meta batida",
@@ -467,7 +463,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 180,00",
     name: "Reembolso recusado",
@@ -477,7 +473,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 300,00",
     name: "Campanha interna",
@@ -487,7 +483,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 300,00",
     name: "Horas extras",
@@ -497,7 +493,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Entrada",
     value: "R$ 270,00",
     name: "Reposição de equipamento",
@@ -507,7 +503,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 250,00",
     name: "Ajuda de custo",
@@ -517,7 +513,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 500,00",
     name: "Premiação interna",
@@ -527,7 +523,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Entrada",
     value: "R$ 650,00",
     name: "Bônus produtividade",
@@ -537,7 +533,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Saida",
     value: "R$ 220,00",
     name: "Despesas viagem",
@@ -547,7 +543,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 120,00",
     name: "Vale transporte",
@@ -557,7 +553,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Entrada",
     value: "R$ 1.100,00",
     name: "Gratificação especial",
@@ -567,7 +563,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Saida",
     value: "R$ 130,00",
     name: "Vale refeição",
@@ -577,7 +573,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Saida",
     value: "R$ 210,00",
     name: "Material individual",
@@ -587,7 +583,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Rejeitado",
+    status: "Pendente",
     movementType: "Entrada",
     value: "R$ 400,00",
     name: "Solicitação extra",
@@ -597,7 +593,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovado aguardando comprovante",
+    status: "Atrasado",
     movementType: "Saida",
     value: "R$ 360,00",
     name: "Curso interno",
@@ -607,7 +603,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Baixado",
+    status: "Pago",
     movementType: "Saida",
     value: "R$ 500,00",
     name: "Ajuda deslocamento",
@@ -617,7 +613,7 @@ export const Events2: EventType2[] = [
   },
   {
     type: "Colaborador",
-    status: "Aprovação",
+    status: "À Pagar",
     movementType: "Entrada",
     value: "R$ 300,00",
     name: "Uniformes",

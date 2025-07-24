@@ -4,6 +4,8 @@ import { ArrowRight, ClipboardList } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ApprovalTable } from "./components/approval-table";
+import { BudgetApprovalTable } from "./components/budget-approval-table";
+import { FinalApprovalTable } from "./components/final-approval-table";
 import { NewPurchaseApprovalModal } from "./components/new-purchase-approval-modal";
 import { NewPurchaseBudgetModal } from "./components/new-purchase-budget-modal";
 import { NewPurchaseRequestModal } from "./components/new-purchase-request-modal";
@@ -63,21 +65,44 @@ export default function PurchaseApproval() {
           <button className="hover:text-primary border-b-primary text-primary flex h-12 cursor-pointer items-center justify-center border-b px-2 font-semibold transition-all duration-300">
             Solicitação de Compras
           </button>
-          <OrangeButton
-            icon={<ArrowRight />}
-            iconPosition="right"
-            onClick={handleOpenModal}
-          >
-            Solicitar Compras
-          </OrangeButton>
+          {currentStep === 0 ? (
+            <OrangeButton
+              icon={<ArrowRight />}
+              iconPosition="right"
+              onClick={handleOpenModal}
+            >
+              Solicitar Compras
+            </OrangeButton>
+          ) : (
+            <OrangeButton
+              icon={<ArrowRight />}
+              iconPosition="right"
+              onClick={handleOpenModal}
+            >
+              Reportar Erro
+            </OrangeButton>
+          )}
         </div>
 
         {currentStep === 0 ? (
-          <RequestTable />
+          <RequestTable
+            openJustifyModal={() => setShowNewPurchaseRequestModal(true)}
+          />
         ) : currentStep === 1 ? (
-          <ApprovalTable />
+          <ApprovalTable
+            openModal={handleOpenModal}
+            openJustifyModal={() => setShowNewPurchaseRequestModal(true)}
+          />
+        ) : currentStep === 2 ? (
+          <BudgetApprovalTable
+            openModal={handleOpenModal}
+            openJustifyModal={() => setShowNewPurchaseApprovalModal(true)}
+          />
         ) : (
-          <></>
+          <FinalApprovalTable
+            openModal={handleOpenModal}
+            openJustifyModal={() => setShowNewPurchaseBudgetModal(true)}
+          />
         )}
       </div>
       {showNewPurchaseRequestModal && (

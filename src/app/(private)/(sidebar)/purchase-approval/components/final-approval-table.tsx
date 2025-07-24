@@ -38,12 +38,15 @@ interface RowProps {
 }
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn = "item";
-
 interface TableProps {
   openModal: () => void;
   openJustifyModal: () => void;
 }
-export function ApprovalTable({ openModal, openJustifyModal }: TableProps) {
+
+export function FinalApprovalTable({
+  openModal,
+  openJustifyModal,
+}: TableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const columns: ColumnProps[] = [
@@ -200,7 +203,7 @@ export function ApprovalTable({ openModal, openJustifyModal }: TableProps) {
                         alt=""
                         width={40}
                         height={40}
-                        className="h-4 w-4"
+                        className="h-4 w-4 fill-red-500 text-red-500"
                       />
                     </div>
                     {row.deadline}
@@ -263,7 +266,7 @@ export function ApprovalTable({ openModal, openJustifyModal }: TableProps) {
                 </TableCell>
                 <TableCell className="w-40 py-0.5 text-start text-sm font-normal whitespace-nowrap">
                   <OrangeButton onClick={openModal}>
-                    Analisar <ArrowRight />
+                    Aprovar <ArrowRight />
                   </OrangeButton>
                 </TableCell>
               </TableRow>

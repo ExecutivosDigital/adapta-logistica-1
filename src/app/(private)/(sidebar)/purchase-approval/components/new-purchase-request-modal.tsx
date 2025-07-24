@@ -36,8 +36,8 @@ export function NewPurchaseRequestModal({
           <div className="relative z-50 flex max-h-[85vh] w-max flex-col items-center justify-center">
             <div
               className={twMerge(
-                "relative z-20 flex w-full max-w-[30vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-md border bg-white px-2 py-4 shadow-md",
-                "scrollbar-hide h-[85vh] w-[30vw] overflow-y-scroll rounded-2xl border-none px-0",
+                "relative z-20 flex w-full max-w-[50vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-md border bg-white px-2 py-4 shadow-md",
+                "scrollbar-hide overflow-y-scroll rounded-2xl border-none px-0",
               )}
             >
               <X
@@ -127,10 +127,16 @@ export function NewPurchaseRequestModal({
                 </div>
               </div>
               <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-4">
-                <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-zinc-200">
+                <button
+                  onClick={onHide}
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-zinc-200"
+                >
                   <X className="text-red-500" />
-                </div>
-                <button className="bg-primary flex h-10 items-center overflow-hidden rounded-lg font-semibold text-white shadow-sm">
+                </button>
+                <button
+                  onClick={onHide}
+                  className="bg-primary flex h-10 items-center overflow-hidden rounded-lg font-semibold text-white shadow-sm"
+                >
                   <span className="mr-4 ml-4">Enviar Solicitação</span>
                   <div className="ml-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white">
                     <Check className="text-green-500" />
