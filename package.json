@@ -33,6 +33,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "flowbite-react": "^0.11.8",
+    "framer-motion": "^12.23.9",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.479.0",
     "moment": "^2.30.1",
