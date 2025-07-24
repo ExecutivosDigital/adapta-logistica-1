@@ -1,5 +1,6 @@
 /* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
+import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
@@ -93,6 +94,7 @@ export default function CreateReceivable() {
     approval: "",
     mail: "",
   });
+
   const clients = [
     {
       name: "Cliente 1",
@@ -130,6 +132,10 @@ export default function CreateReceivable() {
       status: "ATIVO",
     },
   ];
+
+  const handleData = () => {
+    return;
+  };
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden">
@@ -415,22 +421,7 @@ export default function CreateReceivable() {
               />
             </>
           ) : steps === 1 ? (
-            <div
-              className="border-primary flex h-[80%] w-[80%] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8"
-              style={{ borderWidth: "2px", borderSpacing: "80px" }}
-            >
-              <div className="border-primary flex h-16 w-16 items-center justify-center rounded-full border">
-                <span className="text-primary text-3xl font-light">+</span>
-              </div>
-              <div className="mt-2 text-center">
-                <p className="text-primary font-medium">Upload de Documento</p>
-                <p className="text-primary/70 text-sm">
-                  Arraste e solte o arquivo aqui ou adicione do seu dispositivo
-                  <br />
-                  PDF ou PNG
-                </p>
-              </div>
-            </div>
+            <AiFileReader handleData={handleData} />
           ) : (
             <></>
           )}

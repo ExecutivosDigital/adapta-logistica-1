@@ -1,5 +1,6 @@
 /* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
+import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
@@ -128,7 +129,6 @@ export default function CreateRecurringPayment() {
   ];
   const [currentPage, setCurrentPage] = useState(1);
   const [steps, setSteps] = useState(1);
-  const [isShowingDocument, setIsShowingDocument] = useState(false);
   const [selectedClient, setSelectedClient] = useState({
     name: "",
     cnpj: "",
@@ -154,27 +154,17 @@ export default function CreateRecurringPayment() {
     );
   }, [Accounts, filteredContabilAccounts]);
 
-  /**
-   * Número total de páginas baseado no resultado filtrado
-   */
   const ITEMS_PER_PAGE = 6;
   const pageCount = Math.max(
     1,
     Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE),
   );
-  /**
-   * Itens a serem exibidos na página atual
-   */
+
   const paginatedAccounts = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredAccounts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredAccounts, currentPage]);
 
-  /**
-   * Gera uma lista de botões de página adequados.
-   * - Até 5 botões visíveis para não poluir o layout.
-   * - "Desliza" a janela conforme navegação.
-   */
   const pages = useMemo(() => {
     const maxButtons = 5;
 
@@ -185,7 +175,6 @@ export default function CreateRecurringPayment() {
     let from = Math.max(1, currentPage - half);
     const to = Math.min(pageCount, from + maxButtons - 1);
 
-    // se não alcançou o máximo de botões, ajusta início
     if (to - from < maxButtons - 1) {
       from = Math.max(1, to - maxButtons + 1);
     }
@@ -193,9 +182,9 @@ export default function CreateRecurringPayment() {
     return Array.from({ length: to - from + 1 }, (_, i) => from + i);
   }, [pageCount, currentPage]);
 
-  /**
-   * Handler de seleção
-   */
+  const handleData = () => {
+    return;
+  };
 
   useEffect(() => {
     setCurrentPage(1);
@@ -607,35 +596,7 @@ export default function CreateRecurringPayment() {
         <div className="w-px bg-orange-200" />
 
         <section className="bg-primary/10 flex flex-1 items-center justify-center p-4">
-          {!isShowingDocument ? (
-            <div
-              onClick={() => setIsShowingDocument(true)}
-              className="border-primary flex h-[80%] w-[80%] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8"
-              style={{ borderWidth: "2px", borderSpacing: "80px" }}
-            >
-              <div className="border-primary flex h-16 w-16 items-center justify-center rounded-full border">
-                <span className="text-primary text-3xl font-light">+</span>
-              </div>
-              <div className="mt-2 text-center">
-                <p className="text-primary font-medium">Upload de Documento</p>
-                <p className="text-primary/70 text-sm">
-                  Arraste e solte o arquivo aqui ou adicione do seu dispositivo
-                  <br />
-                  PDF ou PNG
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="h-full w-full overflow-y-auto">
-              <Image
-                src="/doc.png"
-                width={500}
-                height={500}
-                className="h-max w-full"
-                alt=""
-              />
-            </div>
-          )}
+          <AiFileReader handleData={handleData} />
         </section>
       </main>
 
