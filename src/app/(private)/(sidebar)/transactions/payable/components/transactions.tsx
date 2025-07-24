@@ -16,35 +16,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/cn";
-import debounce from "lodash.debounce";
+
 import {
   ChevronDown,
   ChevronRight,
   ChevronUp,
   EllipsisVertical,
-  Search,
+  Files,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
-
-interface TransactionProps {
-  id: string;
-  date: string;
-  origin: string;
-  value: string;
-  category: string;
-  cc: string;
-  status: string;
-  documents: {
-    id: string;
-    name: string;
-    file: string;
-  }[];
-}
-
-interface TransactionsProps {
-  transactions: TransactionProps[];
-}
+import { useMemo, useState } from "react";
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn =
@@ -59,183 +40,128 @@ export function PayableTransactions() {
   const router = useRouter();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  const [query, setQuery] = useState("");
+  const [query] = useState("");
 
   const columns = [
-    { key: "date" as SortableColumn, label: "Data", sortable: true },
-    { key: "origin" as SortableColumn, label: "Cliente", sortable: true },
+    { key: "date" as SortableColumn, label: "Data Pag.", sortable: true },
+    { key: "origin" as SortableColumn, label: "Fornecedor", sortable: true },
     { key: "value" as SortableColumn, label: "Valor Título", sortable: true },
-    { key: "category" as SortableColumn, label: "Categoria", sortable: true },
-    { key: "cc" as SortableColumn, label: "Centro de Custos", sortable: true },
+    {
+      key: "category" as SortableColumn,
+      label: "Bens/Serviços",
+      sortable: true,
+    },
+    { key: "cc" as SortableColumn, label: "Documentos", sortable: true },
     { key: "status" as SortableColumn, label: "Status", sortable: true },
-    { key: "actions", label: "", sortable: false },
   ];
 
-  const rawRows: TransactionsProps[] = [
-    {
-      transactions: [
-        {
-          id: "1",
-          date: "01/01/2025",
-          origin: "Cliente 1",
-          value: "R$ 1.000,00",
-          category: "Categoria 1",
-          cc: "Centro de Custos 1",
-          status: "Pago",
-          documents: [
-            { id: "1", name: "Documento 1", file: "file.pdf" },
-            { id: "2", name: "Documento 2", file: "file.pdf" },
-          ],
-        },
-      ],
-    },
-    {
-      transactions: [
-        {
-          id: "2",
-          date: "02/01/2025",
-          origin: "Cliente 2",
-          value: "R$ 1.000,00",
-          category: "Categoria 2",
-          cc: "Centro de Custos 2",
-          status: "Pendente",
-          documents: [],
-        },
-      ],
-    },
-    {
-      transactions: [
-        {
-          id: "3",
-          date: "03/01/2025",
-          origin: "Cliente 3",
-          value: "R$ 1.000,00",
-          category: "Categoria 3",
-          cc: "Centro de Custos 3",
-          status: "Pago",
-          documents: [],
-        },
-      ],
-    },
-    {
-      transactions: [
-        {
-          id: "1",
-          date: "01/01/2025",
-          origin: "Cliente 4",
-          value: "R$ 1.000,00",
-          category: "Categoria 4",
-          cc: "Centro de Custos 4",
-          status: "Pago",
-          documents: [
-            { id: "1", name: "Documento 1", file: "file.pdf" },
-            { id: "2", name: "Documento 2", file: "file.pdf" },
-          ],
-        },
-        {
-          id: "2",
-          date: "02/01/2025",
-          origin: "Cliente 4",
-          value: "R$ 1.000,00",
-          category: "Categoria 4",
-          cc: "Centro de Custos 4",
-          status: "Pago",
-          documents: [
-            { id: "1", name: "Documento 1", file: "file.pdf" },
-            { id: "2", name: "Documento 2", file: "file.pdf" },
-          ],
-        },
-        {
-          id: "3",
-          date: "03/01/2025",
-          origin: "Cliente 4",
-          value: "R$ 1.000,00",
-          category: "Categoria 4",
-          cc: "Centro de Custos 4",
-          status: "Pendente",
-          documents: [
-            { id: "1", name: "Documento 1", file: "file.pdf" },
-            { id: "2", name: "Documento 2", file: "file.pdf" },
-          ],
-        },
-        {
-          id: "4",
-          date: "04/01/2025",
-          origin: "Cliente 4",
-          value: "R$ 1.000,00",
-          category: "Categoria 4",
-          cc: "Centro de Custos 4",
-          status: "Negado",
-          documents: [
-            { id: "1", name: "Documento 1", file: "file.pdf" },
-            { id: "2", name: "Documento 2", file: "file.pdf" },
-          ],
-        },
-      ],
-    },
-  ];
-
-  const toggleRow = (rowIndex: number) => {
-    const newExpandedRows = new Set(expandedRows);
-    if (newExpandedRows.has(rowIndex)) {
-      newExpandedRows.delete(rowIndex);
-    } else {
-      newExpandedRows.add(rowIndex);
-    }
-    setExpandedRows(newExpandedRows);
-  };
-
-  const renderTransactionRow = (
-    transaction: TransactionProps,
-    isSubRow = false,
-  ) => (
-    <TableRow
-      key={transaction.id}
-      className={cn(
-        "hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300",
-        isSubRow && "bg-gray-50",
-      )}
-    >
-      <TableCell className="py-0.5 pl-12 text-start text-sm font-medium whitespace-nowrap">
-        {transaction.date}
-      </TableCell>
-      <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
-        <div className="flex items-center gap-4 text-center">
-          {transaction.origin}
-        </div>
-      </TableCell>
-      <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#00A181]">
-        {transaction.value}
-      </TableCell>
-      <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
-        {transaction.category}
-      </TableCell>
-      <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
-        {transaction.cc}
-      </TableCell>
-      <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
-        <div
-          className={cn(
-            transaction.status === "Pago"
-              ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
-              : transaction.status === "Negado"
-                ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
-                : transaction.status === "Pendente"
-                  ? "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]"
-                  : "rounded-md border border-[#1877F2] bg-[#1877F2]/20 px-2 py-1 text-[#1877F2]",
-          )}
-        >
-          {transaction.status}
-        </div>
-      </TableCell>
-      <TableCell className="py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-400 underline">
-        <EllipsisVertical />
-      </TableCell>
-    </TableRow>
-  );
+  const rawRows = useMemo(() => {
+    return [
+      {
+        transactions: [
+          {
+            id: "1",
+            date: "01/01/2025",
+            origin: "Fornecedor 1",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 1",
+            cc: "Ver Documentos",
+            status: "Á pagar",
+            documents: [
+              { id: "1", name: "Documento 1", file: "file.pdf" },
+              { id: "2", name: "Documento 2", file: "file.pdf" },
+            ],
+          },
+        ],
+      },
+      {
+        transactions: [
+          {
+            id: "2",
+            date: "02/01/2025",
+            origin: "Fornecedor 2",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 2",
+            cc: "Ver Documentos",
+            status: "Pendente",
+            documents: [],
+          },
+        ],
+      },
+      {
+        transactions: [
+          {
+            id: "3",
+            date: "03/01/2025",
+            origin: "Fornecedor 3",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 3",
+            cc: "Ver Documentos",
+            status: "Pago",
+            documents: [],
+          },
+        ],
+      },
+      {
+        transactions: [
+          {
+            id: "1",
+            date: "01/01/2025",
+            origin: "Fornecedor 4",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 4",
+            cc: "Ver Documentos",
+            status: "Pago",
+            documents: [
+              { id: "1", name: "Documento 1", file: "file.pdf" },
+              { id: "2", name: "Documento 2", file: "file.pdf" },
+            ],
+          },
+          {
+            id: "2",
+            date: "02/01/2025",
+            origin: "Fornecedor 4",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 4",
+            cc: "Ver Documentos",
+            status: "Pago",
+            documents: [
+              { id: "1", name: "Documento 1", file: "file.pdf" },
+              { id: "2", name: "Documento 2", file: "file.pdf" },
+            ],
+          },
+          {
+            id: "3",
+            date: "03/01/2025",
+            origin: "Fornecedor 4",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 4",
+            cc: "Ver Documentos",
+            status: "Pendente",
+            documents: [
+              { id: "1", name: "Documento 1", file: "file.pdf" },
+              { id: "2", name: "Documento 2", file: "file.pdf" },
+            ],
+          },
+          {
+            id: "4",
+            date: "04/01/2025",
+            origin: "Fornecedor 4",
+            value: "R$ 1.000,00",
+            category: "Nome do Serviço 4",
+            cc: "Ver Documentos",
+            status: "Negado",
+            documents: [
+              { id: "1", name: "Documento 1", file: "file.pdf" },
+              { id: "2", name: "Documento 2", file: "file.pdf" },
+            ],
+          },
+        ],
+      },
+    ];
+  }, []);
 
   const handleSort = (column: SortableColumn) => {
     if (sortColumn === column) {
@@ -341,15 +267,33 @@ export function PayableTransactions() {
     });
   }, [sortedRows, query]);
 
-  const handleStopTypingPositive = (value: string) => {
-    setQuery(value);
-  };
+  // const handleStopTypingPositive = (value: string) => {
+  //   setQuery(value);
+  // };
 
-  const debouncedHandleStopTyping = useCallback(
-    debounce(handleStopTypingPositive, 500),
-    [],
-  );
-
+  // const debouncedHandleStopTyping = useCallback(
+  //   debounce(handleStopTypingPositive, 500),
+  //   [],
+  // );
+  const tableTypes = [
+    {
+      id: "1",
+      name: "Ver Todos Pagamentos",
+    },
+    {
+      id: "2",
+      name: "Solicitação de Compras",
+    },
+    {
+      id: "3",
+      name: "Pgtos.Recorrentes",
+    },
+    {
+      id: "4",
+      name: "Lançamentos À Pagar",
+    },
+  ];
+  const [selectedTableType, setSelectedTableType] = useState(tableTypes[0]);
   return (
     <>
       <div className="flex flex-col">
@@ -393,6 +337,7 @@ export function PayableTransactions() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        {/*   
         <label
           htmlFor="search"
           className="border-primary text-primary flex max-w-80 flex-row items-center gap-2 rounded-lg border p-1"
@@ -405,7 +350,31 @@ export function PayableTransactions() {
             className="bg-transparent outline-none focus:outline-none"
             onChange={(e) => debouncedHandleStopTyping(e.target.value)}
           />
-        </label>
+        </label> */}
+        <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
+          {tableTypes.map((tab, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedTableType(tab)}
+              className={`hover:text-primary flex h-12 cursor-pointer flex-row items-center justify-center gap-2 border-b px-2 transition-all duration-300 ${
+                tab.id === selectedTableType.id
+                  ? "text-primary border-b-primary"
+                  : "border-b-transparent"
+              }`}
+            >
+              {tab.id === selectedTableType.id ? (
+                <div className="bg-primary/20 text-primary flex h-4 w-4 items-center justify-center rounded-full">
+                  <ChevronDown />
+                </div>
+              ) : (
+                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-zinc-400/20 text-zinc-400">
+                  <ChevronRight />
+                </div>
+              )}
+              {tab.name}
+            </button>
+          ))}
+        </div>
         <Table className="border-collapse">
           <TableHeader>
             <TableRow className="gap-1">
@@ -417,7 +386,9 @@ export function PayableTransactions() {
                     column.sortable && handleSort(column.key as SortableColumn)
                   }
                 >
-                  <div className="flex items-center gap-2">
+                  <div
+                    className={`flex items-center gap-2 ${column.label === "Status" && "justify-center"}`}
+                  >
                     {column.label}
                     {column.sortable &&
                       getSortIcon(column.key as SortableColumn)}
@@ -428,8 +399,6 @@ export function PayableTransactions() {
           </TableHeader>
           <TableBody>
             {filteredRows.map((row, rowIndex) => {
-              const hasMultipleTransactions = row.transactions.length > 1;
-              const isExpanded = expandedRows.has(rowIndex);
               const firstTransaction = row.transactions[0];
 
               return (
@@ -438,78 +407,51 @@ export function PayableTransactions() {
                   <TableRow
                     key={`row-${rowIndex}`}
                     className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
-                    onClick={() =>
-                      hasMultipleTransactions && toggleRow(rowIndex)
-                    }
                   >
-                    <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                    <TableCell className="py-0.5 text-sm whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <button
-                          className={cn(
-                            "p-1",
-                            hasMultipleTransactions
-                              ? "opacity-00"
-                              : "opacity-0",
-                          )}
-                        >
-                          <ChevronRight
-                            size={16}
-                            className={cn(
-                              "transition duration-300",
-                              isExpanded ? "rotate-90" : "rotate-0",
-                            )}
-                          />
-                        </button>
                         {firstTransaction.date}
-                        {hasMultipleTransactions && (
-                          <span className="text-xs text-gray-500">
-                            (+{row.transactions.length - 1})
-                          </span>
-                        )}
                       </div>
                     </TableCell>
-                    <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                    <TableCell className="py-0.5 text-sm whitespace-nowrap">
                       <div className="flex items-center gap-4 text-center">
                         {firstTransaction.origin}
                       </div>
                     </TableCell>
-                    <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#00A181]">
+                    <TableCell className="py-0.5 text-start text-sm whitespace-nowrap text-[#EF4444]">
                       {firstTransaction.value}
                     </TableCell>
-                    <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                    <TableCell className="py-0.5 text-start text-sm whitespace-nowrap">
                       {firstTransaction.category}
                     </TableCell>
-                    <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                      {firstTransaction.cc}
-                    </TableCell>
-                    <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
-                      <div
-                        className={cn(
-                          firstTransaction.status === "Pago"
-                            ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
-                            : firstTransaction.status === "Negado"
-                              ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
-                              : firstTransaction.status === "Pendente"
-                                ? "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]"
-                                : "rounded-md border border-[#1877F2] bg-[#1877F2]/20 px-2 py-1 text-[#1877F2]",
-                        )}
-                      >
-                        {firstTransaction.status}
+                    <TableCell className="h-full py-0.5 text-start text-sm whitespace-nowrap">
+                      <div className="flex flex-row items-center gap-2 font-bold underline">
+                        {firstTransaction.cc}
+                        <Files />
                       </div>
                     </TableCell>
-                    <TableCell className="py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-400 underline">
-                      <EllipsisVertical />
+                    <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                      <div className="flex w-full flex-row gap-4">
+                        <div
+                          className={cn(
+                            "flex-1 text-center",
+                            firstTransaction.status === "Pago"
+                              ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
+                              : firstTransaction.status === "Á pagar"
+                                ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
+                                : firstTransaction.status === "Pendente"
+                                  ? "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]"
+                                  : "rounded-md border border-[#1877F2] bg-[#1877F2]/20 px-2 py-1 text-[#1877F2]",
+                          )}
+                        >
+                          {firstTransaction.status}
+                        </div>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
+                          <EllipsisVertical />
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
-
-                  {/* Expanded rows */}
-                  {hasMultipleTransactions &&
-                    isExpanded &&
-                    row.transactions
-                      .slice(1)
-                      .map((transaction) =>
-                        renderTransactionRow(transaction, true),
-                      )}
                 </>
               );
             })}

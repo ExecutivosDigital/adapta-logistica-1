@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/cn";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 
 interface ColumnProps {
@@ -166,10 +166,15 @@ export function RequestTable({ openJustifyModal }: TableProps) {
             {rows.map((row) => (
               <TableRow
                 key={`row-${row.id}`}
-                className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
+                className="hover:bg-primary/20 group h-14 cursor-pointer py-8 text-center transition duration-300"
               >
                 <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
-                  {row.sent}
+                  <div className="flex h-full w-full items-center gap-2 text-start">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-400">
+                      <EllipsisVertical className="h-4 w-4 text-zinc-400" />
+                    </div>
+                    {row.sent}
+                  </div>
                 </TableCell>
                 <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
                   <div className="flex items-center gap-4 text-center">

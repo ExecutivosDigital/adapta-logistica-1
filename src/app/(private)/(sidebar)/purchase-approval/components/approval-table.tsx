@@ -186,7 +186,7 @@ export function ApprovalTable({ openModal, openJustifyModal }: TableProps) {
               >
                 <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
                   <div className="flex h-full w-full items-center gap-2 text-start">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-200">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-400">
                       <EllipsisVertical className="h-4 w-4 text-zinc-400" />
                     </div>
                     {row.sent}

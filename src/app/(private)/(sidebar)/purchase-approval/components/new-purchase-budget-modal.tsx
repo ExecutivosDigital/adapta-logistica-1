@@ -51,13 +51,13 @@ export function NewPurchaseBudgetModal({
                 />
                 <button
                   onClick={onHide}
-                  className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2"
+                  className="absolute top-1/2 right-8 flex -translate-y-1/2 items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2"
                 >
                   <span>Sair</span>
                   <X className="text-zinc-400" />
                 </button>
               </div>
-              <div className="flex h-full w-full flex-col shadow-[0_-1px_10px_0_rgba(0,0,0,0.2)]">
+              <div className="flex h-full w-full flex-col px-8 shadow-[0_-1px_10px_0_rgba(0,0,0,0.2)]">
                 <div className="flex w-full items-center justify-between border-b border-b-zinc-200 px-6 py-4 text-black">
                   <span className="font-semibold">Orçamento</span>
                   <div className="flex items-center gap-2">
@@ -120,10 +120,10 @@ export function NewPurchaseBudgetModal({
                   </div>
                 </div>
               </div>
-              <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-4">
+              <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-4 px-8">
                 <button
                   onClick={onHide}
-                  className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-2"
+                  className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-8"
                 >
                   <X className="text-red-500" />
                   Salvar e Sair

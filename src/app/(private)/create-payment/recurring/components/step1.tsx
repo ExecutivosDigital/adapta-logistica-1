@@ -20,6 +20,7 @@ import { DataType } from "../page";
 import { CostCentersList } from "./cost-centers-list";
 
 import "moment/locale/pt-BR";
+import { LaunchTypes } from "./launch-types";
 moment.locale("pt-BR");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
@@ -140,14 +141,17 @@ export function Step1({
     "24 Pagamentos",
   ];
 
-  const paymentTerms = ["Total no Ato", "Parcelado", "Recorrente"];
+  const paymentTerms = LaunchTypes;
 
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState("");
+  const [filteredLaunchTypes, setFilteredLaunchTypes] = useState("");
   const [selectedCostCenters, setSelectedCostCenters] = useState<
     { name: string; value: string; locked?: boolean }[]
   >([]);
   const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
+    useState(false);
+  const [isLaunchTypeDropdownOpen, setIsLaunchTypeDropdownOpen] =
     useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
   const [otherInstallments, setOtherInstallments] = useState<boolean>(false);
@@ -345,12 +349,21 @@ export function Step1({
 
           <label className="col-span-4 flex flex-col gap-1">
             <span className="text-zinc-600">Tipo de Lançamento</span>
-            <DropdownMenu>
+            <DropdownMenu
+              open={isLaunchTypeDropdownOpen}
+              onOpenChange={setIsLaunchTypeDropdownOpen}
+            >
               <DropdownMenuTrigger className="w-full focus:outline-none">
                 <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                   <FileText className="text-primary" size={16} />
                   <span className="flex-1 text-lg text-zinc-700">
-                    {data.paymentTerms || "Selecione"}
+                    {data.paymentTerms ? (
+                      <span className="line-clamp-2 text-sm">
+                        {data.paymentTerms}
+                      </span>
+                    ) : (
+                      "Selecione"
+                    )}
                   </span>
                   <Edit className="text-primary ml-auto" size={16} />
                 </div>
@@ -358,23 +371,51 @@ export function Step1({
               <DropdownMenuContent
                 side="right"
                 sideOffset={0}
-                align="end"
-                className="z-[999] w-72 border-zinc-200"
+                className="z-[999] max-h-[80vh] w-72 overflow-y-auto border-zinc-200"
               >
-                {paymentTerms.map((term) => (
-                  <DropdownMenuItem
-                    key={term}
-                    onClick={() => setData({ ...data, paymentTerms: term })}
-                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                  >
-                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {term}
-                      {data.paymentTerms === term && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
+                <X
+                  className="text-primary ml-auto cursor-pointer"
+                  onClick={() => setIsLaunchTypeDropdownOpen(false)}
+                />
+                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                  <input
+                    value={filteredLaunchTypes}
+                    onChange={(e) => setFilteredLaunchTypes(e.target.value)}
+                    placeholder="Pesquisar tipos de Documentos"
+                    className="flex-1 focus:outline-none"
+                  />
+                  <Search size={14} />
+                </div>
+                {paymentTerms.filter((item) =>
+                  item
+                    .toLowerCase()
+                    .includes(filteredLaunchTypes.toLowerCase()),
+                ).length === 0 && (
+                  <div className="p-2 text-center text-sm text-zinc-600">
+                    Nenhum item encontrado
+                  </div>
+                )}
+                {paymentTerms
+                  .filter((item) =>
+                    item
+                      .toLowerCase()
+                      .includes(filteredLaunchTypes.toLowerCase()),
+                  )
+                  .map((item, index) => (
+                    <DropdownMenuItem
+                      key={index}
+                      onClick={() => setData({ ...data, paymentTerms: item })}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {item}
+                        {/* Check icon */}
+                        {data.paymentTerms === item && (
+                          <div className="border-primary bg-primary h-4 w-4 min-w-4 rounded-md border" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </label>
@@ -395,7 +436,7 @@ export function Step1({
               <DropdownMenuContent
                 side="right"
                 sideOffset={0}
-                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
+                className="z-[999] h-80 w-72 overflow-y-auto border-zinc-200"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
