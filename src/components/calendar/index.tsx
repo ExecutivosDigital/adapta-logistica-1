@@ -1,56 +1,166 @@
 "use client";
 
+import {
+  Tooltip,
+  TooltipArrow,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/chat/tooltip";
 import { DateValue } from "@internationalized/date";
 import { Check, X } from "lucide-react";
 import moment from "moment";
 import "moment/locale/pt-br";
-import React, { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import React, { useMemo, useState } from "react";
+import {
+  Calendar,
+  momentLocalizer,
+  SlotInfo,
+  View,
+  Views,
+} from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+
+// ---- Seus componentes/arquivos já existentes ----
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/date-picker";
 import { Modal } from "../ui/Modal";
-import Events from "./EventData";
+import { CustomEvent } from "./CustomEvent"; // componente para eventos normais (dia/semana)
+import { Events2 } from "./EventData"; // lista inicial de eventos
 import CustomToolbar from "./toolbar";
+
+// -------------------------------------------------
 
 moment.locale("pt-br");
 const localizer = momentLocalizer(moment);
 
-type EvType = {
-  title: string;
-  name?: string;
-  allDay?: boolean;
-  start?: Date;
-  end?: Date;
-  color?: string;
-};
-
-interface CalendarSlotInfo {
+// ===== Tipagens =====
+export interface EventType2 {
+  type: "Recorrentes" | "Avulso" | "Colaborador";
+  movementType: "Entrada" | "Saida";
+  status:
+    | "Aprovação"
+    | "Rejeitado"
+    | "Aprovado aguardando comprovante"
+    | "Baixado";
+  value: string | number; // mantive string, mas recomendo number
+  name: string;
+  installments?: string;
   start: Date;
   end: Date;
-  title: string;
-  slots: Date[];
-  action: "select" | "click" | "doubleClick";
+  color: string;
 }
 
+// Evento-resumo exibido somente na visão mensal
+type SummaryEvent = {
+  id: string;
+  start: Date;
+  end: Date;
+  allDay: true;
+  movementType: "Entrada" | "Saida";
+  count: number;
+  value: string | number;
+  formattedValue: string;
+  isSummary: true;
+  name: string; // "A pagar" | "A receber"
+  color: string;
+};
+
+// União para o Calendar aceitar ambos
+type RBCEvent = EventType2 | SummaryEvent;
+
+interface CalendarSlotInfo extends SlotInfo {
+  name?: string;
+}
+
+function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
+  const isEntrada = event.movementType === "Entrada";
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "2px 4px",
+              borderRadius: 6,
+              fontSize: 12,
+              color: isEntrada ? "#0BB34B" : "#D93025",
+              lineHeight: 1.1,
+            }}
+            className="sum-card"
+          >
+            <div className="flex w-full flex-col text-[14px]">
+              <span className="text-xs">{event.name}</span>
+              <div className="flex w-full flex-row gap-2">
+                <span className="">Quantidade:</span>
+                <span>{event.count}</span>
+              </div>
+              <div className="flex w-full flex-row gap-2">
+                <span>Total:</span>
+                <span className="flex-1">{event.formattedValue}</span>
+              </div>
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          align="start"
+          className="border-primary border bg-white p-3"
+        >
+          <div className="font-bold text-[#6C7386]">
+            <span className="mr-1">Nome:</span>
+            <span className="text-primary">{event.name}</span>
+          </div>
+          <div className="font-bold text-[#6C7386]">
+            <span className="mr-1">Data:</span>
+            <span className="text-primary">
+              {event.start.toLocaleDateString()}
+            </span>
+          </div>
+          <div className="font-bold text-[#6C7386]">
+            <span className="mr-1">Movimento:</span>
+            <span className="text-primary">{event.movementType}</span>
+          </div>
+          <div className="font-bold text-[#6C7386]">
+            <span className="mr-1">Quantidade de itens:</span>
+            <span className="text-primary">{event.count}</span>
+          </div>
+          <div className="font-bold text-[#6C7386]">
+            <span className="mr-1">Valor Total:</span>
+            <span className="text-primary">{event.formattedValue}</span>
+          </div>
+          <TooltipArrow className="fill-primary" />
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+// ===== Arquivo principal =====
 const CalendarApp = () => {
-  const [calevents, setCalEvents] = useState<EvType[]>(Events);
+  const [calevents, setCalEvents] = useState<EventType2[]>(Events2);
   const [open, setOpen] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [slot, setSlot] = useState<CalendarSlotInfo | null>(null);
   const [start, setStart] = useState<Date | null>(null);
   const [end, setEnd] = useState<Date | null>(null);
   const [color, setColor] = useState<string>("primary");
-  const [update, setUpdate] = useState<EvType | null>(null);
+  const [update, setUpdate] = useState<EventType2 | null>(null);
+
+  const [view, setView] = useState<View>(Views.MONTH);
+  const [date, setDate] = useState<Date>(new Date());
 
   const ColorVariation = [
-    { id: 1, eColor: "primary", value: "primary" },
-    { id: 2, eColor: "green-500", value: "green" },
-    { id: 3, eColor: "red-500", value: "red" },
-    { id: 4, eColor: "yellow-200", value: "default" },
-    { id: 5, eColor: "fuchsia-700", value: "cyan-200" },
+    { id: 1, eColor: "#da5709", value: "primary" },
+    { id: 2, eColor: "#7928CA", value: "purple" },
+    { id: 3, eColor: "#2196F3", value: "blue" },
+    { id: 6, eColor: "#faca15", value: "yellow" },
+    { id: 7, eColor: "#f05252", value: "red" },
   ];
 
+  // ===== Funções auxiliares =====
   const addNewEventAlert = (slotInfo: CalendarSlotInfo) => {
     setOpen(true);
     setSlot(slotInfo);
@@ -58,12 +168,12 @@ const CalendarApp = () => {
     setEnd(slotInfo.end);
   };
 
-  const editEvent = (event: EvType) => {
+  const editEvent = (event: EventType2) => {
     setOpen(true);
-    const newEditEvent = calevents.find((elem) => elem.title === event.title);
+    const newEditEvent = calevents.find((elem) => elem.name === event.name);
     if (!newEditEvent) return;
 
-    setTitle(newEditEvent.title);
+    setName(newEditEvent.name);
     setColor(newEditEvent.color || "primary");
     setStart(newEditEvent.start || null);
     setEnd(newEditEvent.end || null);
@@ -74,68 +184,201 @@ const CalendarApp = () => {
     e.preventDefault();
     setCalEvents((prev) =>
       prev.map((elem) =>
-        elem.title === update?.title
+        elem.name === update?.name
           ? {
               ...elem,
-              title,
-              start: start ?? undefined,
-              end: end ?? undefined,
+              name,
+              start: start || new Date(),
+              end: end || new Date(),
               color,
             }
           : elem,
       ),
     );
-    setOpen(false);
-    setTitle("");
-    setColor("");
-    setStart(null);
-    setEnd(null);
-    setUpdate(null);
+    handleClose();
   };
 
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setTitle(e.target.value);
+    setName(e.target.value);
 
   const selectinputChangeHandler = (id: string) => setColor(id);
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newEvent: EvType = {
-      title,
-      start: start ?? undefined,
-      end: end ?? undefined,
+    const newEvent: EventType2 = {
+      type: "Avulso",
+      movementType: "Entrada",
+      status: "Aprovação",
+      value: "0",
+      name,
+      start: start ?? new Date(),
+      end: end ?? new Date(),
       color,
     };
-    setCalEvents([...calevents, newEvent]);
-    setOpen(false);
-    setTitle("");
-    setStart(null);
-    setEnd(null);
+    setCalEvents((prev) => [...prev, newEvent]);
+    handleClose();
   };
 
   const handleClose = () => {
     setOpen(false);
-    setTitle("");
+    setName("");
     setStart(null);
     setEnd(null);
     setUpdate(null);
   };
 
-  const eventColors = (event: EvType) => {
+  const eventColors = (event: RBCEvent) => {
+    if ("isSummary" in event) {
+      const isEnt = event.movementType === "Entrada";
+      return {
+        style: {
+          backgroundColor: isEnt ? "#E9FFF0" : "#FFECEC",
+          color: isEnt ? "#0BB34B" : "#D93025",
+          padding: 0,
+          marginTop: !isEnt && 10,
+        },
+      };
+    }
+
+    const isEntrada = event.movementType === "Entrada";
+    const bg = isEntrada ? "#E9FFF0" : "#FFECEC";
+    const border = isEntrada ? "#0BB34B" : "#D93025";
     return {
-      className: `event-${event.color ?? "default"}`,
+      style: {
+        backgroundColor: bg,
+        borderLeft: `4px solid ${border}`,
+        paddingLeft: 4,
+        marginLeft: 2,
+        width: "95%",
+        color: border,
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+      },
     };
   };
 
   const handleStartChange = (newValue: DateValue | null) => {
-    if (newValue) {
-      setStart(new Date(newValue.toString()));
-    }
+    if (newValue) setStart(new Date(newValue.toString()));
   };
 
   const handleEndChange = (newValue: DateValue | null) => {
-    if (newValue) {
-      setEnd(new Date(newValue.toString()));
+    if (newValue) setEnd(new Date(newValue.toString()));
+  };
+
+  // ===== Agrupamento para visão mensal =====
+  const monthEvents: RBCEvent[] = useMemo(() => {
+    if (view !== Views.MONTH) return calevents;
+
+    const formatCurrency = (value: number): string =>
+      new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Number(value.toFixed(2)));
+
+    const parseBrazilianCurrency = (raw: string): number => {
+      // Ex: "R$ 3.500,00" => 3500.00
+      return parseFloat(
+        raw
+          .replace(/[R$\s.]/g, "") // remove R$, espaços e pontos
+          .replace(",", "."), // substitui vírgula decimal por ponto
+      );
+    };
+
+    const bucket: Record<
+      string,
+      {
+        entrada: number;
+        saida: number;
+        day: Date;
+        totalEntrada: number;
+        totalSaida: number;
+      }
+    > = {};
+
+    calevents.forEach((e) => {
+      const key = moment(e.start).startOf("day").format("YYYY-MM-DD");
+
+      if (!bucket[key]) {
+        bucket[key] = {
+          entrada: 0,
+          saida: 0,
+          day: moment(e.start).startOf("day").toDate(),
+          totalEntrada: 0,
+          totalSaida: 0,
+        };
+      }
+
+      const value = parseBrazilianCurrency(e.value);
+
+      if (e.movementType === "Entrada") {
+        bucket[key].entrada += 1;
+        bucket[key].totalEntrada += value;
+      } else {
+        bucket[key].saida += 1;
+        bucket[key].totalSaida += value;
+      }
+    });
+
+    const list: RBCEvent[] = [];
+
+    Object.values(bucket).forEach(
+      ({ entrada, saida, day, totalEntrada, totalSaida }) => {
+        if (entrada > 0) {
+          list.push({
+            id: `${day.toISOString()}-ent`,
+            start: day,
+            end: day,
+            allDay: true,
+            movementType: "Entrada",
+            count: entrada,
+            isSummary: true,
+            name: "A receber",
+            value: totalEntrada,
+            formattedValue: formatCurrency(totalEntrada),
+            color: "#0BB34B",
+          });
+        }
+
+        if (saida > 0) {
+          list.push({
+            id: `${day.toISOString()}-sai`,
+            start: day,
+            end: day,
+            allDay: true,
+            movementType: "Saida",
+            count: saida,
+            isSummary: true,
+            name: "A pagar",
+            value: totalSaida,
+            formattedValue: formatCurrency(totalSaida),
+            color: "#D93025",
+          });
+        }
+      },
+    );
+
+    return list;
+  }, [view, calevents]);
+
+  // ===== Clique em eventos =====
+  const onSelectEvent = (event: RBCEvent) => {
+    if ("isSummary" in event) {
+      setDate(event.start);
+      setView(Views.DAY);
+      return;
+    }
+    editEvent(event as EventType2);
+  };
+
+  // ===== Clique no slot vazio =====
+  const onSelectSlot = (slotInfo: CalendarSlotInfo) => {
+    if (view === Views.MONTH) {
+      setDate(slotInfo.start);
+      setView(Views.DAY);
+    } else {
+      addNewEventAlert(slotInfo);
     }
   };
 
@@ -144,33 +387,32 @@ const CalendarApp = () => {
       <div className="flex w-full">
         <Calendar
           selectable
-          events={calevents.map((evt: EvType) => ({
-            ...evt,
-            title: evt.name || evt.title, // add a default value if evt.name is undefined
-            start: evt.start ? new Date(evt.start) : undefined,
-            end: evt.end ? new Date(evt.end) : undefined,
-          }))}
-          defaultView="month"
+          date={date}
+          onNavigate={setDate}
+          view={view}
+          onView={setView}
+          events={view === Views.MONTH ? monthEvents : calevents}
+          localizer={localizer}
+          defaultView={Views.MONTH}
           scrollToTime={new Date(1970, 1, 1, 6)}
           defaultDate={new Date()}
-          localizer={localizer}
           components={{
+            event: view === Views.MONTH ? MonthSummaryEvent : CustomEvent,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             toolbar: (props: any) => (
               <CustomToolbar {...props} addNewEvent={() => setOpen(true)} />
             ),
           }}
-          onSelectEvent={(event: EvType) => editEvent(event)}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onSelectSlot={(slotInfo: any) => addNewEventAlert(slotInfo)}
-          eventPropGetter={(event: EvType) => eventColors(event)}
+          onSelectEvent={onSelectEvent}
+          onSelectSlot={onSelectSlot}
+          eventPropGetter={eventColors}
           className="min-h-[600px] w-full text-black xl:min-h-[900px]"
           culture="pt-BR"
-          messages={{
-            noEventsInRange: "Nenhuma atividade encontrada.",
-          }}
+          messages={{ noEventsInRange: "Nenhuma atividade encontrada." }}
         />
       </div>
+
+      {/* Modal */}
       <Modal
         show={open}
         onHide={() => setOpen(false)}
@@ -182,7 +424,7 @@ const CalendarApp = () => {
               <div className="flex flex-col gap-1 border-b px-6 py-4">
                 <div className="flex w-full items-center justify-between">
                   <h3 className="text-text-100 text-xl font-semibold">
-                    {update ? "Atualizar Event" : "Adicionar Evento"}
+                    {update ? "Atualizar Evento" : "Adicionar Evento"}
                   </h3>
                   <X
                     onClick={handleClose}
@@ -191,11 +433,12 @@ const CalendarApp = () => {
                 </div>
                 <p className="text-text-100 mt-1 text-sm font-normal">
                   {!update
-                    ? "Para adicionar um evento, por favor preencha o t tulo e escolha a cor do evento e pressione o bot o adicionar"
-                    : "Para editar/atualizar um evento, por favor altere o t tulo e escolha a cor do evento e pressione o bot o atualizar"}
-                  {slot?.title}
+                    ? "Para adicionar um evento, preencha o título, escolha as datas e a cor, depois clique em Adicionar."
+                    : "Para editar/atualizar, altere os campos e clique em Editar evento."}
+                  {slot?.name}
                 </p>
               </div>
+
               <div className="flex flex-col gap-3 px-6 py-4 text-start">
                 <div>
                   <div className="mb-2 block">
@@ -204,11 +447,12 @@ const CalendarApp = () => {
                     </label>
                   </div>
                   <input
-                    value={title}
+                    value={name}
                     className="h-8 w-full rounded border border-zinc-500 p-2"
                     onChange={inputChangeHandler}
                   />
                 </div>
+
                 <div className="text-start">
                   <div className="flex w-full">
                     <DatePicker
@@ -232,29 +476,33 @@ const CalendarApp = () => {
                     Escolha a cor da marcação
                   </h6>
                   <div className="mt-2 flex items-center gap-2">
-                    {ColorVariation.map((mcolor) => {
-                      return (
-                        <div
-                          className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-fuchsia-700 bg-${mcolor.eColor}`}
-                          key={mcolor.id}
-                          onClick={() => selectinputChangeHandler(mcolor.value)}
-                        >
-                          {mcolor.value === color ? (
-                            <Check width="16" className="text-white" />
-                          ) : null}
-                        </div>
-                      );
-                    })}
+                    {ColorVariation.map((mcolor) => (
+                      <div
+                        key={mcolor.id}
+                        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full"
+                        style={{ background: mcolor.eColor }}
+                        onClick={() => selectinputChangeHandler(mcolor.value)}
+                      >
+                        {mcolor.value === color ? (
+                          <Check width="16" className="text-white" />
+                        ) : null}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
+
               <div className="flex w-full flex-col items-center gap-2 border-t py-4 text-white md:flex-row md:justify-center">
                 <div className="flex items-center gap-2">
-                  <Button className="text-white" onClick={handleClose}>
+                  <Button
+                    className="text-white"
+                    onClick={handleClose}
+                    type="button"
+                  >
                     Fechar
                   </Button>
                 </div>
-                <Button className="text-white" type="submit" disabled={!title}>
+                <Button className="text-white" type="submit" disabled={!name}>
                   {update ? "Editar evento" : "Adicionar evento"}
                 </Button>
               </div>
