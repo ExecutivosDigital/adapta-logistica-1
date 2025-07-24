@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import "moment/locale/pt-BR";
-import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -41,10 +40,62 @@ export function Step1({ data, setData }: Props) {
   const sliderRef: any = useRef(null);
   const [selectedDocument, setSelectedDocument] = useState(4);
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
-
   const [selectedCostCenters, setSelectedCostCenters] = useState<
     { name: string; value: string; locked?: boolean }[]
   >([]);
+
+  const Documents = [
+    {
+      id: "1",
+      name: "Documento 1",
+      doc: null,
+    },
+    {
+      id: "2",
+      name: "Documento 2",
+      doc: null,
+    },
+    {
+      id: "3",
+      name: "Documento 3",
+      doc: "/test-pdf.pdf",
+    },
+    {
+      id: "4",
+      name: "Documento 4",
+      doc: "/test-pdf.pdf",
+    },
+    {
+      id: "5",
+      name: "Documento 5",
+      doc: null,
+    },
+    {
+      id: "6",
+      name: "Documento 6",
+      doc: "/test-pdf.pdf",
+    },
+    {
+      id: "7",
+      name: "Documento 7",
+      doc: null,
+    },
+    {
+      id: "8",
+      name: "Documento 8",
+      doc: null,
+    },
+    {
+      id: "9",
+      name: "Documento 9",
+      doc: "/test-pdf.pdf",
+    },
+    {
+      id: "10",
+      name: "Documento 10",
+      doc: null,
+    },
+  ];
 
   const costCenters = [
     "Centro de Custo",
@@ -212,10 +263,17 @@ export function Step1({ data, setData }: Props) {
     sliderRef.current.slideNext();
   }, []);
 
-  const handleCardClick = (index: number) => {
+  const handleCardClick = (index: number, doc: string | null) => {
     if (sliderRef.current) {
       sliderRef.current.slideTo(index);
       setSelectedDocument(index + 1);
+      if (index === selectedDocument - 1) {
+        if (doc) {
+          if (confirm("Voce deseja abrir o documento?")) {
+            window.open(doc, "_blank");
+          }
+        }
+      }
     }
   };
 
@@ -238,10 +296,10 @@ export function Step1({ data, setData }: Props) {
               spaceBetween={10}
               initialSlide={3}
             >
-              {Array.from({ length: 20 }).map((_, index) => (
+              {Documents.map((d, index) => (
                 <SwiperSlide key={index}>
                   <div
-                    onClick={() => handleCardClick(index)}
+                    onClick={() => handleCardClick(index, d.doc ? d.doc : null)}
                     className="flex w-32 flex-col gap-2"
                   >
                     <div className="border-primary relative w-full cursor-pointer overflow-hidden rounded-lg border">
@@ -251,29 +309,44 @@ export function Step1({ data, setData }: Props) {
                           selectedDocument !== index + 1 && "opacity-0",
                         )}
                       />
-                      <Image
-                        src="/static/document.png"
-                        alt=""
-                        width={500}
-                        height={500}
-                        className={cn(
-                          "h-max w-full object-cover transition duration-200",
-                          selectedDocument !== index + 1 && "opacity-20",
-                        )}
-                      />
+                      {d.doc ? (
+                        <div className="flex h-32 w-32 items-center justify-center">
+                          <FileText
+                            className={cn(
+                              "m-auto transition duration-200",
+                              selectedDocument !== index + 1 && "opacity-20",
+                            )}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-32 w-32 items-center justify-center bg-zinc-100">
+                          <FileText
+                            className={cn(
+                              "m-auto text-red-500 transition duration-200",
+                              selectedDocument !== index + 1 && "opacity-20",
+                            )}
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-col gap-1 text-sm">
-                      <span>Documento {index + 1}</span>
-                      <div className="flex items-center gap-1">
-                        <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
-                        <span className="text-sm text-zinc-600">
-                          R$ 1.234,56
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CircleDollarSign className="text-primary fill-primary/40 h-5 w-5" />
-                        <span className="text-primary text-sm">12/06/2025</span>
-                      </div>
+                      <span>{d.doc ? d.name : "Sem Documento"}</span>
+                      {d.doc && (
+                        <>
+                          <div className="flex items-center gap-1">
+                            <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
+                            <span className="text-sm text-zinc-600">
+                              12/06/2025
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CircleDollarSign className="text-primary fill-primary/40 h-5 w-5" />
+                            <span className="text-primary text-sm">
+                              R$ 1.234,56
+                            </span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </SwiperSlide>
