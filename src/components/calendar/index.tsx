@@ -223,6 +223,7 @@ const CalendarApp = () => {
   };
 
   const eventColors = (event: RBCEvent) => {
+    console.log("event", event);
     if ("isSummary" in event) {
       const isEnt = event.movementType === "Entrada";
       return {

@@ -237,9 +237,9 @@ export default function CreateBusinessUnitPage() {
         <Modal
           show={isOpenSupplierModal}
           onHide={() => setIsOpenSupplierModal(false)}
-          className="w-[720px] border-none bg-transparent shadow-none"
+          className="h-max w-[50vw] border-none bg-transparent shadow-none"
         >
-          <div className="scrollbar-hide w-[720px] overflow-scroll rounded-xl bg-white shadow-xl">
+          <div className="scrollbar-hide w-full overflow-scroll rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
             <div className="bg-primary flex items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
@@ -321,11 +321,18 @@ export default function CreateBusinessUnitPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-6 text-sm">
-                      <div className="text-primary flex items-center gap-1 font-medium">
+                      <div className="text-primary flex w-28 items-center gap-1 font-medium">
                         <span>🪙</span>
                         <span>{fornecedor.expirationDate}</span>
                       </div>
-                      <span className="rounded-md border border-emerald-500 bg-emerald-600/20 px-3 py-1 font-semibold text-emerald-600">
+                      <span
+                        className={cn(
+                          "w-32 rounded-md border px-3 py-1 font-semibold",
+                          fornecedor.status === "ATIVO"
+                            ? "border-emerald-600 bg-emerald-600/20 text-emerald-600"
+                            : "border-rose-600 bg-rose-600/20 text-rose-600",
+                        )}
+                      >
                         {fornecedor.status}
                       </span>
                     </div>
@@ -562,9 +569,9 @@ export default function CreateBusinessUnitPage() {
             <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
               <button
                 onClick={() => router.back()}
-                className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                className="h-9 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
               >
-                Salvar e sair
+                Salvar e Sair
               </button>
 
               <OrangeButton
@@ -582,7 +589,7 @@ export default function CreateBusinessUnitPage() {
                 onClick={() => router.back()}
                 className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
               >
-                Salvar e sair
+                Salvar e Sair
               </button>
 
               <OrangeButton
