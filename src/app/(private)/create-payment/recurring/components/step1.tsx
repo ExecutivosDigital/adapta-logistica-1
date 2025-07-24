@@ -1,4 +1,3 @@
-import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,7 +6,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Building2,
-  CalendarIcon,
   Check,
   DollarSign,
   Edit,
@@ -18,9 +16,8 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
-import { CategoryModal } from "./components/category-modal";
-import { CostCentersList } from "./components/cost-centers-list";
-import { DataType } from "./page";
+import { DataType } from "../page";
+import { CostCentersList } from "./cost-centers-list";
 
 import "moment/locale/pt-BR";
 moment.locale("pt-BR");
@@ -30,18 +27,6 @@ interface Props {
   data: DataType;
   setData: (value: DataType) => void;
 }
-type CostType =
-  | "Custo Fixo"
-  | "Custo Variável"
-  | "Custo de Vendas / Operação Logística"
-  | "Impostos e Tributos"
-  | "Capex (Investimentos)"
-  | "Reembolsos / Adiantamentos";
-
-type Category = {
-  type: string;
-  category: CostType;
-};
 
 export function Step1({
   setIsOpenSupplierModal,
@@ -49,160 +34,6 @@ export function Step1({
   setData,
   setIsOpenContabilidadeModal,
 }: Props) {
-  const categoriesByCostType: Record<CostType, Category[]> = {
-    "Custo Fixo": [
-      { type: "Aluguel / Condomínio / IPTU", category: "Custo Fixo" },
-      { type: "Água e Esgoto", category: "Custo Fixo" },
-      { type: "Internet", category: "Custo Fixo" },
-      { type: "Telefonia e Similares", category: "Custo Fixo" },
-      { type: "Energia", category: "Custo Fixo" },
-      { type: "Seguros Patrimoniais", category: "Custo Fixo" },
-      { type: "Licenças e Software", category: "Custo Fixo" },
-      { type: "Seguros Empresariais Gerais", category: "Custo Fixo" },
-      { type: "Seguros de Carga", category: "Custo Fixo" },
-      { type: "Folha Administrativa", category: "Custo Fixo" },
-      { type: "Custos - Contabilidade", category: "Custo Fixo" },
-      { type: "Taxas Bancárias", category: "Custo Fixo" },
-      { type: "Serviços Terceirizados", category: "Custo Fixo" },
-      { type: "Material de Escritório", category: "Custo Fixo" },
-      { type: "Manutenção Preventiva", category: "Custo Fixo" },
-      { type: "Material Limpeza", category: "Custo Fixo" },
-      { type: "Outros - Descreva", category: "Custo Fixo" },
-    ],
-    "Custo Variável": [
-      { type: "Custos Bancários", category: "Custo Variável" },
-      { type: "Combustível", category: "Custo Variável" },
-      { type: "Pedágios", category: "Custo Variável" },
-      { type: "Frete Subcontratado", category: "Custo Variável" },
-      { type: "Adiantamento", category: "Custo Variável" },
-      { type: "Horas Extras Operacionais", category: "Custo Variável" },
-      { type: "Deslocamento entre Filiais", category: "Custo Variável" },
-      { type: "Manutenção Corretiva", category: "Custo Variável" },
-      { type: "Multas e Penalidades", category: "Custo Variável" },
-      { type: "Armazenagem", category: "Custo Variável" },
-      { type: "Transbordo / Redespacho", category: "Custo Variável" },
-      { type: "Carga e Descarga Terceirizada", category: "Custo Variável" },
-      { type: "Material de Expedição", category: "Custo Variável" },
-      { type: "Locação de Equipamentos", category: "Custo Variável" },
-      { type: "Serviços Avulsos", category: "Custo Variável" },
-      { type: "Ger. de Risco por Operação", category: "Custo Variável" },
-      { type: "Falhas de Entrega", category: "Custo Variável" },
-      { type: "Despesas Administrativas", category: "Custo Variável" },
-      { type: "Falhas Operacionais", category: "Custo Variável" },
-      { type: "Falhas Jurídicas", category: "Custo Variável" },
-      { type: "Outros", category: "Custo Variável" },
-    ],
-    "Impostos e Tributos": [
-      { type: "IRPJ", category: "Impostos e Tributos" },
-      { type: "CSLL", category: "Impostos e Tributos" },
-      { type: "PIS", category: "Impostos e Tributos" },
-      { type: "COFINS", category: "Impostos e Tributos" },
-      { type: "ISS", category: "Impostos e Tributos" },
-      { type: "ICMS ST", category: "Impostos e Tributos" },
-      { type: "ICMS DIFAL", category: "Impostos e Tributos" },
-      { type: "INSS Patronal", category: "Impostos e Tributos" },
-      { type: "FGTS", category: "Impostos e Tributos" },
-      { type: "IRRF", category: "Impostos e Tributos" },
-      { type: "DPVAT", category: "Impostos e Tributos" },
-      { type: "ANTT / RNTRC / Fiscalização", category: "Impostos e Tributos" },
-      { type: "Taxas Municipais", category: "Impostos e Tributos" },
-      { type: "Taxas Estaduais", category: "Impostos e Tributos" },
-      { type: "Parc. Tributos Federais", category: "Impostos e Tributos" },
-      {
-        type: "Parc. Tributos Estado / Munic.",
-        category: "Impostos e Tributos",
-      },
-      {
-        type: "Multas e Juros por Atraso Fiscal",
-        category: "Impostos e Tributos",
-      },
-      { type: "Outros Tributos - Descreva", category: "Impostos e Tributos" },
-    ],
-    "Custo de Vendas / Operação Logística": [
-      {
-        type: "Frete Subcontratado",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      { type: "Combustível", category: "Custo de Vendas / Operação Logística" },
-      { type: "Pedágios", category: "Custo de Vendas / Operação Logística" },
-      {
-        type: "Seguro de Carga",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Gerenciamento de Risco",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      { type: "Armazenagem", category: "Custo de Vendas / Operação Logística" },
-      {
-        type: "Ajudas de Custo",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Motoristas Agregados",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Escolta / Especial",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Locação de Equipamentos",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Transbordo / Redespacho",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Carga e Descarga Terceirizada",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Devolução de Mercadoria",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Projetos Pontuais",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      { type: "Outros", category: "Custo de Vendas / Operação Logística" },
-    ],
-    "Capex (Investimentos)": [
-      { type: "Compra de Veículos", category: "Capex (Investimentos)" },
-      {
-        type: "Aquisição - Máquinass e Equip.",
-        category: "Capex (Investimentos)",
-      },
-      { type: "Galpão / CD", category: "Capex (Investimentos)" },
-      { type: "Reformas e Infraestrutura", category: "Capex (Investimentos)" },
-      { type: "Sistemas e Softwares", category: "Capex (Investimentos)" },
-      { type: "Mobiliários", category: "Capex (Investimentos)" },
-      { type: "Obras", category: "Capex (Investimentos)" },
-      { type: "Projetos de Expansão", category: "Capex (Investimentos)" },
-      { type: "Investimentos Financeiro", category: "Capex (Investimentos)" },
-    ],
-    "Reembolsos / Adiantamentos": [
-      {
-        type: "Adiantamento de Viagem",
-        category: "Reembolsos / Adiantamentos",
-      },
-      {
-        type: "Despesas com Alimentação",
-        category: "Reembolsos / Adiantamentos",
-      },
-      {
-        type: "Combustível (Reembolso)",
-        category: "Reembolsos / Adiantamentos",
-      },
-      { type: "Despesas com Pedágio", category: "Reembolsos / Adiantamentos" },
-      {
-        type: "Caixa Interno / Fundo Fixo",
-        category: "Reembolsos / Adiantamentos",
-      },
-    ],
-  };
-
   const costCenters = [
     "Centro de Custo",
     "Abastecimento Interno",
@@ -300,16 +131,13 @@ export function Step1({
 
   const paymentTerms = ["Total no Ato", "Parcelado", "Recorrente"];
 
-  const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState("");
-  const [valor, setValor] = useState(data.amount); // centavos!
   const [selectedCostCenters, setSelectedCostCenters] = useState<
     { name: string; value: string; locked?: boolean }[]
   >([]);
   const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
     useState(false);
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
 
   const handleCostCenterToggle = (costCenterName: string) => {
@@ -397,71 +225,13 @@ export function Step1({
     }
   };
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // 1. só dígitos
-    const digits = e.target.value.replace(/\D/g, "");
-    // 2. se nada digitado, fica 0
-    const cents = digits === "" ? 0 : parseInt(digits, 10);
-    setValor(cents);
-    setData({ ...data, amount: cents });
-  }
-
-  const formatBRL = (valueInCents: number) =>
-    new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valueInCents / 100);
-
-  const categoryOptions =
-    data.costType && categoriesByCostType[data.costType as CostType]
-      ? categoriesByCostType[data.costType as CostType].filter(({ type }) =>
-          type.toLowerCase().includes(filteredCategories.toLowerCase()),
-        )
-      : [];
-
   return (
     <>
       <div className="flex-1">
-        <div className="flex w-full flex-row items-center justify-center">
-          <div className="mt-2 flex gap-2">
-            <div className="bg-primary/40 relative flex w-96 flex-row overflow-hidden rounded-lg p-2">
-              <div
-                className={`absolute top-0 bottom-0 left-0 flex w-1/3 transform items-center justify-center transition-transform duration-300 ${data.entryType === "DESPESAS" ? "translate-x-0 pl-2" : data.entryType === "IMPOSTOS" ? "translate-x-full" : "translate-x-[200%] pr-2"}`}
-              >
-                <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
-              </div>
-              <button
-                onClick={() => setData({ ...data, entryType: "DESPESAS" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "DESPESAS" ? "font-semibold text-white" : "text-white/80"}`}
-              >
-                DESPESAS
-              </button>
-              <button
-                onClick={() => setData({ ...data, entryType: "IMPOSTOS" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "IMPOSTOS" ? "font-semibold text-white" : "text-white/80"}`}
-              >
-                IMPOSTOS
-              </button>
-              <button
-                onClick={() => setData({ ...data, entryType: "C. VENDAS" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "C. VENDAS" ? "font-semibold text-white" : "text-white/80"}`}
-              >
-                <span className="w-max">C. VENDAS</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="my-4 h-px bg-zinc-200/60" />
         <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
           {/* --------------------- FORNECEDOR --------------------- */}
           <label className="col-span-8 flex flex-col gap-1">
-            <span className="text-zinc-600">
-              {data.entryType === "DESPESAS"
-                ? "Fornecedor"
-                : data.entryType === "IMPOSTOS"
-                  ? "Sefaz"
-                  : "Parceiro"}
-            </span>
+            <span className="text-zinc-600">Fornecedor</span>
             <button
               onClick={() => setIsOpenSupplierModal(true)}
               className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
@@ -483,15 +253,8 @@ export function Step1({
             </button>
           </label>
 
-          {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
           <label className="col-span-4 flex flex-col gap-1">
-            <span className="text-zinc-600">
-              {data.entryType === "DESPESAS"
-                ? "Tipo de Lançamento"
-                : data.entryType === "IMPOSTOS"
-                  ? "Imposto - Código"
-                  : "Tipo de Lançamento"}
-            </span>
+            <span className="text-zinc-600">Documento Gerador</span>
             <DropdownMenu
               open={isDocumentTypeDropdownOpen}
               onOpenChange={setIsDocumentTypeDropdownOpen}
@@ -561,88 +324,8 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          <div className="col-span-12 grid grid-cols-11 gap-4">
-            <label className="col-span-5 flex flex-col gap-1">
-              <span className="text-zinc-600">Valor</span>
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <DollarSign size={16} className="text-primary" />
-                </div>
-                <div className="flex h-full flex-1 items-center justify-center text-center">
-                  <input
-                    value={formatBRL(valor)}
-                    onChange={handleChange}
-                    placeholder="R$ 0,00"
-                    className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
-                  />
-                </div>
-                <div className="flex h-full w-6"></div>
-              </div>
-            </label>
-
-            {/* --------------------- DATAS --------------------- */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <label className="col-span-3 flex flex-col gap-1">
-                  <span className="text-zinc-600">Mês Referência</span>
-                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                    <div className="flex h-full w-6">
-                      <CalendarIcon className="text-primary" size={16} />
-                    </div>
-                    <div className="flex-1 text-lg text-zinc-700">
-                      {data.issueDate
-                        ? moment(data.issueDate).format("MMM")
-                        : moment().format("MMMM")}
-                    </div>
-                    <div className="flex h-full w-6 justify-end">
-                      <Edit className="text-primary" size={16} />
-                    </div>
-                  </div>
-                </label>
-              </DropdownMenuTrigger>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <label className="col-span-3 flex flex-col gap-1">
-                  <span className="text-zinc-600">Vencimento</span>
-                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                    <div className="flex h-full w-6">
-                      <CalendarIcon className="text-primary" size={16} />
-                    </div>
-                    <div className="flex-1 text-lg text-zinc-700">
-                      {data.dueDate
-                        ? moment(data.dueDate).format("DD/MM/YYYY")
-                        : moment().format("DD/MM/YYYY")}
-                    </div>
-                    <div className="flex h-full w-6 justify-end">
-                      <Edit className="text-primary" size={16} />
-                    </div>
-                  </div>
-                </label>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="right"
-                sideOffset={0}
-                align="start"
-                className="z-[999] w-72 border-zinc-200"
-              >
-                <Calendar
-                  mode="single"
-                  selected={moment(data.dueDate).toDate()}
-                  onSelect={(date) => {
-                    if (date) {
-                      setData({ ...data, dueDate: moment(date).format() });
-                    }
-                  }}
-                />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* --------------------- CONDIÇÕES DE PAGAMENTO --------------------- */}
           <label className="col-span-4 flex flex-col gap-1">
-            <span className="text-zinc-600">Condições de Pagamento</span>
+            <span className="text-zinc-600">Tipo de Lançamento</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
                 <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
@@ -863,17 +546,6 @@ export function Step1({
           <CostCentersList data={data} setData={setData} />
         )}
       </div>
-      {isCategoryModalOpen && (
-        <CategoryModal
-          show={isCategoryModalOpen}
-          onHide={() => setIsCategoryModalOpen(false)}
-          filteredCategories={filteredCategories}
-          setFilteredCategories={setFilteredCategories}
-          categoryOptions={categoryOptions}
-          data={data}
-          setData={setData}
-        />
-      )}
     </>
   );
 }

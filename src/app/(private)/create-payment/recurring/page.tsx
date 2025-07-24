@@ -55,7 +55,7 @@ export interface DataType {
   mail: string;
 }
 
-export default function CreateBusinessUnitPage() {
+export default function CreateRecurringPayment() {
   const router = useRouter();
 
   const [data, setData] = useState<DataType>({
@@ -520,7 +520,7 @@ export default function CreateBusinessUnitPage() {
                 className={cn("cursor-pointer", steps === 1 && "hidden")}
               />
               <div className="flex flex-col">
-                <h2 className="text-xl font-semibold">Fatura À Pagar</h2>
+                <h2 className="text-xl font-semibold">Lançamento Recorrente</h2>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
                   22/03/2025
@@ -541,7 +541,7 @@ export default function CreateBusinessUnitPage() {
                 })}
               </h2>
               <span className="flex items-center gap-1 text-sm text-zinc-600">
-                Preço da Fatura
+                Preço do Documento
               </span>
             </div>
           </div>
