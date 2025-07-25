@@ -144,7 +144,16 @@ export default function FinalPurchaseApproval() {
       documentNumber: payment.documentNumber,
     });
   };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // mantém só 0‑9
+    const onlyDigits = e.target.value.replace(/\D/g, "");
 
+    // se o usuário digitou “1234”, queremos 12,34
+    // => divide por 100 para posicionar a vírgula
+    const amountNumber = Number(onlyDigits) / 100;
+
+    setData({ ...data, amount: amountNumber });
+  };
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden">
@@ -301,23 +310,11 @@ export default function FinalPurchaseApproval() {
                       </div>
                       <div className="flex h-full flex-1 items-center justify-center text-center">
                         <input
-                          placeholder="R$ 0,00"
-                          value={data.amount.toLocaleString("pt-BR", {
+                          value={data.amount.toLocaleString("pt-br", {
                             style: "currency",
                             currency: "BRL",
                           })}
-                          onChange={(e) => {
-                            const value = parseFloat(
-                              e.target.value
-                                .replace(/[^0-9,-]+/g, "")
-                                .replace(",", "."),
-                            );
-                            if (!isNaN(value)) {
-                              setData({ ...data, amount: value });
-                            } else {
-                              setData({ ...data, amount: 0 });
-                            }
-                          }}
+                          onChange={handleChange}
                           className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
                         />
                       </div>
