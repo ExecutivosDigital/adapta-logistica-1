@@ -36,7 +36,7 @@ const CustomToolbar = ({
   const viewHandler = (viewName: string) => {
     onView(viewName);
   };
-
+  console.log("views", views);
   return (
     <div className="rbc-toolbar flex flex-row gap-2 md:gap-0">
       {/* --- Seção Esquerda: Navegação e Ação --- */}
