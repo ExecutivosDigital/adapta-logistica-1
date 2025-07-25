@@ -184,7 +184,7 @@ export function Step2({ data, setData }: Props) {
                 <div className="flex h-full w-6">
                   <DollarSign className="text-primary" size={16} />
                 </div>
-                <div className="flex-1 text-lg text-zinc-700">
+                <div className="flex-1 text-zinc-700 2xl:text-lg">
                   {data.paymentForm || "Selecione"}
                 </div>
                 <div className="flex h-full w-6 justify-end">
@@ -248,7 +248,7 @@ export function Step2({ data, setData }: Props) {
                   setData({ ...data, documentNumber: e.target.value })
                 }
                 placeholder="Digite o número"
-                className="flex-1 bg-transparent text-center text-lg text-zinc-700 outline-none"
+                className="flex-1 bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
               />
             </div>
           </label>
@@ -262,7 +262,7 @@ export function Step2({ data, setData }: Props) {
                   <div className="flex h-full w-6">
                     <CalendarIcon className="text-primary" size={16} />
                   </div>
-                  <div className="flex-1 text-lg text-zinc-700">
+                  <div className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.issueDate
                       ? moment(data.issueDate).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")}
@@ -299,7 +299,7 @@ export function Step2({ data, setData }: Props) {
                   <div className="flex h-full w-6">
                     <CalendarIcon className="text-primary" size={16} />
                   </div>
-                  <div className="flex-1 text-lg text-zinc-700">
+                  <div className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.dueDate
                       ? moment(data.dueDate).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")}
@@ -336,7 +336,7 @@ export function Step2({ data, setData }: Props) {
             <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <FileText className="text-primary" size={16} />
-                <span className="flex-1 text-lg text-zinc-700">
+                <span className="flex-1 text-zinc-700 2xl:text-lg">
                   {data.paymentTerms || "Selecione"}
                 </span>
                 <Edit className="text-primary ml-auto" size={16} />
@@ -373,7 +373,7 @@ export function Step2({ data, setData }: Props) {
             <DropdownMenuTrigger className="w-full focus:outline-none">
               <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                 <DollarSign className="text-primary" size={16} />
-                <span className="flex-1 text-lg text-zinc-700">
+                <span className="flex-1 text-zinc-700 2xl:text-lg">
                   {data.paymentDetails || "Selecione"}
                 </span>
                 <Edit className="text-primary ml-auto" size={16} />

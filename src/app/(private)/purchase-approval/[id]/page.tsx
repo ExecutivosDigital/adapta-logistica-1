@@ -184,7 +184,7 @@ export default function FinalPurchaseApproval() {
                       <MapPin size={16} className="text-primary" />
                     </div>
                     <div className="flex flex-1 flex-col">
-                      <span className="flex-1 text-lg">
+                      <span className="flex-1 2xl:text-lg">
                         {data.supplier.name || "Selecione"}
                       </span>
                       <span className="text-zinc-400">
@@ -216,7 +216,7 @@ export default function FinalPurchaseApproval() {
                           <DollarSign size={16} className="text-primary" />
                         </div>
                         <div className="flex h-full flex-1 items-center">
-                          <span className="flex-1 text-lg">
+                          <span className="flex-1 2xl:text-lg">
                             {data.documentType || "Selecione"}
                           </span>
                         </div>
@@ -289,7 +289,7 @@ export default function FinalPurchaseApproval() {
                       <div className="flex h-full flex-1 items-center justify-center text-center">
                         <input
                           placeholder="R$ 0,00"
-                          className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                          className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                         />
                       </div>
                       <div className="flex h-full w-6"></div>
@@ -305,7 +305,7 @@ export default function FinalPurchaseApproval() {
                           <div className="flex h-full w-6">
                             <CalendarIcon className="text-primary" size={16} />
                           </div>
-                          <div className="flex-1 text-lg text-zinc-700">
+                          <div className="flex-1 text-zinc-700 2xl:text-lg">
                             {data.issueDate
                               ? moment(data.issueDate).format("MMM")
                               : moment().format("MMMM")}
@@ -326,7 +326,7 @@ export default function FinalPurchaseApproval() {
                           <div className="flex h-full w-6">
                             <CalendarIcon className="text-primary" size={16} />
                           </div>
-                          <div className="flex-1 text-lg text-zinc-700">
+                          <div className="flex-1 text-zinc-700 2xl:text-lg">
                             {data.dueDate
                               ? moment(data.dueDate).format("DD/MM/YYYY")
                               : moment().format("DD/MM/YYYY")}
@@ -369,7 +369,7 @@ export default function FinalPurchaseApproval() {
                       <MapPin size={16} className="text-primary" />
                     </div>
                     <div className="flex flex-1 flex-col">
-                      <span className="flex-1 text-lg">
+                      <span className="flex-1 2xl:text-lg">
                         {data.supplier.name || "Selecione"}
                       </span>
                       <span className="text-zinc-400">
@@ -394,7 +394,7 @@ export default function FinalPurchaseApproval() {
                           <DollarSign size={16} className="text-primary" />
                         </div>
                         <div className="flex h-full flex-1 items-center">
-                          <span className="flex-1 text-lg">
+                          <span className="flex-1 2xl:text-lg">
                             {data.documentType || "Selecione"}
                           </span>
                         </div>
@@ -562,7 +562,7 @@ export default function FinalPurchaseApproval() {
         <div className="scrollbar-hide w-[720px] overflow-scroll rounded-xl bg-white shadow-xl">
           {/* Cabeçalho */}
           <div className="bg-primary flex items-center justify-between px-6 py-4">
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="font-semibold text-white 2xl:text-lg">
               Lista de Fornecedores no Sistema
             </h2>
             <button className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl">

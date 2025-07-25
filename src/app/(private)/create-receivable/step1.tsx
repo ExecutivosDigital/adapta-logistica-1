@@ -71,7 +71,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                 <MapPin size={16} className="text-primary" />
               </div>
               <div className="flex flex-1 flex-col">
-                <span className="flex-1 text-lg">
+                <span className="flex-1 2xl:text-lg">
                   {data.client.name || "Selecione"}
                 </span>
                 <span className="text-xs text-zinc-400">
@@ -98,7 +98,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                     <DollarSign size={16} className="text-primary" />
                   </div>
                   <div className="flex h-full flex-1 items-center">
-                    <span className="flex-1 text-lg">
+                    <span className="flex-1 2xl:text-lg">
                       {data.approval ? data.approval : "Selecione"}
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                   value={formatBRL(valor)}
                   onChange={handleChange}
                   placeholder="R$ 0,00"
-                  className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                  className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                 />
                 <span className="text-xs text-zinc-400">
                   Soma dos Documentos
@@ -191,7 +191,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                       value={"223 Documentos"}
                       onChange={handleChange}
                       placeholder="R$ 0,00"
-                      className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                      className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                     />
                     <span className="text-xs text-zinc-400">
                       1223, 3334, 3...
@@ -252,7 +252,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                 <Mail size={16} className="text-primary" />
               </div>
               <div className="flex flex-1 flex-col">
-                <span className="flex-1 text-lg">Financeiro</span>
+                <span className="flex-1 2xl:text-lg">Financeiro</span>
                 <span className="text-zinc-400">
                   financeiro@integrabrasil.com.br
                 </span>
@@ -271,7 +271,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                   <div className="flex h-full w-6">
                     <CalendarIcon className="text-primary" size={16} />
                   </div>
-                  <div className="flex-1 text-lg text-zinc-700">
+                  <div className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.issueDate
                       ? moment(data.issueDate).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")}

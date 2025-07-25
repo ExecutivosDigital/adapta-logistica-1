@@ -52,7 +52,7 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                     <div className="flex h-full flex-1 items-center justify-center text-center">
                       <input
                         placeholder="R$ 0,00"
-                        className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
+                        className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                       />
                     </div>
                     <div className="flex h-full w-6"></div>
@@ -67,7 +67,7 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                         <div className="flex h-full w-6">
                           <CalendarIcon className="text-primary" size={16} />
                         </div>
-                        <div className="flex-1 text-lg text-zinc-700">
+                        <div className="flex-1 text-zinc-700 2xl:text-lg">
                           {data.dueDate
                             ? moment(data.dueDate).format("DD/MM/YYYY")
                             : moment().format("DD/MM/YYYY")}
@@ -107,7 +107,7 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                             size={16}
                           />
                         </div>
-                        <div className="flex-1 text-lg text-zinc-700">
+                        <div className="flex-1 text-zinc-700 2xl:text-lg">
                           R$ 1.000,00
                         </div>
                         <div className="flex h-full w-6 justify-end">
@@ -134,7 +134,7 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                     <MapPin size={16} className="text-primary" />
                   </div>
                   <div className="flex flex-1 flex-col">
-                    <span className="flex-1 text-lg">
+                    <span className="flex-1 2xl:text-lg">
                       {data.supplier.name || "Selecione"}
                     </span>
                     <span className="text-zinc-400">

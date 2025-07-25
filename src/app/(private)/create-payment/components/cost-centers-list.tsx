@@ -167,15 +167,15 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
           {data.costCenters.map((item, index) => (
             <div
               key={index}
-              className={`flex h-16 items-center justify-between gap-2 rounded-2xl border px-3 py-2 ${
+              className={`flex w-full flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-2 ${
                 item.locked
                   ? "border-primary bg-primary/20 text-primary"
                   : "border-zinc-200"
               }`}
             >
-              <div className="flex h-full flex-1 gap-2">
+              <div className="flex flex-1 gap-2">
                 <Building2 size={16} className="text-primary mt-2" />
-                <span className="my-auto text-sm">{item.name}</span>
+                <span className="my-auto w-full text-sm">{item.name}</span>
                 {item.locked && (
                   <span className="text-primary my-auto text-xs font-medium">
                     (Bloqueado)
@@ -221,7 +221,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
                     handleCostCenterValueChange(index, e.target.value)
                   }
                   disabled={item.locked}
-                  className={`w-40 rounded border px-2 py-1 text-right focus:outline-none ${
+                  className={`rounded border px-2 py-1 text-right focus:outline-none ${
                     item.locked
                       ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
                       : "focus:border-primary border-zinc-300"

@@ -187,7 +187,7 @@ export default function RecurringPaymentApproval() {
           <div className="scrollbar-hide w-[720px] overflow-scroll rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
             <div className="bg-primary flex items-center justify-between px-6 py-4">
-              <h2 className="text-lg font-semibold text-white">
+              <h2 className="font-semibold text-white 2xl:text-lg">
                 Lista de Fornecedores no Sistema
               </h2>
               <button className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl">
@@ -320,7 +320,9 @@ export default function RecurringPaymentApproval() {
                 className={cn("cursor-pointer", steps === 1 && "hidden")}
               />
               <div className="flex flex-col">
-                <span className="text-lg font-semibold">Aprovar Documento</span>
+                <span className="font-semibold 2xl:text-lg">
+                  Aprovar Documento
+                </span>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
                   22/03/2025
@@ -356,7 +358,9 @@ export default function RecurringPaymentApproval() {
                 className={cn("cursor-pointer", steps === 1 && "hidden")}
               />
               <div className="flex flex-col">
-                <span className="text-lg font-semibold">Faturas à Pagar</span>
+                <span className="font-semibold 2xl:text-lg">
+                  Faturas à Pagar
+                </span>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
                   22/03/2025

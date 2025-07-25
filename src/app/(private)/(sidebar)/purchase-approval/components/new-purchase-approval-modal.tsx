@@ -121,7 +121,7 @@ export function NewPurchaseApprovalModal({
                         <div className="flex w-full flex-col">
                           <div className="flex w-full items-center justify-between text-black">
                             <span className="font-semibold">
-                              Nome da Unidade de Negócio
+                              asd s Nome da Unidade de Negócio
                             </span>
                             <div className="flex items-center gap-1 rounded-md border border-zinc-200 px-2 py-1 text-sm font-semibold">
                               <span>Ajustar</span>

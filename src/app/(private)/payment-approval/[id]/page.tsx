@@ -60,7 +60,9 @@ export default function FinalPaymentApproval() {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-lg font-semibold">Orçamento Aprovado</span>
+              <span className="font-semibold 2xl:text-lg">
+                Orçamento Aprovado
+              </span>
               <span className="text-sm text-zinc-600 italic">
                 Selecione o orçamento aprovado abaixo
               </span>

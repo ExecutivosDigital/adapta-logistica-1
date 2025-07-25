@@ -16,8 +16,8 @@ import {
   ChevronUp,
   CircleCheck,
   ClipboardList,
-  Images,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import Stepper from "./components/steper";
@@ -458,9 +458,15 @@ export default function NewReceivable() {
                 <div className="flex items-center gap-4 text-center">
                   <div className="border-primary flex h-8 w-8 items-center justify-center rounded-full border p-0.5">
                     {row.document.file ? (
-                      <CircleCheck className="text-green-500" />
+                      <CircleCheck className="fill-green-500 text-white" />
                     ) : (
-                      <Images className="text-red-500" />
+                      <Image
+                        src="/icons/no-image.png"
+                        alt=""
+                        width={200}
+                        height={200}
+                        className="h-max w-5 object-contain"
+                      />
                     )}
                   </div>
                   <div className="flex flex-col">

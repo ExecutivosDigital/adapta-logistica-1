@@ -41,8 +41,6 @@ export default function PurchaseApproval() {
     }
   };
 
-  console.log("currentStep", currentStep);
-
   return (
     <>
       <div className="flex h-full w-full flex-col gap-4 lg:gap-6">

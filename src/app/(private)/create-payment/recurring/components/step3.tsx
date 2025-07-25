@@ -92,7 +92,7 @@ export function Step3({ data, setData }: Props) {
                   value={formatBRL(amount)}
                   onChange={handleChangeAmount}
                   placeholder="R$ 0,00"
-                  className="flex-1 bg-transparent text-center text-lg text-zinc-700 outline-none"
+                  className="flex-1 bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                 />
               </span>
             </div>
@@ -108,7 +108,7 @@ export function Step3({ data, setData }: Props) {
                 <div className="flex h-full w-6">
                   <DollarSign className="text-primary" size={16} />
                 </div>
-                <div className="flex-1 text-lg text-zinc-700">
+                <div className="flex-1 text-zinc-700 2xl:text-lg">
                   {data.paymentForm || "Selecione"}
                 </div>
                 <div className="flex h-full w-6 justify-end">

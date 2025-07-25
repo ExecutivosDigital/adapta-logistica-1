@@ -366,7 +366,7 @@ export function Step1({ data, setData }: Props) {
                 <MapPin size={16} className="text-primary" />
               </div>
               <div className="flex flex-1 flex-col">
-                <span className="flex-1 text-lg">
+                <span className="flex-1 2xl:text-lg">
                   {data.supplier.name || "Selecione"}
                 </span>
                 <span className="text-zinc-400">
@@ -387,7 +387,7 @@ export function Step1({ data, setData }: Props) {
                 <DollarSign size={16} className="text-primary" />
               </div>
               <div className="flex h-full flex-1 items-center">
-                <span className="flex-1 text-lg">
+                <span className="flex-1 2xl:text-lg">
                   {data.approval ? data.approval : "Selecione"}
                 </span>
               </div>
@@ -404,7 +404,7 @@ export function Step1({ data, setData }: Props) {
                 <Mail size={16} className="text-primary" />
               </div>
               <div className="flex flex-1 flex-col">
-                <span className="flex-1 text-lg">
+                <span className="flex-1 2xl:text-lg">
                   {data.supplier.name || "Selecione"}
                 </span>
                 <span className="text-zinc-400">
@@ -423,7 +423,7 @@ export function Step1({ data, setData }: Props) {
               <DropdownMenuTrigger className="w-full focus:outline-none">
                 <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                   <FileText className="text-primary" size={16} />
-                  <span className="flex-1 text-lg text-zinc-700">
+                  <span className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.paymentTerms || "Selecione"}
                   </span>
                   <Edit className="text-primary ml-auto" size={16} />
@@ -459,7 +459,7 @@ export function Step1({ data, setData }: Props) {
               <DropdownMenuTrigger className="w-full focus:outline-none">
                 <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                   <DollarSign className="text-primary" size={16} />
-                  <span className="flex-1 text-lg text-zinc-700">
+                  <span className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.paymentDetails || "Selecione"}
                   </span>
                   <Edit className="text-primary ml-auto" size={16} />
