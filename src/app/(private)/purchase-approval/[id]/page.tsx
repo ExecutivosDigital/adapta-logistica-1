@@ -1,6 +1,10 @@
 "use client";
-import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
+import {
+  AiFileReader,
+  PaymentDocumentProps,
+} from "@/components/ai-file-reader";
+import { Modal } from "@/components/ui/Modal";
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
@@ -8,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
 import {
   CalendarDays,
@@ -128,10 +131,29 @@ export default function FinalPurchaseApproval() {
     "Lorem",
   ];
 
-  const handleData = () => {
-    return;
-  };
+  const handleData = (payment: PaymentDocumentProps) => {
+    const supplier = suppliers.find(
+      (supplier) => supplier.cnpj === payment.cpfCnpj,
+    );
 
+    setData({
+      ...data,
+      supplier: supplier || { name: "", cnpj: "" },
+      amount: payment.value,
+      dueDate: payment.dueDate,
+      documentNumber: payment.documentNumber,
+    });
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // mantém só 0‑9
+    const onlyDigits = e.target.value.replace(/\D/g, "");
+
+    // se o usuário digitou “1234”, queremos 12,34
+    // => divide por 100 para posicionar a vírgula
+    const amountNumber = Number(onlyDigits) / 100;
+
+    setData({ ...data, amount: amountNumber });
+  };
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden">
@@ -288,8 +310,12 @@ export default function FinalPurchaseApproval() {
                       </div>
                       <div className="flex h-full flex-1 items-center justify-center text-center">
                         <input
-                          placeholder="R$ 0,00"
-                          className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
+                          value={data.amount.toLocaleString("pt-br", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                          onChange={handleChange}
+                          className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
                         />
                       </div>
                       <div className="flex h-full w-6"></div>

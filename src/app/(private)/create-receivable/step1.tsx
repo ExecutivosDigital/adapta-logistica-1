@@ -39,23 +39,17 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
 
   const [filteredResponsible, setFilteredResponsible] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState("");
-  const [valor, setValor] = useState(data.amount); // centavos!
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // 1. só dígitos
-    const digits = e.target.value.replace(/\D/g, "");
-    // 2. se nada digitado, fica 0
-    const cents = digits === "" ? 0 : parseInt(digits, 10);
-    setValor(cents);
-    setData({ ...data, amount: cents });
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // mantém só 0‑9
+    const onlyDigits = e.target.value.replace(/\D/g, "");
 
-  const formatBRL = (valueInCents: number) =>
-    new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valueInCents / 100);
+    // se o usuário digitou “1234”, queremos 12,34
+    // => divide por 100 para posicionar a vírgula
+    const amountNumber = Number(onlyDigits) / 100;
 
+    setData({ ...data, amount: amountNumber });
+  };
   return (
     <>
       <div className="flex-1">
@@ -165,7 +159,10 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
               </div>
               <div className="flex h-full flex-1 flex-col items-center justify-center text-center">
                 <input
-                  value={formatBRL(valor)}
+                  value={data.amount.toLocaleString("pt-br", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                   onChange={handleChange}
                   placeholder="R$ 0,00"
                   className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
