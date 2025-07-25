@@ -1,7 +1,10 @@
 /* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
-import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
+import {
+  AiFileReader,
+  PaymentDocumentProps,
+} from "@/components/ai-file-reader";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
 import {
@@ -183,9 +186,21 @@ export default function CreateBusinessUnitPage() {
     return Array.from({ length: to - from + 1 }, (_, i) => from + i);
   }, [pageCount, currentPage]);
 
-  const handleData = () => {
-    return;
+  const handleData = (payment: PaymentDocumentProps) => {
+    const supplier = suppliers.find(
+      (supplier) => supplier.cnpj === payment.cpfCnpj,
+    );
+
+    setData({
+      ...data,
+      supplier: supplier || { name: "", cnpj: "" },
+      amount: payment.value,
+      dueDate: payment.dueDate,
+      documentNumber: payment.documentNumber,
+    });
   };
+
+  console.log(data);
 
   useEffect(() => {
     setCurrentPage(1);

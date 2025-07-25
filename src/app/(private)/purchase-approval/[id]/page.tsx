@@ -1,6 +1,10 @@
 "use client";
-import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
+import {
+  AiFileReader,
+  PaymentDocumentProps,
+} from "@/components/ai-file-reader";
+import { Modal } from "@/components/ui/Modal";
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
@@ -8,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
 import {
   CalendarDays,
@@ -128,8 +131,18 @@ export default function FinalPurchaseApproval() {
     "Lorem",
   ];
 
-  const handleData = () => {
-    return;
+  const handleData = (payment: PaymentDocumentProps) => {
+    const supplier = suppliers.find(
+      (supplier) => supplier.cnpj === payment.cpfCnpj,
+    );
+
+    setData({
+      ...data,
+      supplier: supplier || { name: "", cnpj: "" },
+      amount: payment.value,
+      dueDate: payment.dueDate,
+      documentNumber: payment.documentNumber,
+    });
   };
 
   return (
@@ -289,6 +302,22 @@ export default function FinalPurchaseApproval() {
                       <div className="flex h-full flex-1 items-center justify-center text-center">
                         <input
                           placeholder="R$ 0,00"
+                          value={data.amount.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                          onChange={(e) => {
+                            const value = parseFloat(
+                              e.target.value
+                                .replace(/[^0-9,-]+/g, "")
+                                .replace(",", "."),
+                            );
+                            if (!isNaN(value)) {
+                              setData({ ...data, amount: value });
+                            } else {
+                              setData({ ...data, amount: 0 });
+                            }
+                          }}
                           className="flex-1 items-center bg-transparent text-center text-lg text-zinc-700 outline-none"
                         />
                       </div>
