@@ -46,8 +46,11 @@ export default function ChatWidget() {
 
   useEffect(() => {
     const prompt = screenPrompts.find((p) => p.screen === pathName);
-    console.log(prompt);
-    if (prompt) setSelectedPrompt(prompt);
+    if (prompt) {
+      setSelectedPrompt(prompt);
+    } else {
+      setSelectedPrompt(generalPrompt);
+    }
   }, [pathName]);
 
   // Auto foco ao abrir
