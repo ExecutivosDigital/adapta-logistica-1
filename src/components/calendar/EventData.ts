@@ -4,6 +4,7 @@ const m = today.getMonth();
 // const d = today.getDate();
 
 export interface EventType2 {
+  id: string;
   type: "Recorrentes" | "Avulso" | "Colaborador";
   movementType: "Entrada" | "Saida";
   status: "À Pagar" | "Pendente" | "Atrasado" | "Pago";
@@ -16,6 +17,7 @@ export interface EventType2 {
 }
 export const Events2: EventType2[] = [
   {
+    id: "1",
     type: "Recorrentes",
     status: "À Pagar",
     movementType: "Entrada",
@@ -27,6 +29,7 @@ export const Events2: EventType2[] = [
     color: "#d96927",
   },
   {
+    id: "2",
     type: "Recorrentes",
     status: "Pendente",
     movementType: "Saida",
@@ -38,6 +41,7 @@ export const Events2: EventType2[] = [
     color: "#b33f40",
   },
   {
+    id: "3",
     type: "Recorrentes",
     status: "Atrasado",
     movementType: "Entrada",
@@ -48,6 +52,7 @@ export const Events2: EventType2[] = [
     color: "#2e86ab",
   },
   {
+    id: "4",
     type: "Recorrentes",
     status: "Pago",
     movementType: "Saida",
@@ -59,6 +64,7 @@ export const Events2: EventType2[] = [
     color: "#8e44ad",
   },
   {
+    id: "5",
     type: "Recorrentes",
     status: "Atrasado",
     movementType: "Entrada",
@@ -69,6 +75,7 @@ export const Events2: EventType2[] = [
     color: "#16a085",
   },
   {
+    id: "6",
     type: "Recorrentes",
     status: "Pago",
     movementType: "Saida",
@@ -79,6 +86,7 @@ export const Events2: EventType2[] = [
     color: "#f39c12",
   },
   {
+    id: "7",
     type: "Recorrentes",
     status: "À Pagar",
     movementType: "Entrada",
@@ -90,6 +98,7 @@ export const Events2: EventType2[] = [
     color: "#2980b9",
   },
   {
+    id: "8",
     type: "Recorrentes",
     status: "Pendente",
     movementType: "Saida",
@@ -100,6 +109,7 @@ export const Events2: EventType2[] = [
     color: "#c0392b",
   },
   {
+    id: "9",
     type: "Recorrentes",
     status: "À Pagar",
     movementType: "Entrada",
@@ -111,6 +121,7 @@ export const Events2: EventType2[] = [
     color: "#27ae60",
   },
   {
+    id: "10",
     type: "Recorrentes",
     status: "Pago",
     movementType: "Saida",
@@ -121,6 +132,7 @@ export const Events2: EventType2[] = [
     color: "#7f8c8d",
   },
   {
+    id: "11",
     type: "Recorrentes",
     status: "Atrasado",
     movementType: "Entrada",
@@ -131,6 +143,7 @@ export const Events2: EventType2[] = [
     color: "#9b59b6",
   },
   {
+    id: "12",
     type: "Recorrentes",
     status: "Pendente",
     movementType: "Saida",
@@ -142,6 +155,7 @@ export const Events2: EventType2[] = [
     color: "#e74c3c",
   },
   {
+    id: "13",
     type: "Recorrentes",
     status: "Pago",
     movementType: "Entrada",
@@ -152,6 +166,7 @@ export const Events2: EventType2[] = [
     color: "#3498db",
   },
   {
+    id: "14",
     type: "Recorrentes",
     status: "À Pagar",
     movementType: "Saida",
@@ -162,6 +177,7 @@ export const Events2: EventType2[] = [
     color: "#1abc9c",
   },
   {
+    id: "15",
     type: "Recorrentes",
     status: "Pago",
     movementType: "Entrada",
@@ -172,6 +188,7 @@ export const Events2: EventType2[] = [
     color: "#f1c40f",
   },
   {
+    id: "16",
     type: "Recorrentes",
     status: "Atrasado",
     movementType: "Saida",
@@ -182,6 +199,7 @@ export const Events2: EventType2[] = [
     color: "#d35400",
   },
   {
+    id: "17",
     type: "Recorrentes",
     status: "Pendente",
     movementType: "Entrada",
@@ -192,6 +210,7 @@ export const Events2: EventType2[] = [
     color: "#34495e",
   },
   {
+    id: "18",
     type: "Recorrentes",
     status: "À Pagar",
     movementType: "Saida",
@@ -202,6 +221,7 @@ export const Events2: EventType2[] = [
     color: "#95a5a6",
   },
   {
+    id: "19",
     type: "Recorrentes",
     status: "Pago",
     movementType: "Entrada",
@@ -212,6 +232,7 @@ export const Events2: EventType2[] = [
     color: "#e67e22",
   },
   {
+    id: "20",
     type: "Recorrentes",
     status: "Atrasado",
     movementType: "Saida",
@@ -222,6 +243,7 @@ export const Events2: EventType2[] = [
     color: "#ec7063",
   },
   {
+    id: "21",
     type: "Avulso",
     status: "À Pagar",
     movementType: "Saida",
@@ -232,6 +254,7 @@ export const Events2: EventType2[] = [
     color: "#1abc9c",
   },
   {
+    id: "22",
     type: "Avulso",
     status: "Pendente",
     movementType: "Entrada",
@@ -242,6 +265,7 @@ export const Events2: EventType2[] = [
     color: "#e74c3c",
   },
   {
+    id: "23",
     type: "Avulso",
     status: "Atrasado",
     movementType: "Saida",
@@ -252,6 +276,7 @@ export const Events2: EventType2[] = [
     color: "#8e44ad",
   },
   {
+    id: "24",
     type: "Avulso",
     status: "Pago",
     movementType: "Entrada",
@@ -262,6 +287,7 @@ export const Events2: EventType2[] = [
     color: "#3498db",
   },
   {
+    id: "25",
     type: "Avulso",
     status: "À Pagar",
     movementType: "Saida",
@@ -272,6 +298,7 @@ export const Events2: EventType2[] = [
     color: "#f1c40f",
   },
   {
+    id: "26",
     type: "Avulso",
     status: "Pendente",
     movementType: "Entrada",
@@ -282,6 +309,7 @@ export const Events2: EventType2[] = [
     color: "#d35400",
   },
   {
+    id: "27",
     type: "Avulso",
     status: "Pago",
     movementType: "Saida",
@@ -292,6 +320,7 @@ export const Events2: EventType2[] = [
     color: "#2ecc71",
   },
   {
+    id: "28",
     type: "Avulso",
     status: "Atrasado",
     movementType: "Entrada",
@@ -302,6 +331,7 @@ export const Events2: EventType2[] = [
     color: "#9b59b6",
   },
   {
+    id: "29",
     type: "Avulso",
     status: "À Pagar",
     movementType: "Saida",
@@ -312,6 +342,7 @@ export const Events2: EventType2[] = [
     color: "#34495e",
   },
   {
+    id: "30",
     type: "Avulso",
     status: "Pago",
     movementType: "Entrada",
@@ -322,6 +353,7 @@ export const Events2: EventType2[] = [
     color: "#95a5a6",
   },
   {
+    id: "31",
     type: "Avulso",
     status: "Pendente",
     movementType: "Saida",
@@ -332,6 +364,7 @@ export const Events2: EventType2[] = [
     color: "#7f8c8d",
   },
   {
+    id: "32",
     type: "Avulso",
     status: "Atrasado",
     movementType: "Entrada",
@@ -342,6 +375,7 @@ export const Events2: EventType2[] = [
     color: "#f39c12",
   },
   {
+    id: "33",
     type: "Avulso",
     status: "Pago",
     movementType: "Saida",
@@ -352,6 +386,7 @@ export const Events2: EventType2[] = [
     color: "#16a085",
   },
   {
+    id: "34",
     type: "Avulso",
     status: "À Pagar",
     movementType: "Entrada",
@@ -362,6 +397,7 @@ export const Events2: EventType2[] = [
     color: "#c0392b",
   },
   {
+    id: "35",
     type: "Avulso",
     status: "Pendente",
     movementType: "Saida",
@@ -372,6 +408,7 @@ export const Events2: EventType2[] = [
     color: "#27ae60",
   },
   {
+    id: "36",
     type: "Avulso",
     status: "Atrasado",
     movementType: "Entrada",
@@ -382,6 +419,7 @@ export const Events2: EventType2[] = [
     color: "#2980b9",
   },
   {
+    id: "37",
     type: "Avulso",
     status: "Pago",
     movementType: "Saida",
@@ -392,6 +430,7 @@ export const Events2: EventType2[] = [
     color: "#d35400",
   },
   {
+    id: "38",
     type: "Avulso",
     status: "À Pagar",
     movementType: "Entrada",
@@ -402,6 +441,7 @@ export const Events2: EventType2[] = [
     color: "#e67e22",
   },
   {
+    id: "39",
     type: "Avulso",
     status: "Pendente",
     movementType: "Saida",
@@ -412,6 +452,7 @@ export const Events2: EventType2[] = [
     color: "#bdc3c7",
   },
   {
+    id: "40",
     type: "Avulso",
     status: "Atrasado",
     movementType: "Entrada",
@@ -422,6 +463,7 @@ export const Events2: EventType2[] = [
     color: "#a569bd",
   },
   {
+    id: "41",
     type: "Colaborador",
     status: "À Pagar",
     movementType: "Saida",
@@ -432,6 +474,7 @@ export const Events2: EventType2[] = [
     color: "#f1948a",
   },
   {
+    id: "42",
     type: "Colaborador",
     status: "À Pagar",
     movementType: "Entrada",
@@ -442,6 +485,7 @@ export const Events2: EventType2[] = [
     color: "#27ae60",
   },
   {
+    id: "43",
     type: "Colaborador",
     status: "Pendente",
     movementType: "Entrada",
@@ -452,6 +496,7 @@ export const Events2: EventType2[] = [
     color: "#bdc3c7",
   },
   {
+    id: "44",
     type: "Colaborador",
     status: "Pago",
     movementType: "Entrada",
@@ -462,6 +507,7 @@ export const Events2: EventType2[] = [
     color: "#34495e",
   },
   {
+    id: "45",
     type: "Colaborador",
     status: "Pendente",
     movementType: "Saida",
@@ -472,6 +518,7 @@ export const Events2: EventType2[] = [
     color: "#c0392b",
   },
   {
+    id: "46",
     type: "Colaborador",
     status: "Pago",
     movementType: "Entrada",
@@ -482,6 +529,7 @@ export const Events2: EventType2[] = [
     color: "#7dcea0",
   },
   {
+    id: "47",
     type: "Colaborador",
     status: "Atrasado",
     movementType: "Entrada",
@@ -492,6 +540,7 @@ export const Events2: EventType2[] = [
     color: "#2980b9",
   },
   {
+    id: "48",
     type: "Colaborador",
     status: "Pendente",
     movementType: "Entrada",
@@ -502,6 +551,7 @@ export const Events2: EventType2[] = [
     color: "#9b59b6",
   },
   {
+    id: "49",
     type: "Colaborador",
     status: "Pago",
     movementType: "Saida",
@@ -512,6 +562,7 @@ export const Events2: EventType2[] = [
     color: "#16a085",
   },
   {
+    id: "50",
     type: "Colaborador",
     status: "À Pagar",
     movementType: "Entrada",
@@ -522,6 +573,7 @@ export const Events2: EventType2[] = [
     color: "#8e44ad",
   },
   {
+    id: "51",
     type: "Colaborador",
     status: "Pago",
     movementType: "Entrada",
@@ -532,6 +584,7 @@ export const Events2: EventType2[] = [
     color: "#d35400",
   },
   {
+    id: "52",
     type: "Colaborador",
     status: "Atrasado",
     movementType: "Saida",
@@ -542,6 +595,7 @@ export const Events2: EventType2[] = [
     color: "#1abc9c",
   },
   {
+    id: "53",
     type: "Colaborador",
     status: "Pago",
     movementType: "Saida",
@@ -552,6 +606,7 @@ export const Events2: EventType2[] = [
     color: "#f39c12",
   },
   {
+    id: "54",
     type: "Colaborador",
     status: "Atrasado",
     movementType: "Entrada",
@@ -562,6 +617,7 @@ export const Events2: EventType2[] = [
     color: "#a569bd",
   },
   {
+    id: "55",
     type: "Colaborador",
     status: "À Pagar",
     movementType: "Saida",
@@ -572,6 +628,7 @@ export const Events2: EventType2[] = [
     color: "#f1c40f",
   },
   {
+    id: "56",
     type: "Colaborador",
     status: "Pendente",
     movementType: "Saida",
@@ -582,6 +639,7 @@ export const Events2: EventType2[] = [
     color: "#dc7633",
   },
   {
+    id: "57",
     type: "Colaborador",
     status: "Pendente",
     movementType: "Entrada",
@@ -592,6 +650,7 @@ export const Events2: EventType2[] = [
     color: "#e74c3c",
   },
   {
+    id: "58",
     type: "Colaborador",
     status: "Atrasado",
     movementType: "Saida",
@@ -602,6 +661,7 @@ export const Events2: EventType2[] = [
     color: "#e67e22",
   },
   {
+    id: "59",
     type: "Colaborador",
     status: "Pago",
     movementType: "Saida",
@@ -612,6 +672,7 @@ export const Events2: EventType2[] = [
     color: "#5dade2",
   },
   {
+    id: "60",
     type: "Colaborador",
     status: "À Pagar",
     movementType: "Entrada",

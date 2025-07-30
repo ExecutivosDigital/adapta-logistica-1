@@ -1,11 +1,10 @@
 "use client";
 
-import { Viewer, Worker } from "@react-pdf-viewer/core";
-import "@react-pdf-viewer/core/lib/styles/index.css";
 import { Loader2 } from "lucide-react";
 import OpenAI from "openai";
 import { useState } from "react";
 import toast from "react-hot-toast";
+
 export interface PaymentDocumentProps {
   cpfCnpj: string;
   documentNumber: string;
@@ -20,7 +19,9 @@ interface AiFileReaderProps {
 export function AiFileReader({ handleData }: AiFileReaderProps) {
   const [isShowingDocument, setIsShowingDocument] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
 
   const client = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -72,7 +73,7 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
           newStatus.status === "queued"
         ) {
           await new Promise((resolve) => setTimeout(resolve, 5000));
-          return await waitForCompletion({ run, thread }); // Recursivamente verifica novamente
+          return await waitForCompletion({ run, thread });
         } else {
           return { status: newStatus.status };
         }
@@ -84,13 +85,11 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
       });
 
       if (isCompleted.status === "completed") {
-        //eslint ignore:
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const threadMessages: any = await client.beta.threads.messages.list(
           thread.thread_id,
         );
 
-        // Tenta fazer o parse da string
         return JSON.parse(
           threadMessages.data[0].content[0].text.value
             .replace("```json\n", "")
@@ -121,26 +120,26 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
           <input
             disabled={loading}
             type="file"
+            accept=".pdf"
             onChange={async (e) => {
               setLoading(true);
-              const file = e.target.files?.[0];
-              if (file) {
+              const selectedFile = e.target.files?.[0];
+              if (selectedFile) {
                 const reader = new FileReader();
                 reader.onload = async (event) => {
                   const buffer = Buffer.from(
                     event.target?.result as ArrayBuffer,
                   );
-                  const fileUrl = URL.createObjectURL(file);
                   const summaryData = await analyze(buffer);
 
                   if (summaryData) {
                     handleData(summaryData);
-                    setFile(fileUrl);
+                    setFile(selectedFile);
                     setIsShowingDocument(true);
                   }
                   setLoading(false);
                 };
-                reader.readAsArrayBuffer(file);
+                reader.readAsArrayBuffer(selectedFile);
               }
             }}
             title=" "
@@ -177,23 +176,57 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
           )}
         </div>
       ) : file ? (
-        <div className="relative flex h-full w-full">
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-            <Viewer fileUrl={file} />
-          </Worker>
-          <button
-            onClick={() => {
-              setIsShowingDocument(false);
-              setFile(null);
-              setLoading(false);
-            }}
-            className="absolute top-1 left-1 rounded-md bg-orange-500 px-4 py-2 text-white"
-          >
-            Alterar Documento
-          </button>
+        <div className="relative flex h-full w-full flex-col">
+          <div className="flex items-center justify-between bg-gray-100 p-4">
+            <button
+              onClick={() => {
+                setIsShowingDocument(false);
+                setFile(null);
+                setLoading(false);
+                setPageNumber(1);
+                setNumPages(0);
+              }}
+              className="rounded-md bg-orange-500 px-4 py-2 text-white"
+            >
+              Alterar Documento
+            </button>
+
+            {numPages > 1 && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
+                  disabled={pageNumber <= 1}
+                  className="rounded bg-blue-500 px-3 py-1 text-white disabled:bg-gray-300"
+                >
+                  Anterior
+                </button>
+                <span className="text-sm">
+                  Página {pageNumber} de {numPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setPageNumber(Math.min(numPages, pageNumber + 1))
+                  }
+                  disabled={pageNumber >= numPages}
+                  className="rounded bg-blue-500 px-3 py-1 text-white disabled:bg-gray-300"
+                >
+                  Próxima
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-1 justify-center overflow-auto p-4">
+            <iframe
+              src={URL.createObjectURL(file)}
+              width="100%"
+              height="100%"
+              title="PDF Viewer"
+            />
+          </div>
         </div>
       ) : (
-        <>aaaaa</>
+        <>aaaa</>
       )}
     </>
   );

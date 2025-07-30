@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Tooltip,
   TooltipArrow,
@@ -7,27 +8,12 @@ import {
 } from "@/app/chat/tooltip";
 import { cn } from "@/utils/cn";
 import { Layers } from "lucide-react";
-import { EventType2 } from "./EventData";
-interface Props {
-  event: EventType2;
-  label: string;
-  localizer: {
-    messages: {
-      today: string;
-    };
-  };
-  onNavigate: (action: string) => void;
-  onView: (view: string) => void;
-  view: string;
-  views: string[];
-  addNewEvent: () => void;
-}
 
-export function CustomEventWeek({ event, onView }: Props) {
+export function CustomEventWeek({ event, onView }: any) {
   const viewHandler = (viewName: string) => {
     onView(viewName);
   };
-  console.log("event3232323", event.status);
+
   return (
     <button
       onClick={() => viewHandler("week")}

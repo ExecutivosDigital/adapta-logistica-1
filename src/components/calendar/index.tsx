@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -22,6 +23,7 @@ import {
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 // ---- Seus componentes/arquivos já existentes ----
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/date-picker";
 import { Modal } from "../ui/Modal";
@@ -37,6 +39,7 @@ const localizer = momentLocalizer(moment);
 
 // ===== Tipagens =====
 export interface EventType2 {
+  id: string;
   type: "Recorrentes" | "Avulso" | "Colaborador";
   movementType: "Entrada" | "Saida";
   status: "À Pagar" | "Pendente" | "Atrasado" | "Pago";
@@ -68,6 +71,11 @@ type RBCEvent = EventType2 | SummaryEvent;
 
 interface CalendarSlotInfo extends SlotInfo {
   name?: string;
+}
+
+interface ButtonGroupProps {
+  accessLevel: string;
+  setAccessLevel: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
@@ -134,7 +142,8 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
 }
 
 // ===== Arquivo principal =====
-const CalendarApp = () => {
+const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
+  const router = useRouter();
   const [calevents, setCalEvents] = useState<EventType2[]>(Events2);
   const [open, setOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -143,7 +152,6 @@ const CalendarApp = () => {
   const [end, setEnd] = useState<Date | null>(null);
   const [color, setColor] = useState<string>("primary");
   const [update, setUpdate] = useState<EventType2 | null>(null);
-
   const [view, setView] = useState<View>(Views.MONTH);
   const [date, setDate] = useState<Date>(new Date());
 
@@ -155,24 +163,11 @@ const CalendarApp = () => {
     { id: 7, eColor: "#f05252", value: "red" },
   ];
 
-  // ===== Funções auxiliares =====
   const addNewEventAlert = (slotInfo: CalendarSlotInfo) => {
     setOpen(true);
     setSlot(slotInfo);
     setStart(slotInfo.start);
     setEnd(slotInfo.end);
-  };
-
-  const editEvent = (event: EventType2) => {
-    setOpen(true);
-    const newEditEvent = calevents.find((elem) => elem.name === event.name);
-    if (!newEditEvent) return;
-
-    setName(newEditEvent.name);
-    setColor(newEditEvent.color || "primary");
-    setStart(newEditEvent.start || null);
-    setEnd(newEditEvent.end || null);
-    setUpdate(event);
   };
 
   const updateEvent = (e: React.FormEvent<HTMLFormElement>) => {
@@ -201,6 +196,7 @@ const CalendarApp = () => {
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newEvent: EventType2 = {
+      id: "",
       type: "Avulso",
       movementType: "Entrada",
       status: "Pendente",
@@ -222,37 +218,6 @@ const CalendarApp = () => {
     setUpdate(null);
   };
 
-  const eventColors = (event: RBCEvent) => {
-    console.log("event", event);
-    if ("isSummary" in event) {
-      const isEnt = event.movementType === "Entrada";
-      return {
-        style: {
-          backgroundColor: isEnt ? "#E9FFF0" : "#FFECEC",
-          color: isEnt ? "#0A8C3B" : "#D93025",
-          padding: 0,
-          marginTop: !isEnt && 10,
-        },
-      };
-    }
-
-    const isEntrada = event.movementType === "Entrada";
-    const bg = isEntrada ? "#E9FFF0" : "#FFECEC";
-    const border = isEntrada ? "#0A8C3B" : "#D93025";
-    return {
-      style: {
-        backgroundColor: bg,
-        borderLeft: `4px solid ${border}`,
-        paddingLeft: 4,
-        marginLeft: 2,
-        width: "95%",
-        color: border,
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-      },
-    };
-  };
-
   const handleStartChange = (newValue: DateValue | null) => {
     if (newValue) setStart(new Date(newValue.toString()));
   };
@@ -261,7 +226,6 @@ const CalendarApp = () => {
     if (newValue) setEnd(new Date(newValue.toString()));
   };
 
-  // ===== Agrupamento para visão mensal =====
   const monthEvents: RBCEvent[] = useMemo(() => {
     if (view !== Views.MONTH) return calevents;
 
@@ -306,7 +270,7 @@ const CalendarApp = () => {
         };
       }
 
-      const value = parseBrazilianCurrency(e.value);
+      const value = parseBrazilianCurrency(String(e.value));
 
       if (e.movementType === "Entrada") {
         bucket[key].entrada += 1;
@@ -358,17 +322,40 @@ const CalendarApp = () => {
     return list;
   }, [view, calevents]);
 
-  // ===== Clique em eventos =====
   const onSelectEvent = (event: RBCEvent) => {
     if ("isSummary" in event) {
       setDate(event.start);
       setView(Views.DAY);
       return;
     }
-    editEvent(event as EventType2);
+    if (event.movementType === "Entrada") {
+      if (event.status !== "À Pagar") {
+        if (accessLevel === "common") {
+          if (event.type === "Recorrentes") {
+            return router.push(`/payable/recurring/add-document/${event.id}`);
+          } else {
+            return router.push(`/payable/add-document/${event.id}`);
+          }
+        } else if (accessLevel === "admin") {
+          return router.push(`/payable/approve/${event.id}`);
+        }
+      } else if (event.status === "À Pagar") {
+        return router.push(`/payable/pay/${event.id}`);
+      }
+    } else if (event.movementType === "Saida") {
+      if (event.status !== "À Pagar") {
+        return router.push(`/receivable/update/${event.id}`);
+      } else if (event.status === "À Pagar") {
+        if (accessLevel === "common") {
+          return router.push(`/receivable/receive/${event.id}`);
+        } else if (accessLevel === "admin") {
+          return router.push(`/receivable/approve/${event.id}`);
+        }
+      }
+    }
+    console.log("event: ", event);
   };
 
-  // ===== Clique no slot vazio =====
   const onSelectSlot = (slotInfo: CalendarSlotInfo) => {
     if (view === Views.MONTH) {
       setDate(slotInfo.start);
@@ -393,20 +380,60 @@ const CalendarApp = () => {
           scrollToTime={new Date(1970, 1, 1, 6)}
           defaultDate={new Date()}
           components={{
-            event:
-              view === Views.MONTH
-                ? MonthSummaryEvent
-                : view === Views.WEEK
-                  ? CustomEventWeek
-                  : CustomEvent,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            event: (props) => {
+              const { event } = props;
+              if (view === Views.MONTH) {
+                if ("isSummary" in event && event.isSummary) {
+                  return <MonthSummaryEvent event={event as SummaryEvent} />;
+                }
+              } else if (view === Views.WEEK) {
+                if (!("isSummary" in event)) {
+                  return (
+                    <CustomEventWeek event={event as any} onView={() => {}} />
+                  );
+                }
+              } else {
+                if (!("isSummary" in event)) {
+                  return <CustomEvent event={event as any} onView={() => {}} />;
+                }
+              }
+              return null;
+            },
             toolbar: (props: any) => (
               <CustomToolbar {...props} addNewEvent={() => setOpen(true)} />
             ),
           }}
           onSelectEvent={onSelectEvent}
           onSelectSlot={onSelectSlot}
-          eventPropGetter={eventColors}
+          eventPropGetter={(event: RBCEvent) => {
+            if ("isSummary" in event) {
+              const isEnt = event.movementType === "Entrada";
+              return {
+                style: {
+                  backgroundColor: isEnt ? "#E9FFF0" : "#FFECEC",
+                  color: isEnt ? "#0A8C3B" : "#D93025",
+                  padding: 0,
+                  marginTop: !isEnt ? 10 : 0,
+                },
+              };
+            }
+
+            const isEntrada = event.movementType === "Entrada";
+            const bg = isEntrada ? "#E9FFF0" : "#FFECEC";
+            const border = isEntrada ? "#0A8C3B" : "#D93025";
+            return {
+              style: {
+                backgroundColor: bg,
+                borderLeft: `4px solid ${border}`,
+                paddingLeft: 4,
+                marginLeft: 2,
+                width: "95%",
+                color: border,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+              },
+            };
+          }}
           className="min-h-[600px] w-full text-black xl:min-h-[900px]"
           culture="pt-BR"
           messages={{ noEventsInRange: "Nenhuma atividade encontrada." }}

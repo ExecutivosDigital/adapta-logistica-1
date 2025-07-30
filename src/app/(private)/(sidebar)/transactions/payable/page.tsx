@@ -31,7 +31,7 @@ export default function Payable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="bottom" className="z-[999]">
               <DropdownMenuItem
-                onClick={() => router.push("/create-payment")}
+                onClick={() => router.push("/payable/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -46,7 +46,7 @@ export default function Payable() {
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push("/create-payment/recurring")}
+                onClick={() => router.push("/payable/recurring/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

@@ -370,7 +370,7 @@ export default function NewReceivable() {
         </div>
         <OrangeButton
           className="h-8"
-          onClick={() => router.push("/create-receivable")}
+          onClick={() => router.push("/receivable/new")}
         >
           Continuar
           <ChevronRight />
