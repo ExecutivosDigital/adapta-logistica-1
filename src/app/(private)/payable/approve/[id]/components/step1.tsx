@@ -21,14 +21,14 @@ import {
   Search,
 } from "lucide-react";
 import moment from "moment";
-import "moment/locale/pt-BR";
+import "moment/locale/pt-br";
 import { useCallback, useRef, useState } from "react";
 import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { DataType } from "../page";
 import { CostCentersList } from "./cost-centers-list";
 
-moment.locale("pt-BR");
+moment.locale("pt-br");
 
 interface Props {
   data: DataType;

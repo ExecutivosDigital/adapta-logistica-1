@@ -19,9 +19,9 @@ import { useEffect, useRef, useState } from "react";
 import { DataType } from "../page";
 import { CostCentersList } from "./cost-centers-list";
 
-import "moment/locale/pt-BR";
+import "moment/locale/pt-br";
 import { LaunchTypes } from "./launch-types";
-moment.locale("pt-BR");
+moment.locale("pt-br");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;
