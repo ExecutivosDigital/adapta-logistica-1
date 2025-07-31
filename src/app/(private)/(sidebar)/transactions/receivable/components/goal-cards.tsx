@@ -4,7 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, Filter } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 
 export function ReceivableGoalCards() {
   return (
@@ -33,23 +33,17 @@ export function ReceivableGoalCards() {
         </div>
 
         <div className="relative flex flex-col gap-2 p-2 px-4">
-          <div className="absolute top-2 right-2 flex items-center gap-2 self-end rounded-lg border border-zinc-400 p-1 text-sm text-black">
-            <Filter size={14} />
-            <span className="text-sm">Período</span>
-          </div>
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#00A181]" />
-              <span className="text-lg text-zinc-400 2xl:text-2xl">
-                Á Receber
-              </span>
+              <span className="text-md text-zinc-400">Recebido</span>
             </div>
             <span className="text-2xl font-semibold text-[#00A181]">
               R$ <span className="">1.322.890,00</span>
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 font-semibold">
+          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
             Ver Transações Recebidas
           </button>
           <div />
@@ -82,16 +76,14 @@ export function ReceivableGoalCards() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#00A181]" />
-              <span className="text-lg text-zinc-400 2xl:text-2xl">
-                Em Aberto
-              </span>
+              <span className="text-md text-zinc-400">Em Aberto</span>
             </div>
             <span className="text-2xl font-semibold text-[#00A181]">
               R$ <span className="">1.322.890,00</span>
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 font-semibold">
+          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
             Ver Transações em Aberto
           </button>
           <div />
@@ -124,16 +116,14 @@ export function ReceivableGoalCards() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#EF4444]" />
-              <span className="text-lg text-zinc-400 2xl:text-2xl">
-                Atrasados
-              </span>
+              <span className="text-md text-zinc-400">Atrasados</span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
               R$ <span className="">1.322.890,00</span>
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 font-semibold">
+          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
             Ver Transações Atrasadas
           </button>
           <div />

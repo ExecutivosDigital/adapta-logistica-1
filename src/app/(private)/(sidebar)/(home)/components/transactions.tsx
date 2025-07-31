@@ -117,9 +117,9 @@ export function HomeTransactions() {
     <>
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Transações</span>
+          <span className="font-semibold">Fluxo de Pagamento</span>
           <div className="text-primary flex items-center gap-2 text-sm font-semibold">
-            <span>Ver todas</span>
+            <span>Ver todos</span>
             <ChevronRight />
           </div>
         </div>

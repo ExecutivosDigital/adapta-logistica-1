@@ -27,7 +27,6 @@ const CustomToolbar = ({
   onView,
   view,
   views,
-  addNewEvent,
 }: CustomToolbarProps) => {
   const navigate = (action: string) => {
     onNavigate(action);
@@ -41,22 +40,7 @@ const CustomToolbar = ({
     <div className="rbc-toolbar flex flex-row gap-2 md:gap-0">
       {/* --- Seção Esquerda: Navegação e Ação --- */}
       <div className="flex w-full items-center justify-end md:hidden">
-        <span>
-          <button
-            type="button"
-            style={{
-              background: "linear-gradient(90deg, #7A00E6 0%, #FF0099 100%)",
-              marginLeft: "10px",
-              fontSize: "12px",
-              color: "white",
-              borderRadius: "8px",
-            }}
-            onClick={() => addNewEvent()}
-            className=""
-          >
-            Adicionar Atividade
-          </button>
-        </span>
+        <span></span>
       </div>
       <div className="flex md:hidden">
         <span className="rbc-btn-group my-2 xl:my-0">
@@ -88,7 +72,7 @@ const CustomToolbar = ({
           onClick={() => navigate("PREV")}
           style={{
             backgroundColor: `#d96927`,
-            opacity: "0.5",
+            opacity: "0.8",
             color: "white",
           }}
         >
@@ -107,7 +91,7 @@ const CustomToolbar = ({
             Hoje
           </button>
         </div>
-        <span className="rbc-toolbar-label text-primary block font-bold md:hidden">
+        <span className="rbc-toolbar-label text-primary block font-bold capitalize md:hidden">
           {label}
         </span>
 
@@ -124,26 +108,8 @@ const CustomToolbar = ({
         </button>
       </span>
 
-      {/* Botão customizado "Adicionar Atividade" */}
-      <span
-        className="my-2 mt-2 hidden md:flex xl:my-0"
-        style={{ marginLeft: "10px" }}
-      >
-        <button
-          type="button"
-          onClick={() => addNewEvent()}
-          style={{
-            backgroundColor: `#d96927`,
-            color: "white",
-            borderRadius: "8px",
-          }}
-        >
-          Adicionar Atividade
-        </button>
-      </span>
-
       {/* --- Seção Central: Mês e Ano --- */}
-      <span className="rbc-toolbar-label text-primary hidden font-bold md:block">
+      <span className="rbc-toolbar-label text-primary hidden font-bold capitalize md:block">
         {label}
       </span>
 
@@ -167,6 +133,7 @@ const CustomToolbar = ({
                         : "",
                     backgroundColor: "#d96927",
                     color: "white",
+                    opacity: view === viewName ? "1" : "0.8",
                   }}
                   className={view === viewName ? "rbc-active" : ""}
                   onClick={() => viewHandler(viewName)}

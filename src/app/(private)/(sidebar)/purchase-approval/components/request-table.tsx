@@ -1,4 +1,10 @@
 "use client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -33,8 +39,14 @@ type SortDirection = "asc" | "desc" | null;
 type SortableColumn = "item";
 interface TableProps {
   openJustifyModal: () => void;
+  openEditModal: () => void;
+  openDeleteModal: () => void;
 }
-export function RequestTable({ openJustifyModal }: TableProps) {
+export function RequestTable({
+  openJustifyModal,
+  openEditModal,
+  openDeleteModal,
+}: TableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const columns: ColumnProps[] = [
@@ -170,9 +182,38 @@ export function RequestTable({ openJustifyModal }: TableProps) {
               >
                 <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
                   <div className="flex h-full w-full items-center gap-2 text-start">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-400">
-                      <EllipsisVertical className="h-4 w-4 text-zinc-400" />
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-400">
+                          <EllipsisVertical className="h-4 w-4 text-zinc-400" />
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="start"
+                        side="right"
+                        className="z-[999]"
+                      >
+                        <DropdownMenuItem
+                          onClick={openEditModal}
+                          className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                        >
+                          <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                            Editar
+                            <div className="border-primary h-4 w-4 rounded-md border"></div>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={openDeleteModal}
+                          className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                        >
+                          <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                            Excluir
+                            <div className="border-primary h-4 w-4 rounded-md border"></div>
+                          </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {row.sent}
                   </div>
                 </TableCell>

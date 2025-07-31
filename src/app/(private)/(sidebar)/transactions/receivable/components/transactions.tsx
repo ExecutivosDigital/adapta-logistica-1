@@ -1,4 +1,5 @@
 "use client";
+import { OrangeButton } from "@/components/OrangeButton";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import {
   Table,
@@ -11,12 +12,10 @@ import {
 import { cn } from "@/utils/cn";
 import { ChevronRight, EllipsisVertical, File } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ReceivableNewReleaseSheet } from "./new-release-sheet";
 
 export function ReceivableTransactions() {
-  const router = useRouter();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
@@ -120,22 +119,12 @@ export function ReceivableTransactions() {
       <div className="flex flex-col">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">Transações</span>
-            <div
-              onClick={() => router.push("/transactions/receivable/all")}
-              className="text-primary flex cursor-pointer items-center gap-2 text-sm font-semibold"
-            >
-              <span>Ver todas</span>
-              <ChevronRight />
-            </div>
+            <span className="font-semibold">Fluxo de Pagamento</span>
           </div>
-          <button
-            onClick={() => setIsNewReleaseSheetOpen(true)}
-            className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
-          >
-            <span className="text-sm"> Criar Lançamento</span>
+          <OrangeButton className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
+            <span className="text-sm">Ver todos</span>
             <ChevronRight />
-          </button>
+          </OrangeButton>
         </div>
         <Table className="border-collapse">
           <TableHeader>
@@ -207,7 +196,7 @@ export function ReceivableTransactions() {
                               : "",
                     )}
                   >
-                    {/* {row.status} */}Á Receber
+                    Á Receber
                   </div>
                 </TableCell>
                 <TableCell className="py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-400 underline">

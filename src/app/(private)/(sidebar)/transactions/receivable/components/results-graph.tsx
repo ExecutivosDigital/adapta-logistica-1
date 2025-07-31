@@ -6,7 +6,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ApexOptions } from "apexcharts";
-import { Filter } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -118,26 +117,15 @@ export function ReceivableResultsGraph() {
   return (
     <div className="flex h-full w-full justify-between gap-2">
       <div className="flex h-full w-80 flex-col justify-between border-r border-r-zinc-200 p-2">
-        <div className="flex items-center justify-between">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-2 rounded-lg border border-zinc-400 p-2 text-black">
-                <Filter />
-                <span className="text-sm">Período</span>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex items-center justify-between"></div>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <div className="h-full w-1 bg-[#00A181]" />
+            <span className="text-lg text-zinc-400 2xl:text-2xl">Recebido</span>
+          </div>
+          <span className="text-2xl font-semibold text-[#00A181]">
+            R$ <span className="">1.322.890,00</span>
+          </span>
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
@@ -150,6 +138,24 @@ export function ReceivableResultsGraph() {
             R$ <span className="">1.322.890,00</span>
           </span>
         </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center gap-2 self-start rounded-lg border border-zinc-400 p-2 text-black">
+              <span className="text-sm">Ano Atual</span>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              Lorem Ipsum
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <div />
       </div>
 

@@ -8,12 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/utils/cn";
-import {
-  ArrowRight,
-  CircleDollarSign,
-  EllipsisVertical,
-  Search,
-} from "lucide-react";
+import { ArrowRight, CircleDollarSign, Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -68,7 +63,7 @@ export function NewReceivableModal({ show, onHide }: NewReceivableModalProps) {
           Cadastro de Conta à Receber
         </span>
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-zinc-400">
-          <EllipsisVertical />
+          <Plus />
         </div>
       </div>
       <div className="flex flex-col gap-4 border-b border-b-zinc-200 px-8 py-4">

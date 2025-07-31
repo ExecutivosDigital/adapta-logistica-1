@@ -229,7 +229,7 @@ export function HomeCategoryList() {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="left">
               <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
+                Calendário
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
                 Lorem Ipsum

@@ -6,12 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ApexOptions } from "apexcharts";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Filter,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, DollarSign, Filter } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -125,7 +120,7 @@ export function HomeResultsGraph() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="bg-primary/20 text-primary flex h-6 w-6 items-center justify-center rounded-full p-1">
-            <ShieldCheck />
+            <DollarSign />
           </div>
           <span className="text-sm font-semibold">Resultado Consolidado</span>
         </div>

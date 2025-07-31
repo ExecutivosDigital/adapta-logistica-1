@@ -25,7 +25,7 @@ import {
   Files,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn =
@@ -50,7 +50,7 @@ export function PayableTransactions() {
     { key: "value" as SortableColumn, label: "Valor Título", sortable: true },
     {
       key: "category" as SortableColumn,
-      label: "Bens/Serviços",
+      label: "Lançamentos",
       sortable: true,
     },
     { key: "cc" as SortableColumn, label: "Documentos", sortable: true },
@@ -398,16 +398,12 @@ export function PayableTransactions() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRows.map((row, rowIndex) => {
+            {filteredRows.map((row, index) => {
               const firstTransaction = row.transactions[0];
 
               return (
-                <>
-                  {/* Main row */}
-                  <TableRow
-                    key={`row-${rowIndex}`}
-                    className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
-                  >
+                <Fragment key={index}>
+                  <TableRow className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300">
                     <TableCell className="py-0.5 text-sm whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         {firstTransaction.date}
@@ -452,7 +448,7 @@ export function PayableTransactions() {
                       </div>
                     </TableCell>
                   </TableRow>
-                </>
+                </Fragment>
               );
             })}
           </TableBody>

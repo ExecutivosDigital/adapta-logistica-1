@@ -1,17 +1,6 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  ChevronLeft,
-  ChevronRight,
-  EllipsisVertical,
-  Filter,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 
 export function ReceivableFinancialLists() {
   const incomeList = [
@@ -123,26 +112,7 @@ export function ReceivableFinancialLists() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between">
-        <span className="font-semibold">Extrato Consolidado</span>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
-              <Filter />
-              <span className="text-sm">Junho</span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <span className="font-semibold">Fluxo Consolidado</span>
       </div>
       <div className="flex w-full items-center justify-between gap-8">
         <div className="flex w-1/2 flex-col rounded-xl border border-zinc-200 shadow-sm">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ApprovalTable } from "./components/approval-table";
 import { BudgetApprovalTable } from "./components/budget-approval-table";
+import { DeleteRequestModal } from "./components/delete-request-modal";
 import { FinalApprovalTable } from "./components/final-approval-table";
 import { NewPurchaseApprovalModal } from "./components/new-purchase-approval-modal";
 import { NewPurchaseBudgetModal } from "./components/new-purchase-budget-modal";
@@ -17,11 +18,16 @@ export default function PurchaseApproval() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [showNewPurchaseRequestModal, setShowNewPurchaseRequestModal] =
     useState<boolean>(false);
+  const [showDeleteRequestModal, setShowDeleteRequestModal] =
+    useState<boolean>(false);
   const [showNewPurchaseApprovalModal, setShowNewPurchaseApprovalModal] =
     useState<boolean>(false);
   const [showNewPurchaseBudgetModal, setShowNewPurchaseBudgetModal] =
     useState<boolean>(false);
-
+  const [
+    ShowNewPurchaseRequestModalEditable,
+    setShowNewPurchaseRequestModalEditable,
+  ] = useState<boolean>(false);
   const steps = [
     { label: "Solicitação de Compras", value: "requests" },
     { label: "Aprovação Financeiro", value: "approval" },
@@ -32,6 +38,7 @@ export default function PurchaseApproval() {
   const handleOpenModal = () => {
     if (currentStep === 0) {
       setShowNewPurchaseRequestModal(true);
+      setShowNewPurchaseRequestModalEditable(true);
     } else if (currentStep === 1) {
       setShowNewPurchaseApprovalModal(true);
     } else if (currentStep === 2) {
@@ -84,7 +91,15 @@ export default function PurchaseApproval() {
 
         {currentStep === 0 ? (
           <RequestTable
-            openJustifyModal={() => setShowNewPurchaseRequestModal(true)}
+            openJustifyModal={() => {
+              setShowNewPurchaseRequestModal(true);
+              setShowNewPurchaseRequestModalEditable(false);
+            }}
+            openEditModal={() => {
+              setShowNewPurchaseRequestModal(true);
+              setShowNewPurchaseRequestModalEditable(false);
+            }}
+            openDeleteModal={() => setShowDeleteRequestModal(true)}
           />
         ) : currentStep === 1 ? (
           <ApprovalTable
@@ -106,7 +121,14 @@ export default function PurchaseApproval() {
       {showNewPurchaseRequestModal && (
         <NewPurchaseRequestModal
           show={showNewPurchaseRequestModal}
+          isEditable={ShowNewPurchaseRequestModalEditable}
           onHide={() => setShowNewPurchaseRequestModal(false)}
+        />
+      )}
+      {showDeleteRequestModal && (
+        <DeleteRequestModal
+          show={showDeleteRequestModal}
+          onHide={() => setShowDeleteRequestModal(false)}
         />
       )}
       {showNewPurchaseApprovalModal && (

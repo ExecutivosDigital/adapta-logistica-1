@@ -3,16 +3,13 @@ import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-interface NewPurchaseRequestModalProps {
+interface DeleteRequestModalProps {
   show: boolean;
   onHide: () => void;
   isEditable?: boolean;
 }
 
-export function NewPurchaseRequestModal({
-  show,
-  onHide,
-}: NewPurchaseRequestModalProps) {
+export function DeleteRequestModal({ show, onHide }: DeleteRequestModalProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -37,7 +34,7 @@ export function NewPurchaseRequestModal({
           <div className="relative z-50 flex max-h-[85vh] w-max flex-col items-center justify-center">
             <div
               className={twMerge(
-                "relative z-20 flex w-full max-w-[50vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-md border bg-white px-2 py-4 shadow-md",
+                "relative z-20 flex max-w-[60vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-md border bg-white px-2 py-4 shadow-md",
                 "scrollbar-hide overflow-y-scroll rounded-2xl border-none px-0",
               )}
             >
@@ -47,7 +44,7 @@ export function NewPurchaseRequestModal({
               />
               <div className="border-b-primary flex h-20 w-full items-center border-b p-4">
                 <span className="text-primary text-lg font-semibold">
-                  Solicitação de Compras
+                  Excluir Solicitação de Compras
                 </span>
               </div>
               <div className="flex h-full w-full flex-col items-start justify-start">
@@ -85,44 +82,11 @@ export function NewPurchaseRequestModal({
                   </div>
                 </div>
                 <div className="h-px w-full bg-zinc-200" />
-                <div className="flex w-full flex-col gap-4 px-6 py-2 text-zinc-400">
-                  <div className="flex flex-col items-start">
-                    <label className="font-semibold">Item/Serviço</label>
+                <div className="w-full p-4">
+                  <div className="flex h-40 w-full flex-col gap-4 rounded-lg border border-zinc-400 px-6 py-2 text-zinc-400">
                     <textarea
-                      className="h-24 w-full resize-none rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                      placeholder="Descreva o que precisa"
-                    />
-                  </div>
-                  <div className="flex w-full items-center gap-4">
-                    <div className="flex w-full flex-col items-start">
-                      <label className="font-semibold">Valor Estimado</label>
-                      <input
-                        className="h-12 w-full rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                        placeholder="R$ 0,00"
-                        type="number"
-                      />
-                    </div>
-                    <div className="flex flex-col items-start">
-                      <label className="font-semibold">Quantidade</label>
-                      <input
-                        className="h-12 w-24 rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                        placeholder="x1"
-                        type="number"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-start">
-                    <label className="font-semibold">Justificativa</label>
-                    <textarea
-                      className="h-24 w-full resize-none rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                      placeholder="Descrição da Necessidade de Compras"
-                    />
-                  </div>
-                  <div className="flex w-full flex-col items-start">
-                    <label className="">Categoria</label>
-                    <input
-                      className="h-12 w-full rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                      placeholder="Categoria no Plano de Contas"
+                      className="h-full"
+                      placeholder="Justificativa da exclusão"
                     />
                   </div>
                 </div>
@@ -138,7 +102,7 @@ export function NewPurchaseRequestModal({
                   onClick={onHide}
                   className="bg-primary flex h-10 items-center overflow-hidden rounded-lg font-semibold text-white shadow-sm"
                 >
-                  <span className="mr-4 ml-4">Enviar Solicitação</span>
+                  <span className="mr-4 ml-4">Excluir </span>
                   <div className="ml-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white">
                     <Check className="text-green-500" />
                   </div>

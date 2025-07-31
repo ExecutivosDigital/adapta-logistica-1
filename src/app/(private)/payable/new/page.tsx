@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  Plus,
   Search,
   X,
 } from "lucide-react";
@@ -20,9 +21,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { AccontsType, Accounts } from "./components/acconts";
+import LaunchTypeModal from "./components/launch-type-modal";
 import { Step1 } from "./components/step1";
 import { Step3 } from "./components/step3";
-
 export interface DataType {
   totalValue: number;
   entryType: "DESPESAS" | "IMPOSTOS" | "C. VENDAS";
@@ -58,7 +59,12 @@ export interface DataType {
   approval: string;
   mail: string;
 }
-
+interface LaunchType {
+  tipoLancamento: string;
+  descNivel4: string; // só o texto depois do “-”
+  conta: string;
+  centroResultado: string;
+}
 export default function NewPayable() {
   const router = useRouter();
 
@@ -96,6 +102,7 @@ export default function NewPayable() {
   /* render */
 
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
+  const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
   const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
     useState(false);
   const suppliers = [
@@ -203,7 +210,93 @@ export default function NewPayable() {
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredContabilAccounts]);
+  const [selectedCostCenters, setSelectedCostCenters] = useState<
+    { name: string; value: string; locked?: boolean }[]
+  >([]);
+  const handleCostCenterToggle = (costCenterName: string) => {
+    const isSelected = selectedCostCenters.some(
+      (cc) => cc.name === costCenterName,
+    );
 
+    let updatedSelectedCenters;
+    let updatedCostCenters;
+
+    if (isSelected) {
+      // Remove the cost center
+      updatedSelectedCenters = selectedCostCenters.filter(
+        (cc) => cc.name !== costCenterName,
+      );
+      updatedCostCenters = data.costCenters.filter(
+        (cc) => cc.name !== costCenterName,
+      );
+    } else {
+      // Add the cost center
+      const newCostCenter = {
+        name: costCenterName,
+        value: "0.00",
+        locked: false,
+      };
+      updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
+      updatedCostCenters = [...data.costCenters, newCostCenter];
+    }
+
+    setSelectedCostCenters(updatedSelectedCenters);
+
+    // Apply the same distribution logic as distributeValueEvenly
+    if (updatedCostCenters.length > 0) {
+      const lockedCenters = updatedCostCenters.filter(
+        (center) => center.locked,
+      );
+      const unlockedCenters = updatedCostCenters.filter(
+        (center) => !center.locked,
+      );
+
+      const lockedTotal = lockedCenters.reduce(
+        (sum, center) => sum + (parseFloat(center.value) || 0),
+        0,
+      );
+
+      const remainingValue = data.totalValue - lockedTotal;
+
+      if (unlockedCenters.length > 0 && remainingValue >= 0) {
+        // Convert to cents to avoid floating point issues
+        const remainingCents = Math.round(remainingValue * 100);
+        const baseValueCents = Math.floor(
+          remainingCents / unlockedCenters.length,
+        );
+        const remainder = remainingCents % unlockedCenters.length;
+
+        const finalUpdatedCostCenters = updatedCostCenters.map(
+          (center, index) => {
+            if (center.locked) {
+              return center;
+            }
+
+            // Find the position of this center in the unlocked centers array
+            const unlockedIndex = unlockedCenters.findIndex(
+              (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
+            );
+
+            // Distribute remainder to first N centers (where N = remainder)
+            const extraCent = unlockedIndex < remainder ? 1 : 0;
+            const finalValueCents = baseValueCents + extraCent;
+            const finalValue = (finalValueCents / 100).toFixed(2);
+
+            return {
+              ...center,
+              value: finalValue,
+            };
+          },
+        );
+
+        setData({ ...data, costCenters: finalUpdatedCostCenters });
+      } else {
+        setData({ ...data, costCenters: updatedCostCenters });
+      }
+    } else {
+      setData({ ...data, costCenters: [] });
+    }
+  };
   return (
     <div className="flex min-h-screen flex-col overflow-hidden">
       {/* HEADER -------------------------------------------------------- */}
@@ -249,7 +342,7 @@ export default function NewPayable() {
                 Lista de Fornecedores no Sistema
               </h2>
               <button className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl">
-                ⋮
+                <Plus />
               </button>
             </div>
 
@@ -522,6 +615,26 @@ export default function NewPayable() {
             </div>
           </div>
         </Modal>
+        <LaunchTypeModal
+          show={isOpenLaunchTypeModal}
+          onClose={() => setIsOpenLaunchTypeModal(false)}
+          showingTaxes={data.entryType === "IMPOSTOS"}
+          selectCostCenter={(launch: LaunchType) =>
+            handleCostCenterToggle(launch.centroResultado)
+          }
+          onSelect={(launch: LaunchType) => {
+            setData((prev) => ({
+              ...prev,
+              accountingAccount: {
+                code: launch.conta,
+                description: launch.tipoLancamento,
+              },
+              documentType: launch.descNivel4,
+            }));
+
+            setIsOpenLaunchTypeModal(false);
+          }}
+        />
         <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
           <div className="flex w-full justify-between">
             <div className="flex gap-2">
@@ -560,8 +673,12 @@ export default function NewPayable() {
             <Step1
               data={data}
               setData={setData}
+              selectedCostCenters={selectedCostCenters}
+              setSelectedCostCenters={setSelectedCostCenters}
+              handleCostCenterToggle={handleCostCenterToggle}
               setIsOpenSupplierModal={setIsOpenSupplierModal}
               setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
+              setIsOpenLaunchTypeModal={setIsOpenLaunchTypeModal}
             />
           ) : steps === 2 ? (
             <Step3 data={data} setData={setData} />

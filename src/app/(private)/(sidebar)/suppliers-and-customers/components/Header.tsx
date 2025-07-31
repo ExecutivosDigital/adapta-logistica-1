@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
   return (
-    <div className="relative flex h-80 w-full flex-col overflow-hidden rounded-t-sm">
+    <div className="relative flex h-60 w-full flex-col overflow-hidden rounded-t-sm">
       <Image
         src={Backgrond}
         alt="background"
@@ -19,7 +19,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
       <div className="z-[1] flex flex-1 flex-col items-center justify-center gap-4 text-white">
         <div className="flex flex-row items-center gap-4 text-white">
           <File />
-          <h2 className="text-3xl font-bold text-white uppercase">
+          <h2 className="text-xl font-bold text-white uppercase">
             clientes e fornecedores
           </h2>
         </div>
@@ -38,7 +38,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
           } cursor-pointer transition-all duration-300`}
         >
           <User2 />
-          <span className="uppercase">CLIENTES</span>
+          <span className="text-sm uppercase">CLIENTES</span>
         </button>
         <button
           onClick={() => setSelectedToolType(1)}
@@ -49,7 +49,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
           } cursor-pointer transition-all duration-300`}
         >
           <Box />
-          <span className="uppercase">Fornecedores</span>
+          <span className="text-sm uppercase">Fornecedores</span>
         </button>
       </div>
     </div>

@@ -14,7 +14,6 @@ import {
   FileText,
   MapPin,
   Search,
-  X,
 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
@@ -27,8 +26,18 @@ moment.locale("pt-BR");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;
+  setIsOpenLaunchTypeModal: (value: boolean) => void;
   data: DataType;
   setData: (value: DataType) => void;
+  selectedCostCenters: {
+    name: string;
+    value: string;
+    locked?: boolean | undefined;
+  }[];
+  setSelectedCostCenters: (
+    value: { name: string; value: string; locked: boolean | undefined }[],
+  ) => void;
+  handleCostCenterToggle: (costCenterName: string) => void;
 }
 type CostType =
   | "Custo Fixo"
@@ -47,7 +56,11 @@ export function Step1({
   setIsOpenSupplierModal,
   data,
   setData,
+  setIsOpenLaunchTypeModal,
   setIsOpenContabilidadeModal,
+  selectedCostCenters,
+  setSelectedCostCenters,
+  handleCostCenterToggle,
 }: Props) {
   const categoriesByCostType: Record<CostType, Category[]> = {
     "Custo Fixo": [
@@ -272,17 +285,6 @@ export function Step1({
     "Viagens Corporativas",
   ];
 
-  const documents = [
-    "Boleto",
-    "Nota Fiscal",
-    "Contrato",
-    "Ordem de Serviço",
-    "Fatura",
-    "Lorem",
-    "Lorem",
-    "Lorem",
-  ];
-
   const installments = [
     "2 Pagamentos",
     "3 Pagamentos",
@@ -302,99 +304,9 @@ export function Step1({
 
   const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
-  const [filteredDocuments, setFilteredDocuments] = useState("");
-  const [selectedCostCenters, setSelectedCostCenters] = useState<
-    { name: string; value: string; locked?: boolean }[]
-  >([]);
-  const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
-    useState(false);
+
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
-
-  const handleCostCenterToggle = (costCenterName: string) => {
-    const isSelected = selectedCostCenters.some(
-      (cc) => cc.name === costCenterName,
-    );
-
-    let updatedSelectedCenters;
-    let updatedCostCenters;
-
-    if (isSelected) {
-      // Remove the cost center
-      updatedSelectedCenters = selectedCostCenters.filter(
-        (cc) => cc.name !== costCenterName,
-      );
-      updatedCostCenters = data.costCenters.filter(
-        (cc) => cc.name !== costCenterName,
-      );
-    } else {
-      // Add the cost center
-      const newCostCenter = {
-        name: costCenterName,
-        value: "0.00",
-        locked: false,
-      };
-      updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
-      updatedCostCenters = [...data.costCenters, newCostCenter];
-    }
-
-    setSelectedCostCenters(updatedSelectedCenters);
-
-    // Apply the same distribution logic as distributeValueEvenly
-    if (updatedCostCenters.length > 0) {
-      const lockedCenters = updatedCostCenters.filter(
-        (center) => center.locked,
-      );
-      const unlockedCenters = updatedCostCenters.filter(
-        (center) => !center.locked,
-      );
-
-      const lockedTotal = lockedCenters.reduce(
-        (sum, center) => sum + (parseFloat(center.value) || 0),
-        0,
-      );
-
-      const remainingValue = data.totalValue - lockedTotal;
-
-      if (unlockedCenters.length > 0 && remainingValue >= 0) {
-        // Convert to cents to avoid floating point issues
-        const remainingCents = Math.round(remainingValue * 100);
-        const baseValueCents = Math.floor(
-          remainingCents / unlockedCenters.length,
-        );
-        const remainder = remainingCents % unlockedCenters.length;
-
-        const finalUpdatedCostCenters = updatedCostCenters.map(
-          (center, index) => {
-            if (center.locked) {
-              return center;
-            }
-
-            // Find the position of this center in the unlocked centers array
-            const unlockedIndex = unlockedCenters.findIndex(
-              (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
-            );
-
-            // Distribute remainder to first N centers (where N = remainder)
-            const extraCent = unlockedIndex < remainder ? 1 : 0;
-            const finalValueCents = baseValueCents + extraCent;
-            const finalValue = (finalValueCents / 100).toFixed(2);
-
-            return {
-              ...center,
-              value: finalValue,
-            };
-          },
-        );
-
-        setData({ ...data, costCenters: finalUpdatedCostCenters });
-      } else {
-        setData({ ...data, costCenters: updatedCostCenters });
-      }
-    } else {
-      setData({ ...data, costCenters: [] });
-    }
-  };
 
   const categoryOptions =
     data.costType && categoriesByCostType[data.costType as CostType]
@@ -485,12 +397,28 @@ export function Step1({
                   ? "Imposto - Código"
                   : "Tipo de Lançamento"}
             </span>
-            <DropdownMenu
+            <button
+              onClick={() => setIsOpenLaunchTypeModal(true)}
+              className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+            >
+              <div className="flex h-full w-6">
+                <DollarSign size={16} className="text-primary" />
+              </div>
+              <div className="flex h-full flex-1 items-center">
+                <span className="flex-1 2xl:text-lg">
+                  {data.documentType || "Selecione"}
+                </span>
+              </div>
+              <div className="flex h-full w-6 justify-end">
+                <Edit size={16} className="text-primary" />
+              </div>
+            </button>
+            {/* <DropdownMenu
               open={isDocumentTypeDropdownOpen}
               onOpenChange={setIsDocumentTypeDropdownOpen}
             >
-              <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
+              <DropdownMenuTrigger className="w-full focus:outline-none"> 
+                 <button onClick={() => setIsOpenLaunchTypeModal(true)} className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
                   <div className="flex h-full w-6">
                     <DollarSign size={16} className="text-primary" />
                   </div>
@@ -502,8 +430,8 @@ export function Step1({
                   <div className="flex h-full w-6 justify-end">
                     <Edit size={16} className="text-primary" />
                   </div>
-                </div>
-              </DropdownMenuTrigger>
+                </button> 
+               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side="bottom"
                 sideOffset={0}
@@ -543,15 +471,15 @@ export function Step1({
                     >
                       <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
                         {item}
-                        {/* Check icon */}
-                        {data.documentType === item && (
+                        {/* Check icon 
+                         {data.documentType === item && (
                           <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
                         )}
                       </div>
                     </DropdownMenuItem>
                   ))}
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </label>
 
           <div className="col-span-12 grid grid-cols-11 gap-4">
