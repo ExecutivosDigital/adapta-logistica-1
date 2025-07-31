@@ -21,8 +21,8 @@ import { DataType } from "../page";
 import { CategoryModal } from "./category-modal";
 import { CostCentersList } from "./cost-centers-list";
 
-import "moment/locale/pt-BR";
-moment.locale("pt-BR");
+import "moment/locale/pt-br";
+moment.locale("pt-br");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;

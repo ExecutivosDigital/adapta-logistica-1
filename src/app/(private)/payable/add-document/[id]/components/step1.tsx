@@ -15,8 +15,8 @@ import moment from "moment";
 import { DataType } from "../page";
 
 import { Calendar } from "@/components/ui/calendar";
-import "moment/locale/pt-BR";
-moment.locale("pt-BR");
+import "moment/locale/pt-br";
+moment.locale("pt-br");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   data: DataType;
