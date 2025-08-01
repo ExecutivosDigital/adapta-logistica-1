@@ -1,154 +1,408 @@
 "use client";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { maskCep, maskCnpj } from "@/lib/masks";
 import { cn } from "@/utils/cn";
-import { ArrowLeft, PlusSquare } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Pencil, Upload } from "lucide-react";
+import OpenAI from "openai";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
-export default function RegisterBranches() {
-  const router = useRouter();
-  const [arrayLength, setArrayLength] = useState(0);
+/* ----------------------------------------------------------------
+ * Interfaces auxiliares
+ * -------------------------------------------------------------- */
+interface CnpjCardResponse {
+  fullName: string;
+  fantasyName: string;
+  cnpj: string;
+  openDate: string;
+  juridicNature: string;
+  mainActivity: string;
+  secondaryActivities: string;
+  registerSituation: string;
+  contactNumber: string;
+  situationDate: string;
+  email: string;
+  address: {
+    address: string;
+    number: string;
+    province: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+}
 
-  return (
-    <div className="relative flex min-h-screen w-full">
-      <button
-        onClick={() => router.back()}
-        className="text-primary absolute top-5 left-5 flex cursor-pointer items-center gap-2"
-      >
-        <ArrowLeft />
-        <span>Voltar</span>
-      </button>
-      <div className="flex h-screen w-5/12 flex-col items-center justify-center">
-        <div className="flex h-full w-11/12 flex-col gap-4 py-4 pt-14">
-          <Image
-            src="/logo/logo.png"
-            alt=""
-            width={500}
-            height={750}
-            className="h-28 w-max object-contain"
-          />
-          <div className="flex flex-col">
-            <span className="text-2xl font-bold">Cadastrar Filiais</span>
-            <span className="w-1/2">
-              Texto referente ao cadastro das Filiais da empresa
-            </span>
-          </div>
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="flex w-2/3 flex-col gap-4"
-          >
-            <ScrollArea className="h-60">
-              <div className="relative mb-2 flex flex-col gap-1">
-                <Label htmlFor="CNPJ1" className="border-default-900 text-lg">
-                  CNPJ Filial 1
-                </Label>
-                <Input
-                  removeWrapper
-                  id="CNPJ1"
-                  placeholder=""
-                  className={cn("peer border-zinc-200 text-base")}
-                />
-                <button className="bg-primary/20 text-primary border-primary mx-auto flex w-max items-center gap-2 rounded-lg border p-1">
-                  <Image
-                    src="/icons/export.png"
-                    alt=""
-                    width={100}
-                    height={100}
-                    className="h-5 w-max object-contain"
-                  />
-                  <span>Cadastro completo com Cartão CNPJ</span>
-                </button>
-              </div>
-              <div className="relative mb-2 flex flex-col gap-1">
-                <Label htmlFor="CNPJ2" className="border-default-900 text-lg">
-                  CNPJ Filial 2 (se houver)
-                </Label>
-                <Input
-                  removeWrapper
-                  id="CNPJ2"
-                  placeholder=""
-                  className={cn("peer border-zinc-200 text-base")}
-                />
-                <button className="bg-primary/20 text-primary border-primary mx-auto flex w-max items-center gap-2 rounded-lg border p-1">
-                  <Image
-                    src="/icons/export.png"
-                    alt=""
-                    width={100}
-                    height={100}
-                    className="h-5 w-max object-contain"
-                  />
-                  <span>Cadastro completo com Cartão CNPJ</span>
-                </button>
-              </div>
-              {Array.from({ length: arrayLength }, (_, index) => (
-                <div key={index} className="relative mb-2 flex flex-col gap-1">
-                  <Label
-                    htmlFor={"CNPJ" + index + 3}
-                    className="border-default-900 text-lg"
-                  >
-                    CNPJ Filial {index + 3} (se houver)
-                  </Label>
-                  <Input
-                    removeWrapper
-                    id={"CNPJ" + index + 3}
-                    placeholder=""
-                    className={cn("peer border-zinc-200 text-base")}
-                  />
-                  <button className="bg-primary/20 text-primary border-primary mx-auto flex w-max items-center gap-2 rounded-lg border p-1">
-                    <Image
-                      src="/icons/export.png"
-                      alt=""
-                      width={100}
-                      height={100}
-                      className="h-5 w-max object-contain"
-                    />
-                    <span>Cadastro completo com Cartão CNPJ</span>
-                  </button>
-                </div>
-              ))}
-            </ScrollArea>
-            <button
-              onClick={() => setArrayLength(arrayLength + 1)}
-              className="border-primary hover:bg-primary text-primary flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border font-semibold transition duration-300 hover:text-white"
-            >
-              <PlusSquare />
-              <span>Clique aqui para Inserir outra Filial</span>
-            </button>
-            <button
-              onClick={() => router.push("/register/branches-list")}
-              className="bg-primary hover:bg-primary-dark h-12 w-full cursor-pointer rounded-lg font-semibold text-white transition duration-300"
-            >
-              Continuar
-            </button>
-            <span className="mx-auto">
-              Novo aqui no Adapta?
-              <span className="text-primary hover:text-primary-dark cursor-pointer font-semibold transition duration-300">
-                {""} Conheça o Grupo Agora
-              </span>
-            </span>
-          </form>
-        </div>
+/* ----------------------------------------------------------------
+ * Schema Zod
+ * -------------------------------------------------------------- */
+const FormSchema = z.object({
+  razaoSocial: z.string().min(1, "Razão social obrigatória"),
+  cnpj: z
+    .string()
+    .regex(
+      /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/,
+      "Formato CNPJ 00.000.000/0000-00",
+    ),
+  cep: z.string().regex(/\d{5}-\d{3}/, "Formato CEP 00000-000"),
+  cidade: z.string().min(1, "Cidade obrigatória"),
+  logradouro: z.string().min(1, "Logradouro obrigatório"),
+  bairro: z.string().min(1, "Bairro obrigatório"),
+  uf: z.string().length(2, "UF inválida"),
+  numero: z.string().min(1, "Número obrigatório"),
+  complemento: z.string().nullable().optional(),
+  qtdUsuarios: z.coerce.number().min(0, "Qtd. Usuários obrigatória"),
+  qtdFiliais: z.coerce.number().min(0, "Qtd. Filiais obrigatória"),
+  inscEstadual: z.string().nullable().optional(),
+  inscMunicipal: z.string().nullable().optional(),
+});
+
+export type ContratanteFormData = z.infer<typeof FormSchema>;
+
+/* ----------------------------------------------------------------
+ * Componente principal
+ * -------------------------------------------------------------- */
+export default function CadastroContratanteForm({
+  onBack,
+}: {
+  onBack?: () => void;
+}) {
+  const form = useForm<ContratanteFormData>({
+    resolver: zodResolver(FormSchema),
+    shouldFocusError: false,
+    mode: "onBlur",
+    defaultValues: {
+      razaoSocial: "",
+      cnpj: "",
+      cep: "",
+      cidade: "",
+      logradouro: "",
+      bairro: "",
+      uf: "",
+      numero: "",
+      complemento: "",
+      qtdUsuarios: 0,
+      qtdFiliais: 0,
+      inscEstadual: "",
+      inscMunicipal: "",
+    },
+  });
+
+  const { control, handleSubmit, setValue, watch } = form;
+
+  /* ----------------------------------------------------------------
+   * Estados & refs
+   * -------------------------------------------------------------- */
+  const [loadingCard, setLoadingCard] = useState(false);
+  const openaiRef = useRef<OpenAI | null>(null);
+  if (!openaiRef.current) {
+    openaiRef.current = new OpenAI({
+      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true,
+    });
+  }
+  const client = openaiRef.current;
+  const summaryAssistant = "asst_Q6Xw1vrYYzYrF9c4m3rsnvDx"; // seu assistant ID
+
+  /* ----------------------------------------------------------------
+   * Preenche campos com dados do cartão
+   * -------------------------------------------------------------- */
+  const fillWithSummary = (summary: CnpjCardResponse) => {
+    setValue("razaoSocial", summary.fullName);
+    setValue("cnpj", maskCnpj(summary.cnpj));
+    setValue("cep", maskCep(summary.address.postalCode));
+    setValue("logradouro", summary.address.address);
+    setValue("numero", summary.address.number);
+    setValue("bairro", summary.address.province);
+    setValue("cidade", summary.address.city);
+    setValue("uf", summary.address.state);
+  };
+
+  /* ----------------------------------------------------------------
+   * ViaCEP auto-preenchimento
+   * -------------------------------------------------------------- */
+  useEffect(() => {
+    const sub = watch(async (all, { name }) => {
+      if (name !== "cep") return;
+      const cepDigits = all.cep?.replace(/\D/g, "");
+      if (cepDigits?.length !== 8) return;
+
+      try {
+        const data = await fetch(
+          `https://viacep.com.br/ws/${cepDigits}/json/`,
+        ).then((r) => r.json());
+        if (data.erro) return;
+
+        const opts = {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+          shouldFocus: false,
+        } as const;
+
+        setValue("logradouro", data.logradouro ?? "", opts);
+        setValue("bairro", data.bairro ?? "", opts);
+        setValue("cidade", data.localidade ?? "", opts);
+        setValue("uf", data.uf ?? "", opts);
+      } catch {
+        /* vazio */
+      }
+    });
+    return () => sub.unsubscribe();
+  }, [watch, setValue]);
+
+  /* ----------------------------------------------------------------
+   * Máscaras onChange
+   * -------------------------------------------------------------- */
+  const handleMask =
+    (fn: (v: string) => string, onChange: (v: string) => void) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChange(fn(e.target.value));
+
+  /* ----------------------------------------------------------------
+   * Análise do PDF do Cartão CNPJ
+   * -------------------------------------------------------------- */
+  async function analyze(fileBuffer: ArrayBuffer) {
+    try {
+      const file = new File([fileBuffer], "cartao_cnpj.pdf", {
+        type: "application/pdf",
+      });
+      const sendFile = await client.files.create({
+        file,
+        purpose: "assistants",
+      });
+
+      const thread = await client.beta.threads.createAndRun({
+        assistant_id: summaryAssistant,
+        thread: {
+          messages: [
+            {
+              role: "user",
+              content: "transcreva",
+              attachments: [
+                {
+                  file_id: sendFile.id,
+                  tools: [{ type: "file_search" }],
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      const wait = async (runId: string, threadId: string): Promise<void> => {
+        const st = await client.beta.threads.runs.retrieve(threadId, runId);
+        if (st.status === "completed") return;
+        if (st.status === "queued" || st.status === "in_progress") {
+          await new Promise((r) => setTimeout(r, 4000));
+          return await wait(runId, threadId);
+        }
+      };
+
+      await wait(thread.id, thread.thread_id);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msgs: any = await client.beta.threads.messages.list(
+        thread.thread_id,
+      );
+      const jsonText = msgs.data[0].content[0].text.value
+        .replace("```json\n", "")
+        .replace("\n```", "");
+
+      return JSON.parse(jsonText) as CnpjCardResponse;
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao analisar cartão CNPJ");
+      return null;
+    }
+  }
+
+  /* ----------------------------------------------------------------
+   * FieldError – espaço reservado fixo
+   * -------------------------------------------------------------- */
+  const FieldError = ({ name }: { name: keyof ContratanteFormData }) => {
+    const message = form.formState.errors[name]?.message as string | undefined;
+    return (
+      <div className="absolute -bottom-4 w-full">
+        <p className="text-destructive z-[999] h-4 text-xs">
+          {message || "\u00A0"}
+        </p>
       </div>
-      <div className="bg-primary relative flex h-screen w-7/12 items-center justify-center p-8">
-        <Image
-          src="/static/login-bg.png"
-          alt=""
-          width={1000}
-          height={1500}
-          quality={100}
-          className="h-full w-full rounded-2xl object-cover"
-        />
-        <Image
-          src="/logo/logo.png"
-          alt=""
-          width={500}
-          height={750}
-          className="absolute right-20 bottom-20 z-10 h-80 w-max object-contain opacity-20"
-        />
+    );
+  };
+
+  /* ----------------------------------------------------------------
+   * Row genérico estilo card
+   * -------------------------------------------------------------- */
+  const Row = ({
+    label,
+    field,
+    index,
+    lastIndex,
+  }: {
+    label: string;
+    field: React.ReactNode;
+    index: number;
+    lastIndex: number;
+  }) => (
+    <div
+      className={cn(
+        "- flex min-w-[calc(50%-14px)] items-center gap-4 px-6 py-5",
+      )}
+    >
+      <div
+        className={cn(
+          "border-r-primary/50 grid w-full grid-cols-12 items-center gap-4",
+          {
+            "lg:border-r": (index + 1) % 2 === 1 && index !== lastIndex,
+          },
+        )}
+      >
+        <div className="col-span-3 text-gray-800">{label}</div>
+        <div className="col-span-8 flex items-center">{field}</div>
       </div>
     </div>
+  );
+
+  /* ----------------------------------------------------------------
+   * Lista de campos na ordem visual (mesmo da imagem)
+   * -------------------------------------------------------------- */
+  const fields: (readonly [
+    keyof ContratanteFormData,
+    string,
+    ((v: string) => string)?,
+  ])[] = [
+    ["razaoSocial", "Razão Social"],
+    ["cnpj", "CNPJ", maskCnpj],
+    ["cep", "CEP", maskCep],
+    ["cidade", "Cidade"],
+    ["logradouro", "Logradouro"],
+    ["bairro", "Bairro"],
+    ["uf", "UF"],
+    ["numero", "Número"],
+    ["complemento", "Complemento"],
+    ["qtdUsuarios", "Qnt. Usuários"],
+    ["qtdFiliais", "Qnt. Filiais"],
+    ["inscEstadual", "Insc. Estadual"],
+    ["inscMunicipal", "Insc. Municipal"],
+  ];
+
+  /* ----------------------------------------------------------------
+   * Submit do formulário
+   * -------------------------------------------------------------- */
+  const onSubmit = handleSubmit((data) => {
+    toast.success("Contratante salvo com sucesso!");
+    console.log(data);
+  });
+
+  /* ----------------------------------------------------------------
+   * JSX
+   * -------------------------------------------------------------- */
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="w-full overflow-hidden rounded-xl border border-gray-300 bg-white"
+    >
+      {/* Header */}
+      <div className="bg-primary/20 flex w-full items-center justify-between gap-4 px-6 py-4">
+        <div className="flex items-center gap-4">
+          <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-full">
+            <Pencil className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-800">
+              Cadastro de Contratante
+            </h1>
+            <p className="text-sm text-gray-600">Preencha os dados abaixo</p>
+          </div>
+        </div>
+
+        {/* Botão de upload */}
+        <Button
+          type="button"
+          className="group border-primary text-primary hover:border-primary-dark hover:text-primary-dark hover:bg-primary-dark/10 bg-primary/20 relative flex h-20 cursor-pointer flex-col items-center rounded-xl border border-dashed px-2 py-4 font-medium transition duration-300"
+          disabled={loadingCard}
+        >
+          {loadingCard ? (
+            <>
+              <Loader2 className="animate-spin" size={40} />
+              Inserindo Cartão CNPJ
+            </>
+          ) : (
+            <>
+              <Upload size={40} />
+              Inserir Cartão CNPJ
+            </>
+          )}
+          <input
+            type="file"
+            disabled={loadingCard}
+            title=" "
+            className="absolute inset-0 cursor-pointer opacity-0"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              if (!f) return;
+              setLoadingCard(true);
+              try {
+                const buf = await f.arrayBuffer();
+                const summary = await analyze(buf);
+                if (summary) fillWithSummary(summary);
+              } finally {
+                setLoadingCard(false);
+              }
+            }}
+          />
+        </Button>
+      </div>
+
+      {/* Corpo */}
+      <div className="grid grid-cols-1 divide-y divide-gray-300 lg:grid-cols-2">
+        {fields.map(([name, label, maskFn], index) => (
+          <Row
+            key={name}
+            label={label}
+            index={index}
+            lastIndex={fields.length - 1}
+            field={
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <div className="relative flex w-full flex-col">
+                    <Input
+                      {...field}
+                      value={field.value?.toString() ?? ""}
+                      maxLength={name === "uf" ? 2 : undefined}
+                      onChange={
+                        maskFn
+                          ? handleMask(maskFn, field.onChange)
+                          : field.onChange
+                      }
+                    />
+                    <FieldError name={name} />
+                  </div>
+                )}
+              />
+            }
+          />
+        ))}
+      </div>
+
+      {/* Navegação */}
+      <div className="flex justify-between border-t border-gray-300 bg-gray-50 px-6 py-6">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack ?? (() => window.history.back())}
+        >
+          Voltar
+        </Button>
+        <Button type="submit">Salvar</Button>
+      </div>
+    </form>
   );
 }

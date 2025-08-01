@@ -1,5 +1,17 @@
 "use client";
-import { CustomPagination } from "@/components/ui/custom-pagination";
+import { getLocalTimeZone } from "@internationalized/date";
+import { EllipsisVertical, Filter, X } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { DateValue } from "react-aria-components";
+
+import {
+  Category,
+  LaunchType,
+  LaunchTypeModal,
+  useRandomisedCategories,
+} from "./launch-type-modal";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,278 +19,156 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { cn } from "@/utils/cn";
-import { EllipsisVertical, Filter } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
 
-export function HomeCategoryList() {
-  const [categoryPages] = useState<number>(8);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const categories = [
-    {
-      id: "1",
-      type: "red",
-      icon: (
-        <Image
-          src="/icons/category-red.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Folha de Pagamento",
-      value: 122890,
-    },
-    {
-      id: "2",
-      type: "red",
-      icon: (
-        <Image
-          src="/icons/category-red.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Manutenção de Frota",
-      value: 200,
-    },
-    {
-      id: "3",
-      type: "green",
-      icon: (
-        <Image
-          src="/icons/category-green.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Frete Fracionado",
-      value: 16000,
-    },
-    {
-      id: "4",
-      type: "green",
-      icon: (
-        <Image
-          src="/icons/category-green.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Armazenagem",
-      value: 9999271.32,
-    },
-    {
-      id: "5",
-      type: "green",
-      icon: (
-        <Image
-          src="/icons/category-green.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Categoria 1",
-      value: 0,
-    },
-    {
-      id: "6",
-      type: "red",
-      icon: (
-        <Image
-          src="/icons/category-red.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Energia Elétrica",
-      value: 200,
-    },
-    {
-      id: "7",
-      type: "red",
-      icon: (
-        <Image
-          src="/icons/category-red.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Folha de Pagamento",
-      value: 122890,
-    },
-    {
-      id: "8",
-      type: "red",
-      icon: (
-        <Image
-          src="/icons/category-red.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Manutenção de Frota",
-      value: 200,
-    },
-    {
-      id: "9",
-      type: "green",
-      icon: (
-        <Image
-          src="/icons/category-green.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Frete Fracionado",
-      value: 16000,
-    },
-    {
-      id: "10",
-      type: "green",
-      icon: (
-        <Image
-          src="/icons/category-green.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Armazenagem",
-      value: 9999271.32,
-    },
-    {
-      id: "11",
-      type: "green",
-      icon: (
-        <Image
-          src="/icons/category-green.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Categoria 1",
-      value: 0,
-    },
-    {
-      id: "12",
-      type: "red",
-      icon: (
-        <Image
-          src="/icons/category-red.png"
-          alt=""
-          width={100}
-          height={100}
-          className="h-max w-4 object-contain"
-        />
-      ),
-      label: "Energia Elétrica",
-      value: 200,
-    },
-  ];
+export default function HomeCategoryList() {
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const randomisedCategories = useRandomisedCategories();
+  // Run once, but only in the browser
+  useEffect(() => {
+    setAllCategories(randomisedCategories); // ← may call Math.random()
+  }, []);
+  const [selected, setSelected] = useState<Category[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
+  /* -------------------- sincroniza seleção -------------------*/
+  const confirmSelection = (launches: LaunchType[]) => {
+    const toAdd = launches
+      .filter((l) => !selected.some((c) => c.conta === l.conta))
+      .map((l) => allCategories.find((c) => c.conta === l.conta)!)
+      .filter(Boolean);
+    setSelected((prev) => [...prev, ...toAdd]);
+  };
+  const remove = (conta: string) =>
+    setSelected((prev) => prev.filter((c) => c.conta !== conta));
+
+  /* -------------------- data filter --------------------------*/
+  const [date, setDate] = useState<Date | null>(new Date());
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) return setDate(null);
+    if ("toDate" in value) setDate(value.toDate(getLocalTimeZone()));
+    if (value !== null && value instanceof Date) setDate(value);
+  };
+  const listToDisplay = selected.length > 0 ? selected : allCategories;
   return (
-    <div className="flex flex-col">
-      <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
-        <span className="text-sm font-semibold">Categorias</span>
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
-                <Filter />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="left">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-                <EllipsisVertical />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="left">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Calendário
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <ScrollArea className="h-80 w-full p-2">
-        {categories.map((cat) => (
-          <div
-            className="relative my-1 flex w-full items-center justify-between"
-            key={cat.id}
-          >
-            <div className="absolute bottom-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-zinc-200" />
-            <div className="flex items-center gap-2">
-              <div
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full p-1",
-                  cat.type === "green" ? "bg-[#00A181]/20" : "bg-[#EF4444]/20",
-                )}
-              >
-                {cat.icon}
-              </div>
-              <span className="text-sm">{cat.label}</span>
-            </div>
-            <span
-              className={cn(
-                "text-sm font-semibold",
-                cat.type === "green" ? "text-[#00A181]" : "text-[#EF4444]",
-              )}
+    <>
+      <LaunchTypeModal
+        show={isOpen}
+        onClose={() => setIsOpen(false)}
+        onConfirm={confirmSelection}
+        initiallySelected={selected}
+      />
+
+      <div className="flex flex-col">
+        {/* Header */}
+        <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
+          <span className="text-sm font-semibold">Categorias</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsOpen(true)}
+              className="flex items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400"
             >
-              {cat.value.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </span>
+              <Filter />
+            </button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="end">
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer">
+                  Exportar Relatório
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="rounded-md border border-zinc-200 px-2 py-1 text-zinc-400">
+              <SimpleDatePicker
+                value={date}
+                label="Filtro"
+                onChange={handleDateChange}
+                view="day"
+              />
+            </div>
           </div>
-        ))}
-      </ScrollArea>
-      <div className="w-full border-t border-t-zinc-200 p-2">
-        <CustomPagination
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          pages={categoryPages}
-        />
+        </div>
+
+        {/* Chips */}
+        {selected.length > 0 && (
+          <div className="flex max-h-20 flex-wrap gap-2 overflow-y-auto border-b border-zinc-200 p-2">
+            {selected.map((cat) => (
+              <button
+                key={cat.conta}
+                onClick={() => remove(cat.conta)}
+                className="bg-primary/10 text-primary flex items-center gap-1 rounded-full px-3 py-1 text-sm"
+              >
+                {cat.descNivel4}
+                <X size={14} />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Lista */}
+        <ScrollArea className="h-80 w-full p-2">
+          {listToDisplay.map((cat) => (
+            <CategoryCard key={cat.id} cat={cat} />
+          ))}
+        </ScrollArea>
+      </div>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Card da categoria (pago / recebido)                                       */
+/* -------------------------------------------------------------------------- */
+function CategoryCard({ cat }: { cat: Category }) {
+  return (
+    <div className="relative my-1 flex w-full flex-col items-center justify-between gap-2 rounded-lg border border-zinc-200 p-3 shadow-sm">
+      <div className="flex w-full items-center gap-2">
+        <div
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-full p-1",
+            cat.type === "green" ? "bg-[#00A181]/20" : "bg-[#EF4444]/20",
+          )}
+        >
+          <Image
+            src={
+              cat.type === "green"
+                ? "/icons/category-green.png"
+                : "/icons/category-red.png"
+            }
+            alt=""
+            width={100}
+            height={100}
+            className="h-max w-5 object-contain"
+          />
+        </div>
+        <span className="text-sm font-medium text-zinc-700">
+          {cat.descNivel4}
+        </span>
+      </div>
+      <div className="flex w-full flex-wrap items-end justify-between text-xs">
+        <span className="font-semibold text-[#00A181]">
+          Recebido:{" "}
+          {cat.received.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </span>
+        <span className="font-semibold text-[#EF4444]">
+          Pago:{" "}
+          {cat.paid.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </span>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ export type Item = {
   icon: string;
   href?: string; // link simples
   badge?: string | number; // pílula à direita
-  children?: Item[]; // sub-nível
+  children?: Item[]; // suporta sub‑níveis ilimitados agora
 };
 
 const NAV: { heading: string; items: Item[] }[] = [
@@ -43,11 +43,45 @@ const NAV: { heading: string; items: Item[] }[] = [
             label: "Títulos á Receber",
             icon: "/icons/sidebar-transactions.png",
             href: "/transactions/receivable",
+            children: [
+              {
+                label: "Recebidos Consolidado",
+                icon: "/icons/sidebar-transactions.png",
+                href: "/transactions/receivable/consolidated",
+              },
+              {
+                label: "À Receber neste Mês",
+                icon: "/icons/sidebar-transactions.png",
+                href: "/transactions/receivable/this-month",
+              },
+              {
+                label: "À Receber Atrasados",
+                icon: "/icons/sidebar-transactions.png",
+                href: "/transactions/receivable/overdue",
+              },
+            ],
           },
           {
             label: "Contas á Pagar",
             icon: "/icons/sidebar-transactions.png",
             href: "/transactions/payable",
+            children: [
+              {
+                label: "Pagamentos Consolidado",
+                icon: "/icons/sidebar-transactions.png",
+                href: "/transactions/payable/consolidated",
+              },
+              {
+                label: "Pagamentos neste Mês",
+                icon: "/icons/sidebar-transactions.png",
+                href: "/transactions/payable/this-month",
+              },
+              {
+                label: "Pagamentos Atrasados",
+                icon: "/icons/sidebar-transactions.png",
+                href: "/transactions/payable/overdue",
+              },
+            ],
           },
         ],
       },
@@ -130,22 +164,55 @@ export default function Sidebar() {
 
   const width = isCollapsed ? "w-16" : "w-64";
 
-  /* util ─ verifica rota ativa ou filho ativo */
+  /* util ─ verifica rota ativa em profundidade */
   const isActive = (item: Item): boolean => {
-    // Se houver filhos, verificamos se algum filho coincide com a rota atual
-    if (item.children?.length) {
-      return item.children.some((c) => c.href && pathname === c.href);
-    }
-
-    // Caso contrário, comparamos o próprio href, ignorando marcadores vazios / #
-    if (item.href && item.href !== "#") {
-      return pathname === item.href;
-    }
-
-    return false;
+    if (item.href && item.href !== "#" && pathname === item.href) return true;
+    return item.children?.some(isActive) ?? false;
   };
 
-  /* ---------- render ---------- */
+  /* ---------- render recursivo ---------- */
+  const renderItems = (items: Item[], level = 0) =>
+    items.map((item) => {
+      const open = !!openGroup[item.label];
+      const collapsedProp = level === 0 ? isCollapsed : false; // só colapsa no 1º nível
+
+      return (
+        <div
+          key={`${level}-${item.label}`}
+          className="flex w-full flex-col gap-0.5"
+        >
+          <SidebarItem
+            item={item}
+            active={isActive(item)}
+            collapsed={collapsedProp}
+            open={open}
+            toggle={() => {
+              setOpenGroup((s) => ({ ...s, [item.label]: !s[item.label] }));
+              if (isCollapsed && level === 0) {
+                // se sidebar está colapsada, expande ao abrir o menu
+                toggleCollapse();
+              }
+            }}
+            isSub={level > 0}
+            closeMobile={closeMobile}
+          />
+
+          {item.children && open && (
+            <div
+              className={clsx(
+                "flex w-full flex-col pt-1",
+                level === 0 ? "pl-3" : "pl-6", // indentação incremental
+                collapsedProp && "hidden",
+              )}
+            >
+              {renderItems(item.children, level + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+
+  /* ---------- output ---------- */
   return (
     <>
       {/* backdrop (mobile) */}
@@ -204,53 +271,8 @@ export default function Sidebar() {
                 {!isCollapsed ? heading : ""}
               </h4>
 
-              {/* itens */}
-              {items.map((item) => (
-                <div key={item.label} className="flex w-full flex-col gap-0.5">
-                  {/* link ou botão-pai */}
-                  <SidebarItem
-                    item={item}
-                    active={isActive(item)}
-                    collapsed={isCollapsed}
-                    open={!!openGroup[item.label]}
-                    toggle={() => {
-                      setOpenGroup((s) => ({
-                        ...s,
-                        [item.label]: !s[item.label],
-                      }));
-                      if (isCollapsed) {
-                        setOpenGroup((s) => ({
-                          ...s,
-                          [item.label]: true,
-                        }));
-                        toggleCollapse();
-                      }
-                    }}
-                    closeMobile={closeMobile}
-                  />
-
-                  {item.children && openGroup[item.label] && (
-                    <div
-                      className={clsx(
-                        "flex w-full flex-col pt-1 pl-3",
-                        isCollapsed && "hidden",
-                      )}
-                    >
-                      {item.children.map((sub) => (
-                        <SidebarItem
-                          key={sub.label}
-                          item={sub}
-                          active={pathname === sub.href} // o próprio sub-item está ativo?
-                          parentActive={isActive(item)} // o PAI está ativo?
-                          collapsed={false} // sub-menu nunca colapsa
-                          isSub
-                          closeMobile={closeMobile}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {/* itens recursivos */}
+              {renderItems(items)}
             </div>
           ))}
         </nav>
@@ -266,7 +288,6 @@ interface SidebarItemProps {
   collapsed: boolean;
   open?: boolean;
   toggle?: () => void;
-  parentActive?: boolean;
   isSub?: boolean;
   closeMobile: () => void;
 }
@@ -285,14 +306,11 @@ function SidebarItem({
     "group flex items-center  w-full gap-3   px-3 py-2 text-sm font-medium transition-all duration-300";
 
   // ---------- LÓGICA DE ESTILOS ----------
-  // Pai (não é sub)
-  // Pai (não é sub)
   const parentClasses = clsx(base, {
-    "bg-primary text-white rounded-md": active, // ativo OU se algum filho ativo
+    "bg-primary text-white rounded-md": active,
     "text-zinc-900 hover:bg-zinc-100 hover:text-primary rounded-md": !active,
   });
 
-  // Filho (sub)
   const childClasses = clsx(base, "pl-0", {
     "border-l-4 border-primary text-primary pl-2": active,
     "border-l-4 border-zinc-400 text-zinc-700 hover:text-primary pl-2": !active,
@@ -319,7 +337,6 @@ function SidebarItem({
               : item.icon.split(".")[0] + "-white." + item.icon.split(".")[1]
             : item.icon
         }
-        // src={item.icon}
         alt=""
         width={100}
         height={100}
@@ -341,19 +358,27 @@ function SidebarItem({
             </span>
           )}
           {item.children && (
-            <ChevronDown
-              className={clsx(
-                "h-4 w-4 transition-transform",
-                open ? "rotate-180" : "",
-                isSub
-                  ? active
-                    ? "text-primary"
-                    : "group-hover:text-primary text-neutral-500"
-                  : active
-                    ? "text-white"
-                    : "group-hover:text-primary text-neutral-500",
-              )}
-            />
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                toggle?.();
+              }}
+              className="flex cursor-pointer items-center justify-center rounded-md p-1 transition-all duration-300 hover:bg-zinc-400"
+            >
+              <ChevronDown
+                className={clsx(
+                  "h-4 w-4 transition-transform",
+                  open ? "rotate-180" : "",
+                  isSub
+                    ? active
+                      ? "text-primary"
+                      : "group-hover:text-primary text-neutral-500"
+                    : active
+                      ? "text-white"
+                      : "group-hover:text-primary text-neutral-500",
+                )}
+              />
+            </div>
           )}
         </span>
       )}
@@ -363,7 +388,14 @@ function SidebarItem({
   /* link ou botão-pai -- depende se tem children */
   if (item.children) {
     return (
-      <button onClick={toggle} className={cls}>
+      <button
+        onClick={() => {
+          if (item.href) {
+            window.location.href = item.href;
+          } else toggle?.();
+        }}
+        className={cls}
+      >
         {inner}
       </button>
     );

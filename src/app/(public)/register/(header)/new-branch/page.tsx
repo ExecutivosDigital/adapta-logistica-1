@@ -1,25 +1,21 @@
 "use client";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipArrow,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { maskCep, maskCnpj, maskCpf, maskPhone } from "@/lib/masks";
 import { cn } from "@/utils/cn";
-import { faker } from "@faker-js/faker";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
+import { Controller, useForm, UseFormReturn } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
+/* ----------------------------------------------------------------
+ * Interfaces auxiliares
+ * -------------------------------------------------------------- */
 interface CnpjCardResponse {
   fullName: string;
   fantasyName: string;
@@ -42,57 +38,220 @@ interface CnpjCardResponse {
   };
 }
 
-const members = [
-  {
-    name: "Alex",
-    value: "userid1",
-    image: faker.image.avatar(),
-  },
-  {
-    name: "João",
-    value: "userid2",
-    image: faker.image.avatar(),
-  },
-  {
-    name: "Paulo",
-    value: "userid3",
-    image: faker.image.avatar(),
-  },
-  {
-    name: "Gabriel",
-    value: "userid4",
-    image: faker.image.avatar(),
-  },
-];
+/* ----------------------------------------------------------------
+ * Schema Zod
+ * -------------------------------------------------------------- */
+const FormSchema = z.object({
+  code: z.coerce.number({ invalid_type_error: "Código inválido" }),
+  name: z.string().min(1, "Nome obrigatório"),
+  cnpj: z
+    .string()
+    .regex(
+      /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/,
+      "Formato CNPJ 00.000.000/0000-00",
+    ),
+  acronym: z.string().min(1, "Sigla obrigatória"),
+  isHeadquarter: z.boolean(),
+  postalCode: z.string().regex(/\d{5}-\d{3}/, "Formato CEP 00000-000"),
+  address: z.string().min(1, "Logradouro obrigatório"),
+  number: z.string().min(1, "Número obrigatório"),
+  complement: z.string().nullable().optional(),
+  neighborhood: z.string().min(1, "Bairro obrigatório"),
+  city: z.string().min(1, "Município obrigatório"),
+  state: z.string().length(2, "UF inválida"),
+  latitude: z.coerce.number({ invalid_type_error: "Latitude inválida" }),
+  longitude: z.coerce.number({ invalid_type_error: "Longitude inválida" }),
+  responsibleName: z.string().min(1, "Nome do responsável obrigatório"),
+  responsibleEmail: z.string().email("E-mail inválido"),
+  responsiblePhone: z.string().min(8, "Telefone obrigatório"),
+  responsibleCpf: z
+    .string()
+    .regex(/\d{3}\.\d{3}\.\d{3}-\d{2}/, "Formato CPF 000.000.000-00"),
+  legalNatureId: z.string().min(1, "Natureza jurídica obrigatória"),
+  tributaryRegimeId: z.string().min(1, "Regime tributário obrigatório"),
+  companyId: z.string().min(1, "Empresa obrigatória"),
+  mainEconomicActivityId: z.string().min(1, "CNAE principal obrigatório"),
+  phone: z.string().min(8, "Telefone obrigatório"),
+  email: z.string().email("E-mail inválido"),
+  stateRegistration: z.string().nullable().optional(),
+  municipalRegistration: z.string().nullable().optional(),
+});
 
-export default function Home() {
-  const router = useRouter();
-  const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+export type SubsidiaryFormData = z.infer<typeof FormSchema>;
 
-  const client = new OpenAI({
-    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
+/* ----------------------------------------------------------------
+ * Hook de passos
+ * -------------------------------------------------------------- */
+const useFormSteps = (form: UseFormReturn<SubsidiaryFormData>) => {
+  const [activeStep, setActiveStep] = useState(0);
+
+  const stepFields = {
+    0: [
+      "code",
+      "name",
+      "cnpj",
+      "acronym",
+      "isHeadquarter",
+      "postalCode",
+      "address",
+      "number",
+      "neighborhood",
+      "city",
+      "state",
+      "phone",
+      "email",
+    ] as const,
+    1: ["complement", "latitude", "longitude"] as const,
+    2: [
+      "responsibleName",
+      "responsibleEmail",
+      "responsiblePhone",
+      "responsibleCpf",
+      "legalNatureId",
+      "tributaryRegimeId",
+      "companyId",
+      "mainEconomicActivityId",
+      "stateRegistration",
+      "municipalRegistration",
+    ] as const,
+  } as const;
+
+  const validateStep = async (step: number) => {
+    const fields = stepFields[step as keyof typeof stepFields];
+    return await form.trigger(Array.from(fields));
+  };
+
+  return { activeStep, setActiveStep, validateStep };
+};
+
+/* ----------------------------------------------------------------
+ * Componente principal
+ * -------------------------------------------------------------- */
+export default function SubsidiaryForm() {
+  const form = useForm<SubsidiaryFormData>({
+    resolver: zodResolver(FormSchema),
+    shouldFocusError: false,
+    mode: "onBlur",
+    defaultValues: {
+      code: 0,
+      name: "",
+      cnpj: "",
+      acronym: "",
+      isHeadquarter: false,
+      postalCode: "",
+      address: "",
+      number: "",
+      complement: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      latitude: 0,
+      longitude: 0,
+      responsibleName: "",
+      responsibleEmail: "",
+      responsiblePhone: "",
+      responsibleCpf: "",
+      legalNatureId: "",
+      tributaryRegimeId: "",
+      companyId: "",
+      mainEconomicActivityId: "",
+      phone: "",
+      email: "",
+      stateRegistration: "",
+      municipalRegistration: "",
+    },
   });
 
+  const { control, handleSubmit, setValue, watch } = form;
+  const { activeStep, setActiveStep, validateStep } = useFormSteps(form);
+
+  /* ----------------------------------------------------------------
+   * Estados & refs
+   * -------------------------------------------------------------- */
+  const [loadingCard, setLoadingCard] = useState(false);
+  const openaiRef = useRef<OpenAI>(null);
+  if (!openaiRef.current) {
+    openaiRef.current = new OpenAI({
+      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true,
+    });
+  }
+  const client = openaiRef.current;
   const summaryAssistant = "asst_Q6Xw1vrYYzYrF9c4m3rsnvDx";
 
-  useEffect(() => {}, []);
+  /* ----------------------------------------------------------------
+   * Preenche campos com dados do cartão
+   * -------------------------------------------------------------- */
+  const fillWithSummary = (summary: CnpjCardResponse) => {
+    setValue("name", summary.fullName);
+    setValue("cnpj", maskCnpj(summary.cnpj));
+    setValue("postalCode", maskCep(summary.address.postalCode));
+    setValue("address", summary.address.address);
+    setValue("number", summary.address.number);
+    setValue("neighborhood", summary.address.province);
+    setValue("city", summary.address.city);
+    setValue("state", summary.address.state);
+    setValue("phone", maskPhone(summary.contactNumber));
+    setValue("email", summary.email);
+  };
 
-  async function analyze(buffer: Buffer) {
-    console.log("iniciou ");
+  /* ----------------------------------------------------------------
+   * ViaCEP auto-preenchimento
+   * -------------------------------------------------------------- */
+
+  /* ----------------------------------------------------------------
+   * Via-CEP sem re-render
+   * -------------------------------------------------------------- */
+  useEffect(() => {
+    const sub = watch(async (all, { name }) => {
+      if (name !== "postalCode") return;
+      const cepDigits = all.postalCode?.replace(/\D/g, "");
+      if (cepDigits?.length !== 8) return;
+
+      try {
+        const data = await fetch(
+          `https://viacep.com.br/ws/${cepDigits}/json/`,
+        ).then((r) => r.json());
+        if (data.erro) return;
+
+        const opts = {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+          shouldFocus: false,
+        } as const;
+
+        setValue("address", data.logradouro ?? "", opts);
+        setValue("neighborhood", data.bairro ?? "", opts);
+        setValue("city", data.localidade ?? "", opts);
+        setValue("state", data.uf ?? "", opts);
+      } catch {
+        /* nada */
+      }
+    });
+    return () => sub.unsubscribe();
+  }, [watch, setValue]);
+
+  /* ----------------------------------------------------------------
+   * Máscaras onChange
+   * -------------------------------------------------------------- */
+  const handleMask =
+    (fn: (v: string) => string, onChange: (v: string) => void) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      onChange(fn(e.target.value));
+
+  /* ----------------------------------------------------------------
+   * Análise do PDF do Cartão CNPJ
+   * -------------------------------------------------------------- */
+  async function analyze(fileBuffer: ArrayBuffer) {
     try {
-      const file = new File([buffer], "edital.pdf", {
+      const file = new File([fileBuffer], "cartao_cnpj.pdf", {
         type: "application/pdf",
       });
-
       const sendFile = await client.files.create({
-        file: file,
+        file,
         purpose: "assistants",
       });
-
-      console.log("sendFile", sendFile);
 
       const thread = await client.beta.threads.createAndRun({
         assistant_id: summaryAssistant,
@@ -102,339 +261,394 @@ export default function Home() {
               role: "user",
               content: "transcreva",
               attachments: [
-                { file_id: sendFile.id, tools: [{ type: "file_search" }] },
+                {
+                  file_id: sendFile.id,
+                  tools: [{ type: "file_search" }],
+                },
               ],
             },
           ],
         },
       });
 
-      const waitForCompletion = async ({
-        run,
-        thread,
-      }: {
-        run: string;
-        thread: string;
-      }): Promise<{ status: string }> => {
-        const newStatus = await client.beta.threads.runs.retrieve(thread, run);
-        if (newStatus.status === "completed") {
-          return { status: newStatus.status };
-        } else if (
-          newStatus.status === "in_progress" ||
-          newStatus.status === "queued"
-        ) {
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-          return await waitForCompletion({ run, thread }); // Recursivamente verifica novamente
-        } else {
-          return { status: newStatus.status };
+      const wait = async (runId: string, threadId: string): Promise<void> => {
+        const st = await client.beta.threads.runs.retrieve(threadId, runId);
+        if (st.status === "completed") return;
+        if (st.status === "queued" || st.status === "in_progress") {
+          await new Promise((r) => setTimeout(r, 4000));
+          return await wait(runId, threadId);
         }
       };
 
-      const isCompleted = await waitForCompletion({
-        thread: thread.thread_id,
-        run: thread.id,
-      });
+      await wait(thread.id, thread.thread_id);
 
-      if (isCompleted.status === "completed") {
-        //eslint ignore:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const threadMessages: any = await client.beta.threads.messages.list(
-          thread.thread_id,
-        );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msgs: any = await client.beta.threads.messages.list(
+        thread.thread_id,
+      );
+      const jsonText = msgs.data[0].content[0].text.value
+        .replace("```json\n", "")
+        .replace("\n```", "");
 
-        console.log(
-          "threadMessages",
-          threadMessages.data[0].content[0].text.value,
-        );
-
-        // Tenta fazer o parse da string
-        return JSON.parse(
-          threadMessages.data[0].content[0].text.value
-            .replace("```json\n", "")
-            .replace("\n```", ""),
-        );
-      } else {
-        return {
-          summary: null,
-        };
-      }
-    } catch (error) {
-      console.log(error);
+      return JSON.parse(jsonText) as CnpjCardResponse;
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao analisar cartão CNPJ");
+      return null;
     }
   }
 
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = textarea.scrollHeight + "px";
-    }
-  }, [summary]);
+  /* ----------------------------------------------------------------
+   * FieldError – espaço reservado fixo
+   * -------------------------------------------------------------- */
+  const FieldError = ({ name }: { name: keyof SubsidiaryFormData }) => {
+    const message = form.formState.errors[name]?.message as string | undefined;
+    return (
+      <div className="absolute -bottom-4 w-full">
+        <p className="text-destructive z-[999] h-4 text-xs">
+          {message || "\u00A0"}
+        </p>
+      </div>
+    );
+  };
 
-  return (
-    <>
+  /* ----------------------------------------------------------------
+   * Row genérico estilo card
+   * -------------------------------------------------------------- */
+  const Row = ({
+    label,
+    field,
+    index,
+    lastIndex,
+  }: {
+    label: string;
+    field: React.ReactNode;
+    index: number;
+    lastIndex: number;
+  }) => (
+    <div
+      className={cn(
+        "- flex min-w-[calc(50%-14px)] items-center gap-4 px-6 py-5",
+      )}
+    >
       <div
         className={cn(
-          "w-full rounded-xl border border-gray-300",
-          loading && "cursor-progress",
+          `border-r-primary/50 grid w-full grid-cols-12 items-center gap-4`,
+          {
+            "lg:border-r": (index + 1) % 2 === 1 && index !== lastIndex,
+          },
         )}
       >
-        <div className="flex w-full justify-between px-6 py-4">
-          <div className="flex gap-4">
-            <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-full p-2">
-              <Pencil className="text-white" />
-            </div>
-            <div className="">
-              <h1 className="text-xl font-bold text-gray-800">
-                {summary ? summary.fullName : "Razão Social Matriz"}
-              </h1>
-              <p className="text-sm text-gray-600">Responsáveis pela Matriz</p>
-              <div className="mt-4 flex items-end gap-4">
-                <AvatarGroup
-                  max={3}
-                  total={members.length - 3}
-                  countClass="w-6 h-6"
-                >
-                  {members?.map((item, index) => (
-                    <TooltipProvider key={`task-assigned-members-${index}`}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Avatar className="ring-primary ring-offset-primary h-6 w-6 ring-1 ring-offset-[1px]">
-                            <AvatarImage src={item.image} />
-                            <AvatarFallback>AB</AvatarFallback>
-                          </Avatar>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          color="primary"
-                          side="bottom"
-                          className="px-2 py-[2px]"
-                        >
-                          <p className="text-xs font-medium text-white">
-                            {item.name}
-                          </p>
-                          <TooltipArrow className="fill-primary" />
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ))}
-                </AvatarGroup>
-                <button
-                  onClick={() => router.push("/register/user")}
-                  className="text-primary hover:text-primary-dark cursor-pointer underline transition duration-300"
-                >
-                  Ver todos
-                </button>
-              </div>
-            </div>
-            <span className="bg-primary/20 text-primary h-max rounded-sm px-2 py-1 text-sm font-medium">
-              CNPJ: {summary ? summary.cnpj : "000.000.000/0000-00"}
-            </span>
-          </div>
-          <button className="group border-primary text-primary hover:border-primary-dark hover:text-primary-dark hover:bg-primary-dark/10 bg-primary/20 relative flex cursor-pointer flex-col items-center rounded-xl border px-2 py-4 font-medium transition duration-300">
-            {loading ? (
-              <>
-                {" "}
-                <Loader2 className="animate-spin" />
-                Inserindo Cartão CNPJ
-              </>
-            ) : (
-              <>
-                {" "}
-                <Upload />
-                Inserir Cartão CNPJ
-              </>
-            )}
-            <input
-              disabled={loading}
-              type="file"
-              onChange={async (e) => {
-                setLoading(true);
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = async (event) => {
-                    const buffer = Buffer.from(
-                      event.target?.result as ArrayBuffer,
-                    );
-                    const summaryData = await analyze(buffer);
-                    setSummary(summaryData);
-                    setLoading(false);
-                  };
-                  reader.readAsArrayBuffer(file);
-                }
-              }}
-              title=" "
-              className="absolute top-0 h-full w-full cursor-pointer bg-transparent text-transparent"
-            />
-          </button>
-        </div>
-        <div className="flex w-full flex-col gap-4">
-          <div className="flex w-full flex-col gap-4">
-            <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-              <div className="col-span-3 w-10/12 text-gray-800">
-                Nome Fantasia
-              </div>
-              <div className="col-span-8 text-gray-800">
-                {summary ? summary.fantasyName : "Nome Fantasia"}
-              </div>
-              <div className="col-span-1">
-                <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                  Editar {">"}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-            <div className="col-span-3 w-10/12 text-gray-800">
-              Atividade Economica Principal (CNAE)
-            </div>
-            <div className="col-span-8 text-gray-800">
-              {summary ? summary.mainActivity : "Atividade Economica Principal"}
-            </div>
-            <div className="col-span-1">
-              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                Editar {">"}
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-4">
-          <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-            <div className="col-span-3 w-10/12 text-gray-800">
-              Atividades Econômicas Secundarias (CNAE)
-            </div>
-            <textarea
-              disabled
-              ref={textareaRef}
-              className="col-span-8 h-max w-full resize-none text-gray-800"
-              value={
-                summary
-                  ? summary.secondaryActivities
-                  : "Atividades Econômicas Secundarias"
-              }
-            />
-            <div className="col-span-1">
-              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                Editar {">"}
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-4 text-gray-800">
-          <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-            <div className="col-span-3 w-10/12">
-              <span className="text-gray-800">Endereço Completo</span>
-              <p className="text-sm text-gray-600">
-                Endereço referente ao CNPJ
-              </p>
-            </div>
-            <div className="col-span-8 flex gap-8">
-              <div className="flex flex-col">
-                <div className="flex gap-2">
-                  <span className="font-semibold text-gray-950">
-                    Logradouro:
-                  </span>
-                  <span>{summary ? summary.address.address : ""}</span>
-                </div>
-                <div className="flex gap-8">
-                  <div className="flex gap-2">
-                    <span className="font-semibold text-gray-950">
-                      Município:{" "}
-                    </span>
-                    <span>{summary ? summary.address.city : ""}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="font-semibold text-gray-950">UF:</span>
-                    <span>{summary ? summary.address.state : ""}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex gap-2">
-                  <span className="font-semibold text-gray-950">Bairro:</span>
-                  <span>{summary ? summary.address.province : ""}</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="font-semibold text-gray-950">CEP:</span>
-                  <span>{summary ? summary.address.postalCode : ""}</span>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-1">
-              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                Editar {">"}
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-4">
-          <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-            <div className="col-span-3 w-10/12">
-              <span className="text-gray-800">
-                Código e Descrição da Natureza Jurídica
-              </span>
-              <p className="text-sm text-gray-600">E sua Situação Cadastral</p>
-            </div>
-            <div className="col-span-8 flex flex-col gap-2">
-              <span className="text-gray-800">
-                {summary ? summary.juridicNature : "Natureza Jurídica"}
-              </span>
-              <span className="text-sm text-gray-600">
-                {summary
-                  ? summary.registerSituation
-                  : "Ativa, Inapta, Suspensa, Baixada"}
-              </span>
-            </div>
-            <div className="col-span-1">
-              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                Editar {">"}
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-4">
-          <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-            <div className="col-span-3 flex w-10/12 flex-col gap-2">
-              <span className="text-gray-800">DATA DE ABERTURA</span>
-              <span className="text-sm text-gray-600">
-                Data da Situação Cadastral
-              </span>
-            </div>
-            <div className="col-span-8 flex flex-col gap-2">
-              <span className="text-gray-800">
-                {summary ? summary.openDate : "XX/XX/XXXX"}
-              </span>
-              <span className="text-sm text-gray-600">
-                {summary ? summary.situationDate : "XX/XX/XXXX"}
-              </span>
-            </div>
-            <div className="col-span-1">
-              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                Editar {">"}
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-4">
-          <div className="grid grid-cols-12 justify-between border-t border-gray-300 px-6 py-4">
-            <div className="col-span-3 flex w-10/12 flex-col gap-2">
-              <span className="text-gray-800">Telefone de Contato</span>
-              <span className="text-sm text-gray-600">Email para Contato</span>
-            </div>
-            <div className="col-span-8 flex flex-col gap-2">
-              <span>06/10/2021</span>
-              <span className="text-sm text-gray-600">
-                {summary ? summary.email : "email de contato"}
-              </span>
-            </div>
-            <div className="col-span-1">
-              <button className="text-primary hover:text-primary-dark cursor-pointer transition duration-300 hover:underline">
-                Editar {">"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <div className="col-span-3 text-gray-800">{label}</div>
+        <div className="col-span-8 flex items-center">{field}</div>
       </div>
-    </>
+    </div>
+  );
+
+  /* ----------------------------------------------------------------
+   * Step0 – dados básicos + cartão CNPJ
+   * -------------------------------------------------------------- */
+  const Step0 = () => {
+    const fields: (readonly [
+      keyof SubsidiaryFormData,
+      string,
+      ((v: string) => string)?,
+    ])[] = [
+      ["code", "Código"],
+      ["name", "Nome"],
+      ["cnpj", "CNPJ", maskCnpj],
+      ["acronym", "Sigla"],
+      ["postalCode", "CEP", maskCep],
+      ["address", "Logradouro"],
+      ["number", "Número"],
+      ["neighborhood", "Bairro"],
+      ["city", "Município"],
+      ["state", "UF"],
+      ["phone", "Telefone", maskPhone],
+      ["email", "E-mail"],
+    ];
+
+    return (
+      <>
+        {fields.map(([name, label, maskFn], index) => (
+          <Row
+            key={name}
+            label={label}
+            index={index}
+            lastIndex={fields.length - 1}
+            field={
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <div className="relative flex w-full flex-col">
+                    <Input
+                      {...field}
+                      value={field.value?.toString() ?? ""}
+                      className="w-full"
+                      maxLength={name === "state" ? 2 : undefined}
+                      onChange={
+                        maskFn
+                          ? handleMask(maskFn, field.onChange)
+                          : field.onChange
+                      }
+                      disabled={loadingCard}
+                    />
+                    <FieldError name={name} />
+                  </div>
+                )}
+              />
+            }
+          />
+        ))}
+
+        {/* Switch Matriz */}
+        <Row
+          label="É a matriz?"
+          index={fields.length}
+          lastIndex={fields.length}
+          field={
+            <Controller
+              name="isHeadquarter"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="isHeadquarter"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  className="border-primary data-[state=checked]:bg-primary/20 w-10 border p-[1px]"
+                  thumbClass="bg-primary"
+                  disabled={loadingCard}
+                />
+              )}
+            />
+          }
+        />
+      </>
+    );
+  };
+
+  /* ----------------------------------------------------------------
+   * Step1 – coordenadas / complemento
+   * -------------------------------------------------------------- */
+  const Step1 = () => {
+    const fields: (readonly [keyof SubsidiaryFormData, string])[] = [
+      ["complement", "Complemento"],
+      ["latitude", "Latitude"],
+      ["longitude", "Longitude"],
+    ];
+    return (
+      <>
+        {fields.map(([name, label], index) => (
+          <Row
+            key={name}
+            label={label}
+            index={index}
+            lastIndex={fields.length - 1}
+            field={
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <div className="relative flex w-full flex-col">
+                    <Input
+                      {...field}
+                      type={
+                        name === "latitude" || name === "longitude"
+                          ? "number"
+                          : "text"
+                      }
+                      step={
+                        name === "latitude" || name === "longitude"
+                          ? "0.000001"
+                          : undefined
+                      }
+                      value={field.value?.toString() ?? ""}
+                    />
+                    <FieldError name={name} />
+                  </div>
+                )}
+              />
+            }
+          />
+        ))}
+      </>
+    );
+  };
+
+  /* ----------------------------------------------------------------
+   * Step2 – responsável + dados fiscais
+   * -------------------------------------------------------------- */
+  const Step2 = () => {
+    const fields: (readonly [
+      keyof SubsidiaryFormData,
+      string,
+      ((v: string) => string)?,
+    ])[] = [
+      ["responsibleName", "Responsável"],
+      ["responsibleEmail", "E-mail do responsável"],
+      ["responsiblePhone", "Telefone do responsável", maskPhone],
+      ["responsibleCpf", "CPF do responsável", maskCpf],
+      ["legalNatureId", "Natureza Jurídica"],
+      ["tributaryRegimeId", "Regime Tributário"],
+      ["companyId", "Empresa"],
+      ["mainEconomicActivityId", "CNAE Principal"],
+      ["stateRegistration", "Inscrição Estadual"],
+      ["municipalRegistration", "Inscrição Municipal"],
+    ];
+
+    return (
+      <>
+        {fields.map(([name, label, maskFn], index) => (
+          <Row
+            key={name}
+            label={label}
+            index={index}
+            lastIndex={fields.length - 1}
+            field={
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <div className="relative flex w-full flex-col">
+                    <Input
+                      {...field}
+                      value={field.value?.toString() ?? ""}
+                      maxLength={
+                        name === "stateRegistration"
+                          ? 9
+                          : name === "municipalRegistration"
+                            ? 8
+                            : name === "responsibleCpf"
+                              ? 14
+                              : undefined
+                      }
+                      onChange={
+                        maskFn
+                          ? handleMask(maskFn, field.onChange)
+                          : field.onChange
+                      }
+                    />
+                    <FieldError name={name} />
+                  </div>
+                )}
+              />
+            }
+          />
+        ))}
+      </>
+    );
+  };
+
+  /* ----------------------------------------------------------------
+   * Navegação & submit
+   * -------------------------------------------------------------- */
+  const handleNext = async () => {
+    const isValid = await validateStep(activeStep);
+    if (!isValid) {
+      const firstError = Object.values(form.formState.errors)[0];
+      if (firstError && "message" in firstError)
+        toast.error(String(firstError.message));
+      return;
+    }
+    setActiveStep((s) => s + 1);
+  };
+
+  const handlePrev = () => setActiveStep((s) => s - 1);
+
+  const onSubmit = handleSubmit((data) => {
+    toast.success("Filial salva com sucesso!");
+    console.log(data);
+  });
+
+  /* ----------------------------------------------------------------
+   * JSX
+   * -------------------------------------------------------------- */
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="w-full overflow-hidden rounded-xl border border-gray-300"
+    >
+      {/* Header */}
+      <div className="bg-primary/20 flex w-full items-center justify-between gap-4 px-6 py-4">
+        <div className="flex items-center gap-4">
+          <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-full">
+            <Pencil className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-800">
+              Cadastro de Filial
+            </h1>
+            <p className="text-sm text-gray-600">Preencha os dados abaixo</p>
+          </div>
+        </div>
+
+        {/* Botão de upload */}
+        <Button
+          type="button"
+          className="group border-primary text-primary hover:border-primary-dark hover:text-primary-dark hover:bg-primary-dark/10 bg-primary/20 relative flex h-20 cursor-pointer flex-col items-center rounded-xl border border-dashed px-2 py-4 font-medium transition duration-300"
+          disabled={loadingCard}
+        >
+          {loadingCard ? (
+            <>
+              {" "}
+              <Loader2 className="animate-spin" size={40} />
+              Inserindo Cartão CNPJ
+            </>
+          ) : (
+            <>
+              {" "}
+              <Upload size={40} />
+              Inserir Cartão CNPJ
+            </>
+          )}
+          <input
+            type="file"
+            disabled={loadingCard}
+            title=" "
+            className="absolute inset-0 cursor-pointer opacity-0"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              if (!f) return;
+              setLoadingCard(true);
+              try {
+                const buf = await f.arrayBuffer();
+                const summary = await analyze(buf);
+                if (summary) fillWithSummary(summary);
+              } finally {
+                setLoadingCard(false);
+              }
+            }}
+          />
+        </Button>
+      </div>
+
+      {/* Corpo */}
+      <div className="grid grid-cols-1 divide-y divide-gray-300 lg:grid-cols-2">
+        {activeStep === 0 && <Step0 />}
+        {activeStep === 1 && <Step1 />}
+        {activeStep === 2 && <Step2 />}
+      </div>
+
+      {/* Navegação */}
+      <div className="flex justify-between border-t border-gray-300 bg-gray-50 px-6 py-6">
+        <Button
+          type="button"
+          variant="outline"
+          disabled={activeStep === 0}
+          onClick={handlePrev}
+        >
+          Voltar
+        </Button>
+
+        {activeStep < 2 ? (
+          <Button type="button" onClick={handleNext}>
+            Próximo
+          </Button>
+        ) : (
+          <Button type="submit">Salvar</Button>
+        )}
+      </div>
+    </form>
   );
 }

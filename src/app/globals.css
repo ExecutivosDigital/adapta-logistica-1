@@ -1,8 +1,12 @@
 @import "tailwindcss";
 @import "tailwind-scrollbar-hide/v4";
 html {
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable !important;
 }
+body {
+  scrollbar-gutter: stable !important;
+}
+
 @theme {
   /* Changing the default fontFamily to Poppins */
   --font-sans: "Poppins", sans-serif;

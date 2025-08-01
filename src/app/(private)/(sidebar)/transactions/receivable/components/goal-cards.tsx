@@ -1,35 +1,44 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+"use client";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { DateValue } from "react-aria-components";
+interface selectedTableType {
+  selectedTableType?: string;
+}
+export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
+  const [date, setDate] = useState<Date | null>(new Date());
+  const router = useRouter();
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) {
+      setDate(null);
+      return;
+    }
 
-export function ReceivableGoalCards() {
+    // CalendarDate, ZonedDateTime e afins expõem .toDate()
+    if ("toDate" in value) {
+      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  };
   return (
     <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div
+        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "consolidated" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+      >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Recebido Consolidado</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
-                <EllipsisVertical />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="left">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+            <EllipsisVertical />
+            <SimpleDatePicker
+              value={date}
+              view="month"
+              invisible
+              onChange={handleDateChange}
+            />
+          </div>
         </div>
 
         <div className="relative flex flex-col gap-2 p-2 px-4">
@@ -43,33 +52,29 @@ export function ReceivableGoalCards() {
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
+          <button
+            onClick={() => router.push("/transactions/receivable/consolidated")}
+            className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
+          >
             Ver Transações Recebidas
           </button>
           <div />
         </div>
       </div>
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div
+        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "this-month" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+      >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Receber neste Mês</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
-                <EllipsisVertical />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="left">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+            <EllipsisVertical />
+            <SimpleDatePicker
+              value={date}
+              view="month"
+              invisible
+              onChange={handleDateChange}
+            />
+          </div>
         </div>
 
         <div className="relative flex flex-col gap-2 p-2 px-4">
@@ -83,33 +88,29 @@ export function ReceivableGoalCards() {
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
+          <button
+            onClick={() => router.push("/transactions/receivable/this-month")}
+            className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
+          >
             Ver Transações em Aberto
           </button>
           <div />
         </div>
       </div>
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div
+        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "overdue" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+      >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Atrasados</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
-                <EllipsisVertical />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="left">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem Ipsum
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+            <EllipsisVertical />
+            <SimpleDatePicker
+              value={date}
+              view="month"
+              invisible
+              onChange={handleDateChange}
+            />
+          </div>
         </div>
 
         <div className="relative flex flex-col gap-2 p-2 px-4">
@@ -123,7 +124,10 @@ export function ReceivableGoalCards() {
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
+          <button
+            onClick={() => router.push("/transactions/receivable/overdue")}
+            className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
+          >
             Ver Transações Atrasadas
           </button>
           <div />

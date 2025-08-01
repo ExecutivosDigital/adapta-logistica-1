@@ -1,5 +1,6 @@
 import { HomeButtonGroup } from "./components/button-group";
-import { HomeCategoryList } from "./components/category-list";
+import HomeCategoryList from "./components/category-list";
+
 import { HomeFinancialLists } from "./components/financial-lists";
 import { HomeGoalCards } from "./components/goal-cards";
 import { HomeNewRelease } from "./components/new-release";
@@ -31,6 +32,9 @@ export default function Home() {
         <div className="col-span-12">
           <HomeFinancialLists />
         </div>
+        {/* <div className="col-span-12">
+                  <PayableTransactions />
+                </div> */}
         <div className="col-span-12">
           <HomeTransactions />
         </div>

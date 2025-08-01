@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toPay, TransactionProps } from "@/const/transactions";
 import { cn } from "@/utils/cn";
 
 import {
@@ -24,8 +25,8 @@ import {
   EllipsisVertical,
   Files,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Fragment, useMemo, useState } from "react";
+import moment from "moment";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn =
@@ -35,207 +36,118 @@ type SortableColumn =
   | "category"
   | "cc"
   | "status";
+interface Props {
+  filterType?: string;
+}
+export function PayableTransactions({ filterType }: Props) {
+  /* ----------------------------- State & Consts ---------------------------- */
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
-export function PayableTransactions() {
-  const router = useRouter();
-  const [transactionPages] = useState<number>(8);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
   const [query] = useState("");
 
-  const columns = [
-    { key: "date" as SortableColumn, label: "Data Pag.", sortable: true },
-    { key: "origin" as SortableColumn, label: "Fornecedor", sortable: true },
-    { key: "value" as SortableColumn, label: "Valor Título", sortable: true },
-    {
-      key: "category" as SortableColumn,
-      label: "Lançamentos",
-      sortable: true,
-    },
-    { key: "cc" as SortableColumn, label: "Documentos", sortable: true },
-    { key: "status" as SortableColumn, label: "Status", sortable: true },
-  ];
+  const tableTypes = [{ id: "1", name: "Pagamentos" }] as const;
+  const [selectedTableType, setSelectedTableType] = useState<{
+    id: "1" | "2" | "3";
+    name: string;
+  }>(tableTypes[0]);
 
-  const rawRows = useMemo(() => {
-    return [
-      {
-        transactions: [
-          {
-            id: "1",
-            date: "01/01/2025",
-            origin: "Fornecedor 1",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 1",
-            cc: "Ver Documentos",
-            status: "Á pagar",
-            documents: [
-              { id: "1", name: "Documento 1", file: "file.pdf" },
-              { id: "2", name: "Documento 2", file: "file.pdf" },
-            ],
-          },
-        ],
-      },
-      {
-        transactions: [
-          {
-            id: "2",
-            date: "02/01/2025",
-            origin: "Fornecedor 2",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 2",
-            cc: "Ver Documentos",
-            status: "Pendente",
-            documents: [],
-          },
-        ],
-      },
-      {
-        transactions: [
-          {
-            id: "3",
-            date: "03/01/2025",
-            origin: "Fornecedor 3",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 3",
-            cc: "Ver Documentos",
-            status: "Pago",
-            documents: [],
-          },
-        ],
-      },
-      {
-        transactions: [
-          {
-            id: "1",
-            date: "01/01/2025",
-            origin: "Fornecedor 4",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 4",
-            cc: "Ver Documentos",
-            status: "Pago",
-            documents: [
-              { id: "1", name: "Documento 1", file: "file.pdf" },
-              { id: "2", name: "Documento 2", file: "file.pdf" },
-            ],
-          },
-          {
-            id: "2",
-            date: "02/01/2025",
-            origin: "Fornecedor 4",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 4",
-            cc: "Ver Documentos",
-            status: "Pago",
-            documents: [
-              { id: "1", name: "Documento 1", file: "file.pdf" },
-              { id: "2", name: "Documento 2", file: "file.pdf" },
-            ],
-          },
-          {
-            id: "3",
-            date: "03/01/2025",
-            origin: "Fornecedor 4",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 4",
-            cc: "Ver Documentos",
-            status: "Pendente",
-            documents: [
-              { id: "1", name: "Documento 1", file: "file.pdf" },
-              { id: "2", name: "Documento 2", file: "file.pdf" },
-            ],
-          },
-          {
-            id: "4",
-            date: "04/01/2025",
-            origin: "Fornecedor 4",
-            value: "R$ 1.000,00",
-            category: "Nome do Serviço 4",
-            cc: "Ver Documentos",
-            status: "Negado",
-            documents: [
-              { id: "1", name: "Documento 1", file: "file.pdf" },
-              { id: "2", name: "Documento 2", file: "file.pdf" },
-            ],
-          },
-        ],
-      },
-    ];
-  }, []);
+  const rawRows: TransactionProps[] = (() => {
+    if (filterType === "overdue") {
+      return toPay.filter((r) => r.status === "atrasado");
+    }
+    if (filterType === "consolidated") {
+      return toPay.filter((r) => r.status === "pago");
+    }
+    if (filterType === "this-month") {
+      return toPay.filter(
+        (r) =>
+          moment(r.date).isSame(new Date(), "month") && r.status === "a_pagar",
+      );
+    }
+    return toPay;
+  })();
 
+  const parseDate = (raw: string): Date => {
+    if (raw.includes("/")) {
+      // dd/mm/yyyy
+      const [d, m, y] = raw.split("/");
+      return new Date(Number(y), Number(m) - 1, Number(d));
+    }
+    if (raw.includes("-")) {
+      // yyyy-mm-dd (ISO)
+      const [y, m, d] = raw.split("-");
+      return new Date(Number(y), Number(m) - 1, Number(d));
+    }
+    // fallback p/ qualquer outra string reconhecida pelo JS
+    return new Date(raw);
+  };
+
+  const formatDate = (raw: string): string => {
+    const d = parseDate(raw);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  };
+
+  const parseValue = (value: string): number =>
+    Number(value.replace(/[^0-9,-]+/g, "").replace(/,/g, "."));
+  /* -------------------------------- Sorting -------------------------------- */
   const handleSort = (column: SortableColumn) => {
+    // same column ➜ cycle direction
     if (sortColumn === column) {
-      // Cycle through: asc -> desc -> null
-      if (sortDirection === "asc") {
-        setSortDirection("desc");
-      } else if (sortDirection === "desc") {
-        setSortDirection(null);
-        setSortColumn(null);
-      }
+      const next =
+        sortDirection === "asc"
+          ? "desc"
+          : sortDirection === "desc"
+            ? null
+            : "asc";
+      setSortDirection(next);
+      if (!next) setSortColumn(null);
     } else {
       setSortColumn(column);
       setSortDirection("asc");
     }
-  };
-
-  const parseValue = (value: string): number => {
-    return parseFloat(value.replace(/[R$\s.]/g, "").replace(",", "."));
-  };
-
-  const parseDate = (date: string): Date => {
-    const [day, month, year] = date.split("/");
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-  };
-
-  const getSortIcon = (column: SortableColumn) => {
-    if (sortColumn !== column) {
-      return <ChevronUp className="h-4 w-4 text-gray-300" />;
-    }
-
-    if (sortDirection === "asc") {
-      return <ChevronUp className="h-4 w-4 text-gray-600" />;
-    } else if (sortDirection === "desc") {
-      return <ChevronDown className="h-4 w-4 text-gray-600" />;
-    }
-
-    return <ChevronUp className="h-4 w-4 text-gray-300" />;
+    // sempre volta para página 1 ao ordenar
+    setCurrentPage(1);
   };
 
   const sortedRows = useMemo(() => {
     if (!sortColumn || !sortDirection) return rawRows;
 
-    return [...rawRows].sort((a, b) => {
-      // Get the first transaction from each row for comparison
-      const aTransaction = a.transactions[0];
-      const bTransaction = b.transactions[0];
-
+    const rowsCopy = [...rawRows];
+    rowsCopy.sort((a, b) => {
       let aValue: number | Date | string;
       let bValue: number | Date | string;
 
       switch (sortColumn) {
         case "date":
-          aValue = parseDate(aTransaction.date);
-          bValue = parseDate(bTransaction.date);
+          aValue = parseDate(a.date);
+          bValue = parseDate(b.date);
           break;
         case "origin":
-          aValue = aTransaction.origin.toLowerCase();
-          bValue = bTransaction.origin.toLowerCase();
+          aValue = a.origin.toLowerCase();
+          bValue = b.origin.toLowerCase();
           break;
         case "value":
-          aValue = parseValue(aTransaction.value);
-          bValue = parseValue(bTransaction.value);
+          aValue = parseValue(a.value);
+          bValue = parseValue(b.value);
           break;
         case "category":
-          aValue = aTransaction.category.toLowerCase();
-          bValue = bTransaction.category.toLowerCase();
+          aValue = a.category.toLowerCase();
+          bValue = b.category.toLowerCase();
           break;
         case "cc":
-          aValue = aTransaction.cc.toLowerCase();
-          bValue = bTransaction.cc.toLowerCase();
+          aValue = a.cc.toLowerCase();
+          bValue = b.cc.toLowerCase();
           break;
         case "status":
-          aValue = aTransaction.status.toLowerCase();
-          bValue = bTransaction.status.toLowerCase();
+          aValue = String(a.status).toLowerCase();
+          bValue = String(b.status).toLowerCase();
           break;
         default:
           return 0;
@@ -245,222 +157,271 @@ export function PayableTransactions() {
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
+
+    return rowsCopy;
   }, [rawRows, sortColumn, sortDirection]);
 
+  /* ------------------------------ Filtering -------------------------------- */
   const filteredRows = useMemo(() => {
-    if (!query.trim()) return sortedRows;
+    const term = query.trim().toLowerCase();
+    if (!term) return sortedRows;
 
-    const searchTerm = query.toLowerCase().trim();
-
-    return sortedRows.filter((row) => {
-      // Check if any transaction in the row matches the search
-      return row.transactions.some((transaction) => {
-        return (
-          transaction.date.toLowerCase().includes(searchTerm) ||
-          transaction.origin.toLowerCase().includes(searchTerm) ||
-          transaction.value.toLowerCase().includes(searchTerm) ||
-          transaction.category.toLowerCase().includes(searchTerm) ||
-          transaction.cc.toLowerCase().includes(searchTerm) ||
-          transaction.status.toLowerCase().includes(searchTerm)
-        );
-      });
-    });
+    return sortedRows.filter((tx) =>
+      [
+        formatDate(tx.date),
+        tx.origin,
+        tx.value,
+        tx.type,
+        tx.category,
+        tx.cc,
+        String(tx.status),
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(term),
+    );
   }, [sortedRows, query]);
 
-  // const handleStopTypingPositive = (value: string) => {
-  //   setQuery(value);
-  // };
+  /* ----------------------------- Pagination -------------------------------- */
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(filteredRows.length / rowsPerPage)),
+    [filteredRows.length, rowsPerPage],
+  );
 
-  // const debouncedHandleStopTyping = useCallback(
-  //   debounce(handleStopTypingPositive, 500),
-  //   [],
-  // );
-  const tableTypes = [
-    {
-      id: "1",
-      name: "Ver Todos Pagamentos",
-    },
-    {
-      id: "2",
-      name: "Solicitação de Compras",
-    },
-    {
-      id: "3",
-      name: "Pgtos.Recorrentes",
-    },
-    {
-      id: "4",
-      name: "Lançamentos À Pagar",
-    },
-  ];
-  const [selectedTableType, setSelectedTableType] = useState(tableTypes[0]);
+  useEffect(() => {
+    // caso filtro/ordenacao reduza o total, garante que currentPage é válido
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    return filteredRows.slice(start, start + rowsPerPage);
+  }, [filteredRows, currentPage, rowsPerPage]);
+
+  /* -------------------------- Column Definitions --------------------------- */
+  const columns = [
+    { key: "date" as const, label: "Data Pag.", sortable: true },
+    { key: "origin" as const, label: "Fornecedor", sortable: true },
+    { key: "value" as const, label: "Valor Título", sortable: true },
+    { key: "category" as const, label: "Lançamentos", sortable: true },
+    { key: "cc" as const, label: "Documentos", sortable: true },
+    { key: "status" as const, label: "Status", sortable: true },
+  ] satisfies { key: SortableColumn; label: string; sortable: boolean }[];
+
+  const getSortIcon = (column: SortableColumn) => {
+    if (sortColumn !== column)
+      return <ChevronUp className="h-4 w-4 text-gray-300" />;
+    if (sortDirection === "asc")
+      return <ChevronUp className="h-4 w-4 text-gray-600" />;
+    if (sortDirection === "desc")
+      return <ChevronDown className="h-4 w-4 text-gray-600" />;
+    return <ChevronUp className="h-4 w-4 text-gray-300" />;
+  };
+
+  /* --------------------------------- JSX ---------------------------------- */
   return (
-    <>
-      <div className="flex flex-col">
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">Fluxo de Pagamentos</span>
-            <div
-              onClick={() => router.push("/transactions/payable/all")}
-              className="text-primary flex cursor-pointer items-center gap-2 text-sm font-semibold"
-            >
-              <span>Ver todas</span>
-              <ChevronRight />
-            </div>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <OrangeButton className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
-                <span className="text-sm"> Criar Lançamento</span>
-                <ChevronRight />
-              </OrangeButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1">
-                  Lançar Despesa
-                  <div className="border-primary h-4 w-4 rounded-md border"></div>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1">
-                  Pagamento de Colaboradores
-                  <div className="border-primary h-4 w-4 rounded-md border"></div>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1">
-                  Desp. Recorrentes
-                  <div className="border-primary h-4 w-4 rounded-md border"></div>
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <div className="flex flex-col">
+      {/* --------------------------- Header --------------------------- */}
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">Fluxo de Pagamentos</span>
         </div>
-        {/*   
-        <label
-          htmlFor="search"
-          className="border-primary text-primary flex max-w-80 flex-row items-center gap-2 rounded-lg border p-1"
-        >
-          <Search />
-          <input
-            id="search"
-            type="text"
-            placeholder="Pesquisar"
-            className="bg-transparent outline-none focus:outline-none"
-            onChange={(e) => debouncedHandleStopTyping(e.target.value)}
-          />
-        </label> */}
-        <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
-          {tableTypes.map((tab, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedTableType(tab)}
-              className={`hover:text-primary flex h-12 cursor-pointer flex-row items-center justify-center gap-2 border-b px-2 transition-all duration-300 ${
-                tab.id === selectedTableType.id
-                  ? "text-primary border-b-primary"
-                  : "border-b-transparent"
-              }`}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <OrangeButton
+              className="border-primary bg-primary hover:border-primary-dark hover:bg-primary-dark flex items-center gap-2 px-2 py-1 text-white shadow-sm transition"
+              aria-label="Criar Lançamento"
             >
-              {tab.id === selectedTableType.id ? (
-                <div className="bg-primary/20 text-primary flex h-4 w-4 items-center justify-center rounded-full">
-                  <ChevronDown />
+              <span className="text-sm">Criar Lançamento</span>
+              <ChevronRight />
+            </OrangeButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="bottom">
+            {[
+              "Lançar Despesa",
+              "Pagamento de Colaboradores",
+              "Desp. Recorrentes",
+            ].map((item) => (
+              <DropdownMenuItem
+                key={item}
+                className="hover:bg-primary/20 cursor-pointer transition"
+              >
+                <div className="flex w-full items-center justify-between gap-2 border-b p-1">
+                  {item}
+                  <div className="border-primary h-4 w-4 rounded-md border" />
                 </div>
-              ) : (
-                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-zinc-400/20 text-zinc-400">
-                  <ChevronRight />
-                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* --------------------------- Tabs ---------------------------- */}
+      <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
+        {tableTypes.map((tab) => {
+          const isActive = tab.id === selectedTableType.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setSelectedTableType(tab);
+                setCurrentPage(1); // reset page when changing tab
+              }}
+              className={cn(
+                "flex h-12 items-center gap-2 border-b px-2 text-sm transition",
+                isActive
+                  ? "border-b-primary text-primary"
+                  : "hover:text-primary border-b-transparent",
               )}
+            >
+              <div
+                className={cn(
+                  "flex h-4 w-4 items-center justify-center rounded-full",
+                  isActive
+                    ? "bg-primary/20 text-primary"
+                    : "bg-zinc-400/20 text-zinc-400",
+                )}
+              >
+                {isActive ? <ChevronDown /> : <ChevronRight />}
+              </div>
               {tab.name}
             </button>
-          ))}
-        </div>
-        <Table className="border-collapse">
-          <TableHeader>
-            <TableRow className="gap-1">
-              {columns.map((column) => (
-                <TableHead
-                  key={column.key}
-                  className={cn("h-12 cursor-pointer text-sm text-zinc-500")}
-                  onClick={() =>
-                    column.sortable && handleSort(column.key as SortableColumn)
-                  }
-                >
-                  <div
-                    className={`flex items-center gap-2 ${column.label === "Status" && "justify-center"}`}
-                  >
-                    {column.label}
-                    {column.sortable &&
-                      getSortIcon(column.key as SortableColumn)}
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredRows.map((row, index) => {
-              const firstTransaction = row.transactions[0];
-
-              return (
-                <Fragment key={index}>
-                  <TableRow className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300">
-                    <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        {firstTransaction.date}
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                      <div className="flex items-center gap-4 text-center">
-                        {firstTransaction.origin}
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-0.5 text-start text-sm whitespace-nowrap text-[#EF4444]">
-                      {firstTransaction.value}
-                    </TableCell>
-                    <TableCell className="py-0.5 text-start text-sm whitespace-nowrap">
-                      {firstTransaction.category}
-                    </TableCell>
-                    <TableCell className="h-full py-0.5 text-start text-sm whitespace-nowrap">
-                      <div className="flex flex-row items-center gap-2 font-bold underline">
-                        {firstTransaction.cc}
-                        <Files />
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                      <div className="flex w-full flex-row gap-4">
-                        <div
-                          className={cn(
-                            "flex-1 text-center",
-                            firstTransaction.status === "Pago"
-                              ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
-                              : firstTransaction.status === "Á pagar"
-                                ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
-                                : firstTransaction.status === "Pendente"
-                                  ? "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]"
-                                  : "rounded-md border border-[#1877F2] bg-[#1877F2]/20 px-2 py-1 text-[#1877F2]",
-                          )}
-                        >
-                          {firstTransaction.status}
-                        </div>
-                        <div className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
-                          <EllipsisVertical />
-                        </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                </Fragment>
-              );
-            })}
-          </TableBody>
-        </Table>
-        <div className="w-full border-t border-t-zinc-200 p-2">
-          <CustomPagination
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            pages={transactionPages}
-          />
-        </div>
+          );
+        })}
       </div>
-    </>
+
+      {/* --------------------------- Table --------------------------- */}
+      <Table className="border-collapse">
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead
+                key={column.key}
+                className="h-12 cursor-pointer text-sm text-zinc-500"
+                onClick={() => column.sortable && handleSort(column.key)}
+              >
+                <div
+                  className={cn("flex items-center gap-2", {
+                    "justify-center": column.label === "Status",
+                  })}
+                >
+                  {column.label}
+                  {column.sortable && getSortIcon(column.key)}
+                </div>
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {paginatedRows.map((row) => (
+            <Fragment key={row.id}>
+              <TableRow className="hover:bg-primary/20 h-14 cursor-pointer transition">
+                {/* Data */}
+                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                  {moment(row.date).format("DD/MM/YYYY")}
+                </TableCell>
+
+                {/* Fornecedor */}
+                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                  {row.origin}
+                </TableCell>
+
+                {/* Valor */}
+                <TableCell
+                  className={cn(
+                    "py-0.5 text-sm whitespace-nowrap",
+                    row.type === "toReceive"
+                      ? "text-emerald-600"
+                      : "text-red-500",
+                  )}
+                >
+                  {row.value}
+                </TableCell>
+
+                {/* Lançamentos */}
+                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                  {row.category}
+                </TableCell>
+
+                {/* Documentos */}
+                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                  <div className="flex items-center gap-2 font-bold underline">
+                    Ver Documentos
+                    <Files />
+                  </div>
+                </TableCell>
+
+                {/* Status + Ações */}
+                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                  <div className="flex items-center gap-4">
+                    {/* Badge */}
+                    <div
+                      className={cn(
+                        "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
+                        {
+                          "border-red-500 bg-red-500/20 text-red-500":
+                            row.status === "a_pagar" ||
+                            row.status === "a_receber",
+                          "border-black bg-black/20 text-black":
+                            row.status === "negado",
+                          "border-emerald-600 bg-emerald-600/20 text-emerald-600":
+                            row.status === "recebido" || row.status === "pago",
+                          "border-yellow-600 bg-yellow-600/20 text-yellow-600":
+                            row.status === "pendente",
+                          "border-zinc-400 bg-zinc-400/20 text-zinc-600":
+                            row.status === "incompleto",
+                          "border-orange-500 bg-orange-500/20 text-orange-500":
+                            row.status === "atrasado",
+                        },
+                      )}
+                    >
+                      {row.status === "a_pagar"
+                        ? "À PAGAR"
+                        : row.status === "negado"
+                          ? "NEGADO"
+                          : row.status === "a_receber"
+                            ? "À RECEBER"
+                            : row.status === "recebido"
+                              ? "RECEBIDO"
+                              : row.status === "pendente"
+                                ? "PENDENTE"
+                                : row.status === "incompleto"
+                                  ? "INCOMPLETO"
+                                  : row.status === "pago"
+                                    ? "PAGO"
+                                    : "ATRASADO"}
+                    </div>
+
+                    {/* Menu */}
+                    <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
+                      <EllipsisVertical />
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </Fragment>
+          ))}
+          {paginatedRows.length < 10 &&
+            [...Array(10 - paginatedRows.length)].map((_, i) => (
+              <TableRow key={i} className="h-14">
+                <TableCell colSpan={6} className="h-full" />
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+
+      {/* ----------------------- Pagination Footer --------------------- */}
+      <div className="border-t border-t-zinc-200 p-2">
+        <CustomPagination
+          currentPage={currentPage}
+          pages={totalPages}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
+    </div>
   );
 }

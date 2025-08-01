@@ -1,14 +1,11 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { getLocalTimeZone } from "@internationalized/date";
 import { ApexOptions } from "apexcharts";
-import { ArrowDownRight, ArrowUpRight, DollarSign, Filter } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { DateValue } from "react-aria-components";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
@@ -114,6 +111,19 @@ export function HomeResultsGraph() {
       ],
     },
   });
+  const [date, setDate] = useState<Date | null>(new Date());
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) {
+      setDate(null);
+      return;
+    }
+
+    // CalendarDate, ZonedDateTime e afins expõem .toDate()
+    if ("toDate" in value) {
+      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  };
 
   return (
     <div className="flex w-full flex-col gap-2">
@@ -124,25 +134,15 @@ export function HomeResultsGraph() {
           </div>
           <span className="text-sm font-semibold">Resultado Consolidado</span>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
-              <Filter />
-              <span className="text-sm">Junho</span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+        <div className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
+          <SimpleDatePicker
+            value={date}
+            label="Filtro"
+            onChange={handleDateChange}
+            view="day"
+          />
+        </div>
       </div>
       <span className="text-2xl font-semibold">R$180.789,00</span>
       <div className="flex h-6 items-center gap-2">

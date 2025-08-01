@@ -1,13 +1,10 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { getLocalTimeZone } from "@internationalized/date";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { DateValue } from "react-aria-components";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
@@ -16,11 +13,18 @@ export function ReceivableResultsGraph() {
   const [state] = useState({
     series: [
       {
-        name: "STOCK ABC",
-        data: [
-          1052, 1055, 1054, 1062, 1061, 1053, 1069, 1065, 1063, 1063, 1055,
-          1068, 1066,
-        ],
+        name: "Recebido",
+        data: Array.from(
+          { length: 13 },
+          () => Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
+        ),
+      },
+      {
+        name: "Á Receber",
+        data: Array.from(
+          { length: 13 },
+          () => Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
+        ),
       },
     ],
     options: {
@@ -35,7 +39,7 @@ export function ReceivableResultsGraph() {
         background: "transparent",
       },
       tooltip: {
-        enabled: false,
+        enabled: true,
       },
       dataLabels: {
         enabled: false,
@@ -45,7 +49,7 @@ export function ReceivableResultsGraph() {
       },
       fill: {
         type: "gradient",
-        colors: ["#00A181"],
+        colors: ["#00A181", "#003ffd"],
         gradient: {
           shadeIntensity: 1,
           inverseColors: false,
@@ -113,15 +117,36 @@ export function ReceivableResultsGraph() {
       ],
     },
   });
+  const [date, setDate] = useState<Date | null>(new Date());
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) {
+      setDate(null);
+      return;
+    }
 
+    // CalendarDate, ZonedDateTime e afins expõem .toDate()
+    if ("toDate" in value) {
+      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  };
   return (
     <div className="flex h-full w-full justify-between gap-2">
-      <div className="flex h-full w-80 flex-col justify-between border-r border-r-zinc-200 p-2">
-        <div className="flex items-center justify-between"></div>
+      <div className="flex h-full w-80 flex-col items-start justify-between border-r border-r-zinc-200 p-2">
+        <div className="self-star flex items-center gap-2 rounded-lg border border-zinc-400 p-2 text-black">
+          <div className="">
+            <SimpleDatePicker
+              value={date}
+              label="Ano Atual"
+              view="year"
+              onChange={handleDateChange}
+            />
+          </div>
+        </div>
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
             <div className="h-full w-1 bg-[#00A181]" />
-            <span className="text-lg text-zinc-400 2xl:text-2xl">Recebido</span>
+            <span className="text-zinc-400">Recebido</span>
           </div>
           <span className="text-2xl font-semibold text-[#00A181]">
             R$ <span className="">1.322.890,00</span>
@@ -129,33 +154,14 @@ export function ReceivableResultsGraph() {
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
-            <div className="h-full w-1 bg-[#00A181]" />
-            <span className="text-lg text-zinc-400 2xl:text-2xl">
-              Á Receber
-            </span>
+            <div className="h-full w-1 bg-[#003ffd]" />
+            <span className="text-zinc-400">Á Receber</span>
           </div>
-          <span className="text-2xl font-semibold text-[#00A181]">
+          <span className="text-2xl font-semibold text-[#003ffd]">
             R$ <span className="">1.322.890,00</span>
           </span>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center gap-2 self-start rounded-lg border border-zinc-400 p-2 text-black">
-              <span className="text-sm">Ano Atual</span>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              Lorem Ipsum
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
         <div />
       </div>
 

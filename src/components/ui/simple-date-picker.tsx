@@ -84,7 +84,7 @@ export function SimpleDatePicker({
         className={`top-0 left-0 flex h-full w-full items-center gap-2 ${invisible ? "absolute" : ""}`}
       >
         <Button
-          className={`focus:ring-none flex h-full w-full flex-row gap-2 rounded p-2 focus:outline-none`}
+          className={`focus:ring-none flex h-full w-full flex-row gap-2 rounded px-2 focus:outline-none`}
         >
           {!invisible && (
             <>
@@ -104,8 +104,8 @@ export function SimpleDatePicker({
       </Group>
 
       {/* ─── Popover Content ─── */}
-      <Popover className="z-20">
-        <Dialog className="border-primary mt-2 w-80 rounded-lg border bg-white p-4 shadow-lg">
+      <Popover className="z-[9999999999]">
+        <Dialog className="border-primary mt-2 mr-2 mb-2 ml-2 w-80 rounded-lg border bg-white p-4 shadow-lg">
           {/* ---------------- DAY MODE ---------------- */}
           {view === "day" && (
             <Calendar>

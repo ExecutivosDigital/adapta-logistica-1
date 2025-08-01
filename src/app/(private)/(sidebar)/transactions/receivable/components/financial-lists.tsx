@@ -1,7 +1,16 @@
 "use client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { getLocalTimeZone } from "@internationalized/date";
 import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
-
+import { useState } from "react";
+import { DateValue } from "react-aria-components";
 export function ReceivableFinancialLists() {
   const incomeList = [
     {
@@ -108,11 +117,31 @@ export function ReceivableFinancialLists() {
       value: 0,
     },
   ];
+  const [date, setDate] = useState<Date | null>(new Date());
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) {
+      setDate(null);
+      return;
+    }
 
+    // CalendarDate, ZonedDateTime e afins expõem .toDate()
+    if ("toDate" in value) {
+      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  };
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between">
-        <span className="font-semibold">Fluxo Consolidado</span>
+        <span className="font-semibold">Extrato Consolidado</span>
+        <div className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
+          <SimpleDatePicker
+            value={date}
+            label="Filtro"
+            onChange={handleDateChange}
+            view="day"
+          />
+        </div>
       </div>
       <div className="flex w-full items-center justify-between gap-8">
         <div className="flex w-1/2 flex-col rounded-xl border border-zinc-200 shadow-sm">
@@ -121,9 +150,24 @@ export function ReceivableFinancialLists() {
               <span className="text-sm">Recebido</span>
               <span className="font-semibold text-[#00A181]">R$12,890.00</span>
             </div>
-            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-              <EllipsisVertical />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="left"
+                className="divide-zin-400 divide-y-1"
+              >
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Exportar Relatório
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
             {incomeList.map((inc) => (
@@ -177,9 +221,24 @@ export function ReceivableFinancialLists() {
               <span className="text-sm">Á Receber</span>
               <span className="font-semibold text-[#00A181]">-R$8,890.00</span>
             </div>
-            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-              <EllipsisVertical />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="left"
+                className="divide-zin-400 divide-y-1"
+              >
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Exportar Relatório
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
             {expenseList.map((exp) => (

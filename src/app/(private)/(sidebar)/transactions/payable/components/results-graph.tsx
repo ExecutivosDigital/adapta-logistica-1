@@ -126,11 +126,12 @@ export function PayableResultsGraph() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } else if (value !== null && (value as any) instanceof Date) setDate(value);
   };
+
   return (
     <div className="flex h-full w-full justify-between gap-2">
-      <div className="flex h-full w-80 flex-col justify-between border-r border-r-zinc-200 p-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 rounded-lg border border-zinc-400 text-black">
+      <div className="flex h-full w-80 flex-col items-start justify-between border-r border-r-zinc-200 p-2">
+        <div className="self-star flex items-center gap-2 rounded-lg border border-zinc-400 p-2 text-black">
+          <div className="">
             <SimpleDatePicker
               value={date}
               label="Ano Atual"

@@ -21,11 +21,11 @@ interface LaunchTypeRaw {
 }
 export interface LaunchTypeModalProps {
   show: boolean;
-  showingTaxes: boolean;
+  showingTaxes?: boolean;
   onClose: () => void;
 
   onSelect: (launch: LaunchType) => void;
-  selectCostCenter: (launch: LaunchType) => void;
+  selectCostCenter?: (launch: LaunchType) => void;
   itemsPerPage?: number;
 }
 
@@ -100,7 +100,9 @@ export default function LaunchTypeModal({
   /* ---------------------- handlers --------------------------*/
   function handleConfirm() {
     if (!selected) return;
-    selectCostCenter(selected);
+    if (selectCostCenter) {
+      selectCostCenter(selected);
+    }
     onSelect(selected);
   }
 

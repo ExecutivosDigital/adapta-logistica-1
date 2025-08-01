@@ -9,13 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/utils/cn";
 import {
-  ArrowRight,
-  ChevronDown,
-  ChevronUp,
-  EllipsisVertical,
-} from "lucide-react";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/utils/cn";
+import { ChevronDown, ChevronUp, EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -213,30 +214,70 @@ export function FinalApprovalTable({
                   <div className="flex items-center gap-4 text-center">
                     {row.item}
                     {row.tag && (
-                      <span
-                        className={cn(
-                          "min-w-44 rounded-md p-1 text-xs font-semibold",
-                          row.tag === "extreme"
-                            ? "bg-red-500 text-white"
-                            : row.tag === "high"
-                              ? "bg-yellow-500 text-black"
-                              : row.tag === "medium"
-                                ? "bg-orange-500 text-white"
-                                : row.tag === "low"
-                                  ? "bg-blue-500 text-white"
-                                  : "",
-                        )}
-                      >
-                        {row.tag === "extreme"
-                          ? "Estritamente Urgente !!"
-                          : row.tag === "high"
-                            ? "Alta Prioridade !!"
-                            : row.tag === "medium"
-                              ? "Média Prioridade"
-                              : row.tag === "low"
-                                ? "Baixa Prioridade"
-                                : ""}
-                      </span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className={cn(
+                                "flex w-20 flex-row items-center justify-between gap-1 rounded-md p-1 text-center text-xs font-semibold",
+                                row.tag === "extreme"
+                                  ? "bg-red-500 text-white"
+                                  : row.tag === "high"
+                                    ? "bg-yellow-500 text-black"
+                                    : row.tag === "medium"
+                                      ? "bg-orange-500 text-white"
+                                      : row.tag === "low"
+                                        ? "bg-blue-500 text-white"
+                                        : "",
+                              )}
+                            >
+                              <span className="flex-1 text-center">
+                                {row.tag === "extreme"
+                                  ? "Urgente"
+                                  : row.tag === "high"
+                                    ? "Alta"
+                                    : row.tag === "medium"
+                                      ? "Média"
+                                      : row.tag === "low"
+                                        ? "Baixa"
+                                        : ""}
+                              </span>
+                              <div className="flex h-4 w-4 items-center justify-center rounded-full border border-white text-xs">
+                                ?
+                              </div>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="bg-transparent p-0"
+                          >
+                            <span
+                              className={cn(
+                                "min-w-44 rounded-md p-1 text-xs font-semibold",
+                                row.tag === "extreme"
+                                  ? "bg-red-500 text-white"
+                                  : row.tag === "high"
+                                    ? "bg-yellow-500 text-black"
+                                    : row.tag === "medium"
+                                      ? "bg-orange-500 text-white"
+                                      : row.tag === "low"
+                                        ? "bg-blue-500 text-white"
+                                        : "",
+                              )}
+                            >
+                              {row.tag === "extreme"
+                                ? "Estritamente Urgente !!"
+                                : row.tag === "high"
+                                  ? "Alta Prioridade !!"
+                                  : row.tag === "medium"
+                                    ? "Média Prioridade"
+                                    : row.tag === "low"
+                                      ? "Baixa Prioridade"
+                                      : ""}
+                            </span>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                   </div>
                 </TableCell>
@@ -264,9 +305,9 @@ export function FinalApprovalTable({
                     <span className="mr-auto w-max">{row.who}</span>
                   </div>
                 </TableCell>
-                <TableCell className="w-40 py-0.5 text-start text-sm font-normal whitespace-nowrap">
-                  <OrangeButton onClick={openModal}>
-                    Aprovar <ArrowRight />
+                <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
+                  <OrangeButton onClick={openModal} className="text-xs">
+                    Enviar orçamento
                   </OrangeButton>
                 </TableCell>
               </TableRow>

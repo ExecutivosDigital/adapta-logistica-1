@@ -20,7 +20,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import DollarIcon from "../../../../../public/icons/dollar";
 import { AccontsType, Accounts } from "./components/acconts";
+import CreateClientSheet from "./components/create-client-sheet";
 import LaunchTypeModal from "./components/launch-type-modal";
 import { Step1 } from "./components/step1";
 import { Step3 } from "./components/step3";
@@ -297,8 +299,13 @@ export default function NewPayable() {
       setData({ ...data, costCenters: [] });
     }
   };
+  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
   return (
     <div className="flex min-h-screen flex-col overflow-hidden">
+      <CreateClientSheet
+        open={openCreateClientSheet}
+        onOpenChange={setOpenCreateClientSheet}
+      />
       {/* HEADER -------------------------------------------------------- */}
       <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
         <Image
@@ -333,7 +340,7 @@ export default function NewPayable() {
         <Modal
           show={isOpenSupplierModal}
           onHide={() => setIsOpenSupplierModal(false)}
-          className="h-max w-[50vw] border-none bg-transparent shadow-none"
+          className="h-max max-h-[80vh] w-[50vw] border-none bg-transparent shadow-none"
         >
           <div className="scrollbar-hide w-full overflow-scroll rounded-xl bg-white shadow-xl">
             {/* Cabeçalho */}
@@ -341,14 +348,17 @@ export default function NewPayable() {
               <h2 className="text-lg font-semibold text-white">
                 Lista de Fornecedores no Sistema
               </h2>
-              <button className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl">
+              <button
+                onClick={() => setOpenCreateClientSheet(true)}
+                className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl"
+              >
                 <Plus />
               </button>
             </div>
 
             {/* Campo de busca */}
             <div className="flex flex-row items-center gap-2 px-6 py-4">
-              <label className="mb-2 block text-xl text-[#6C7386]">
+              <label className="mb-2 block text-[#6C7386]">
                 Selecione o Fornecedor:
               </label>
               <div className="bg-primary/20 border-primary relative flex flex-1 items-center rounded-md border px-4 py-2">
@@ -404,7 +414,6 @@ export default function NewPayable() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="bg-primary h-4 w-4 rounded-full" />
                       <div className="flex flex-col text-sm">
                         <span className="text-zinc-800">{fornecedor.name}</span>
                       </div>
@@ -418,7 +427,13 @@ export default function NewPayable() {
                     </div>
                     <div className="flex items-center gap-6 text-sm">
                       <div className="text-primary flex w-28 items-center gap-1 font-medium">
-                        <span>🪙</span>
+                        <span>
+                          <DollarIcon
+                            width={22}
+                            height={22}
+                            className="fill-primary text-primary"
+                          />
+                        </span>
                         <span>{fornecedor.expirationDate}</span>
                       </div>
                       <span

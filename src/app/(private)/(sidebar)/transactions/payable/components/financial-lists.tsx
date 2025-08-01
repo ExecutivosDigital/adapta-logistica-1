@@ -1,11 +1,16 @@
 "use client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { getLocalTimeZone } from "@internationalized/date";
 import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
-
 export function PayableFinancialLists() {
   const incomeList = [
     {
@@ -129,12 +134,12 @@ export function PayableFinancialLists() {
     <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between">
         <span className="font-semibold">Fluxo Consolidado</span>
-        <div className="flex items-center gap-2 rounded-lg border border-zinc-400 text-black">
+        <div className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
           <SimpleDatePicker
             value={date}
-            label="Ano Atual"
-            view="day"
+            label="Filtro"
             onChange={handleDateChange}
+            view="day"
           />
         </div>
       </div>
@@ -145,9 +150,24 @@ export function PayableFinancialLists() {
               <span className="text-sm">Efetuado</span>
               <span className="font-semibold text-[#EF4444]">R$12,890.00</span>
             </div>
-            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-              <EllipsisVertical />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="left"
+                className="divide-zin-400 divide-y-1"
+              >
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Exportar Relatório
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
             {incomeList.map((inc) => (
@@ -201,9 +221,24 @@ export function PayableFinancialLists() {
               <span className="text-sm">Á Pagar</span>
               <span className="font-semibold text-[#EF4444]">-R$8,890.00</span>
             </div>
-            <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
-              <EllipsisVertical />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="left"
+                className="divide-zin-400 divide-y-1"
+              >
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Exportar Relatório
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer rounded-none transition duration-300">
+                  Lorem Ipsum
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
             {expenseList.map((exp) => (

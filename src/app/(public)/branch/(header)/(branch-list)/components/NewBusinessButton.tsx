@@ -1,12 +1,13 @@
-import { useCreateBusinessUnit } from "@/context/CreateBusinessUnitContext";
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export function NewBusinessButton() {
-  const { openCreateBusinessUnitModal } = useCreateBusinessUnit();
+  // const { openCreateBusinessUnitModal } = useCreateBusinessUnit();
+  const router = useRouter();
   return (
     <button
-      onClick={() => openCreateBusinessUnitModal()}
+      onClick={() => router.push("/branch/create-business-unit ")}
       className="border-primary relative h-40 w-full cursor-pointer gap-1 overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 hover:scale-[1.02]"
     >
       <Image

@@ -1,10 +1,13 @@
+"use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
-
-export function PayableGoalCards() {
+interface selectedTableType {
+  selectedTableType?: string;
+}
+export function PayableGoalCards({ selectedTableType }: selectedTableType) {
   const [date, setDate] = useState<Date | null>(new Date());
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
@@ -20,7 +23,9 @@ export function PayableGoalCards() {
   };
   return (
     <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div
+        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "consolidated" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+      >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Despesas Consolidado</span>
 
@@ -47,13 +52,20 @@ export function PayableGoalCards() {
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
+          <button
+            onClick={() =>
+              (window.location.href = "/transactions/payable/consolidated")
+            }
+            className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
+          >
             Ver Despesas Pagas
           </button>
           <div />
         </div>
       </div>
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div
+        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "this-month" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+      >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Pagar este Mês</span>
 
@@ -79,13 +91,20 @@ export function PayableGoalCards() {
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
+          <button
+            onClick={() =>
+              (window.location.href = "/transactions/payable/this-month")
+            }
+            className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
+          >
             Ver Despesas em Aberto
           </button>
           <div />
         </div>
       </div>
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div
+        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "overdue" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+      >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Atrasados</span>
           <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
@@ -110,7 +129,12 @@ export function PayableGoalCards() {
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
-          <button className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]">
+          <button
+            onClick={() =>
+              (window.location.href = "/transactions/payable/overdue")
+            }
+            className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
+          >
             Ver Despesas Atrasadas
           </button>
           <div />

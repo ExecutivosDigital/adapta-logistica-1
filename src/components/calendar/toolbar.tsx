@@ -131,9 +131,9 @@ const CustomToolbar = ({
                       : last
                         ? "0 0.5rem 0.5rem 0"
                         : "",
-                    backgroundColor: "#d96927",
-                    color: "white",
-                    opacity: view === viewName ? "1" : "0.8",
+                    backgroundColor: view !== viewName ? "#fff" : "#d96927",
+                    color: view === viewName ? "#fff" : "#d96927",
+                    opacity: 1,
                   }}
                   className={view === viewName ? "rbc-active" : ""}
                   onClick={() => viewHandler(viewName)}

@@ -1,8 +1,13 @@
 "use client";
-import { Check, X } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Check, ChevronDown, Mic, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
-
 interface NewPurchaseRequestModalProps {
   show: boolean;
   onHide: () => void;
@@ -113,17 +118,90 @@ export function NewPurchaseRequestModal({
                   </div>
                   <div className="flex flex-col items-start">
                     <label className="font-semibold">Justificativa</label>
-                    <textarea
-                      className="h-24 w-full resize-none rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                      placeholder="Descrição da Necessidade de Compras"
-                    />
+                    <div className="relative flex w-full">
+                      <textarea
+                        className="h-24 w-full resize-none rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
+                        placeholder="Descrição da Necessidade de Compras"
+                      />
+                      <button className="absolute right-2 bottom-2 text-black">
+                        <Mic />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex w-full flex-col items-start">
-                    <label className="">Categoria</label>
-                    <input
-                      className="h-12 w-full rounded-2xl border border-zinc-200 p-4 text-base text-black placeholder:text-black focus:outline-none"
-                      placeholder="Categoria no Plano de Contas"
-                    />
+                  <div className="flex w-full flex-row items-start justify-between gap-2">
+                    <div className="flex flex-1 flex-col items-start">
+                      <label className="">Categoria</label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <div className="flex h-12 w-full flex-row gap-2 rounded-2xl border border-zinc-200 p-4 text-sm text-black placeholder:text-black focus:outline-none">
+                            <span>Categoria no Plano de Contas</span>
+                            <ChevronDown className="ml-auto" />
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          side="top"
+                          sideOffset={0}
+                          className="z-[99999] w-72 border-zinc-200"
+                        >
+                          {/* <X className="text-primary ml-auto cursor-pointer" />
+                          <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                            <input
+                              placeholder="Pesquisar tipos de Documentos"
+                              className="flex-1 focus:outline-none"
+                            />
+                            <Search size={14} />
+                          </div> */}
+
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                              Categoria 1
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                              Categoria 1
+                            </div>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="flex flex-col items-start">
+                      <label className="">Prioridade</label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <div className="flex h-12 w-full flex-row rounded-2xl border border-zinc-200 p-4 text-sm text-black placeholder:text-black focus:outline-none">
+                            <span>Prioridade</span>
+                            <ChevronDown className="ml-2" />
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          side="top"
+                          sideOffset={0}
+                          className="z-[99999] w-72 border-zinc-200"
+                        >
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                              Urgente
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                              Alta
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                              Média
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                            <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                              Baixa
+                            </div>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               </div>

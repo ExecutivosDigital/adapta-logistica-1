@@ -16,11 +16,16 @@ export function HomeNewRelease() {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          <OrangeButton className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
-            <span className="text-sm"> Criar Lançamento</span>
-            <ChevronRight />
-          </OrangeButton>
+        <DropdownMenuTrigger asChild>
+          <div>
+            <OrangeButton
+              disabled
+              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
+            >
+              <span className="text-sm"> Criar Lançamento</span>
+              <ChevronRight />
+            </OrangeButton>
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" className="z-[999]">
           <DropdownMenuItem
