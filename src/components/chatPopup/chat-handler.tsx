@@ -51,7 +51,7 @@ export function useSectionChat({ selectedPrompt }: UseSectionChatParams) {
     }
     if (aiInstanceRef.current) {
       chatSessionRef.current = aiInstanceRef.current.chats.create({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         history: initialHistory || [],
         config: {
           systemInstruction: selectedPrompt
