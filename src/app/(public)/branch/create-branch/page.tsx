@@ -7,6 +7,7 @@ import { maskCep, maskCnpj, maskCpf, maskPhone } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, UseFormReturn } from "react-hook-form";
@@ -128,6 +129,7 @@ const useFormSteps = (form: UseFormReturn<SubsidiaryFormData>) => {
  * Componente principal
  * -------------------------------------------------------------- */
 export default function SubsidiaryForm() {
+  const router = useRouter();
   const form = useForm<SubsidiaryFormData>({
     resolver: zodResolver(FormSchema),
     shouldFocusError: false,
@@ -417,9 +419,11 @@ export default function SubsidiaryForm() {
                   checked={field.value}
                   onCheckedChange={(checked) => {
                     field.onChange(checked);
-                    toast.success(
-                      `${checked ? "Matriz selecionada" : "Matriz desmarcada"} `,
-                    );
+                    if (checked) {
+                      toast.success("Matriz Marcada");
+                    } else {
+                      toast.error("Matriz Desmarcada");
+                    }
                   }}
                   className="border-primary data-[state=checked]:bg-primary/20 w-10 border p-[1px]"
                   thumbClass="bg-primary"
@@ -650,7 +654,12 @@ export default function SubsidiaryForm() {
             Próximo
           </Button>
         ) : (
-          <Button type="submit">Salvar</Button>
+          <Button
+            type="submit"
+            onClick={() => router.push("/branch/branch-details")}
+          >
+            Salvar
+          </Button>
         )}
       </div>
     </form>

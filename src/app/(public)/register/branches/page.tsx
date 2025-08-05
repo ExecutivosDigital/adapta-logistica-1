@@ -6,6 +6,7 @@ import { maskCep, maskCnpj } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -67,6 +68,7 @@ export type ContratanteFormData = z.infer<typeof FormSchema>;
  * Componente principal
  * -------------------------------------------------------------- */
 export default function CadastroContratanteForm() {
+  const router = useRouter();
   const form = useForm<ContratanteFormData>({
     resolver: zodResolver(FormSchema),
     shouldFocusError: false,
@@ -403,7 +405,12 @@ export default function CadastroContratanteForm() {
         >
           Voltar
         </Button>
-        <Button type="submit">Salvar</Button>
+        <Button
+          type="submit"
+          onClick={() => router.push("/register/branches-list")}
+        >
+          Salvar
+        </Button>
       </div>
     </form>
   );
