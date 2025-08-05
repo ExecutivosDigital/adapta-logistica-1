@@ -16,7 +16,10 @@ export default function RegisterLayout({
         <div className="relative flex h-full min-h-[calc(100vh-64px)] w-full flex-col rounded-t-2xl bg-white">
           {/* Cabeçalho com itens posicionados absolutamente */}
           <div className="relative p-8 pb-0">
-            <button className="text-primary hover:text-primary-dark absolute top-5 left-5 flex cursor-pointer items-center gap-2 transition duration-300">
+            <button
+              onClick={() => window.history.back()}
+              className="text-primary hover:text-primary-dark absolute top-5 left-5 flex cursor-pointer items-center gap-2 transition duration-300"
+            >
               <ArrowLeft />
               <span>Acesso à Central</span>
             </button>
@@ -45,7 +48,7 @@ export default function RegisterLayout({
             {/* Seção das abas e conteúdo - ESTE É O CONTAINER QUE VAI CRESCER */}
             <div className="mt-16 flex flex-1 flex-col overflow-hidden">
               {/* AQUI ESTÁ A MÁGICA: A ScrollArea ocupa o espaço restante */}
-              <div className="flex max-h-[80vh] w-full flex-1 py-4">
+              <div className="flex w-full flex-1 py-4">
                 <ScrollArea className="w-full">{children}</ScrollArea>
               </div>
             </div>

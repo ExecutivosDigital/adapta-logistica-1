@@ -16,52 +16,52 @@ export function HomeFinancialLists() {
   const incomeList = [
     {
       id: "1",
-      label: "Lorem",
+      label: "ALCAST DO BRASIL LTDA FILIAL",
       value: 12890,
     },
     {
       id: "2",
-      label: "Lorem",
+      label: "ALCAST DO BRASIL LTDA",
       value: 200,
     },
     {
       id: "3",
-      label: "Lorem",
+      label: "ALCAST DO BRASIL S A",
       value: 16000,
     },
     {
       id: "4",
-      label: "Lorem",
+      label: "CINPAL COMPANHIA INDUSTRIAL DE PECAS PARA AUTOMOVEIS",
       value: 321.32,
     },
     {
       id: "5",
-      label: "Lorem",
+      label: "SAVOY INDUSTRIA DE COSMETICOS",
       value: 0,
     },
     {
       id: "6",
-      label: "Lorem",
+      label: "COTY BRASIL COMERCIO S.A.",
       value: 12890,
     },
     {
       id: "7",
-      label: "Lorem",
+      label: "ELECTROLUX DO BRASIL S A",
       value: 200,
     },
     {
       id: "8",
-      label: "Lorem",
+      label: "ELECTROLUX DO BRASIL S A",
       value: 16000,
     },
     {
       id: "9",
-      label: "Lorem",
+      label: "ELECTROLUX DO BRASIL S A",
       value: 321.32,
     },
     {
       id: "10",
-      label: "Lorem",
+      label: "ENEVA S A SEDE",
       value: 0,
     },
   ];
@@ -69,52 +69,52 @@ export function HomeFinancialLists() {
   const expenseList = [
     {
       id: "1",
-      label: "Lorem",
+      label: "ELECTROLUX DO BRASIL S A",
       value: 12890,
     },
     {
       id: "2",
-      label: "Lorem",
+      label: "CASA E VIDEO RIO DE JANEIRO",
       value: 200,
     },
     {
       id: "3",
-      label: "Lorem",
+      label: "SAF DO BRASIL PRODUTOS ALIMENTICIOS LTDA",
       value: 16000,
     },
     {
       id: "4",
-      label: "Lorem",
+      label: "TK ELEVADORES BRASIL LTDA",
       value: 321.32,
     },
     {
       id: "5",
-      label: "Lorem",
+      label: "TP-LINK SISTEMAS DO BRASIL LTDA",
       value: 0,
     },
     {
       id: "6",
-      label: "Lorem",
+      label: "SHE OPL VOTORANTIM CIMENTOS SA",
       value: 12890,
     },
     {
       id: "7",
-      label: "Lorem",
+      label: "Potencial Fomento Mercantil Eireli",
       value: 200,
     },
     {
       id: "8",
-      label: "Lorem",
+      label: "Itau Administradora de Consorcios Ltda",
       value: 16000,
     },
     {
       id: "9",
-      label: "Lorem",
+      label: "Bradesco Administradora de Consorcios Ltda.",
       value: 321.32,
     },
     {
       id: "10",
-      label: "Lorem",
+      label: "Itau Unibanco S.a.",
       value: 0,
     },
   ];

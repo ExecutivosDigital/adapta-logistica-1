@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { branches } from "@/mock/branches";
 import { cn } from "@/utils/cn";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, EllipsisVertical, Info } from "lucide-react";
@@ -27,106 +28,6 @@ export default function BranchesList() {
     { key: "CNPJ", label: "CNPJ" },
     { key: "place", label: "Cidade e Estado" },
     { key: "unit", label: "Acesso à Filial" },
-  ];
-
-  const rows = [
-    {
-      id: "1",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-      parentCompany: true,
-    },
-    {
-      id: "2",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "3",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "4",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "5",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "6",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "7",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "8",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "9",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "10",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "11",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "12",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "13",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "14",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "15",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
-    {
-      id: "16",
-      name: "Razão Social da Filial",
-      CNPJ: "43.795.283/0001-18",
-      place: "Curitiba - Paraná",
-    },
   ];
 
   return (
@@ -153,7 +54,7 @@ export default function BranchesList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((row) => (
+          {branches.map((row) => (
             <TableRow
               key={row.id}
               onClick={() => router.push("/branch")}

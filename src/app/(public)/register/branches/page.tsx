@@ -228,7 +228,7 @@ export default function CadastroContratanteForm({
     const message = form.formState.errors[name]?.message as string | undefined;
     return (
       <div className="absolute -bottom-4 w-full">
-        <p className="text-destructive z-[999] h-4 text-xs">
+        <p className="text-destructive z-[999] h-4 text-xs text-red-400">
           {message || "\u00A0"}
         </p>
       </div>
@@ -376,6 +376,13 @@ export default function CadastroContratanteForm({
                     <Input
                       {...field}
                       value={field.value?.toString() ?? ""}
+                      type={
+                        name === "qtdUsuarios"
+                          ? "number"
+                          : name === "qtdFiliais"
+                            ? "number"
+                            : "text"
+                      }
                       maxLength={name === "uf" ? 2 : undefined}
                       onChange={
                         maskFn

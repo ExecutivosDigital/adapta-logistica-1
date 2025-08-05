@@ -8,7 +8,7 @@ export function NewBusinessButton() {
   return (
     <button
       onClick={() => router.push("/branch/create-business-unit ")}
-      className="border-primary relative h-40 w-full cursor-pointer gap-1 overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 hover:scale-[1.02]"
+      className="border-primary relative h-full w-full cursor-pointer gap-1 overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 hover:scale-[1.02]"
     >
       <Image
         src="/static/branch-details-bg.png"

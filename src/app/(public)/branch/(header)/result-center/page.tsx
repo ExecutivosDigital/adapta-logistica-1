@@ -1,8 +1,8 @@
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
+import { CostCenter, CostCenterProps } from "@/mock/cost-center";
 import { ChevronRight, Plus, Search } from "lucide-react";
 import { useState } from "react";
-
 export default function BranchDetails() {
   const [value, setValue] = useState("");
 
@@ -27,40 +27,67 @@ export default function BranchDetails() {
           Ações
         </OrangeButton>
       </div>
-      <div className="grid h-full w-full grid-cols-3 gap-8">
-        {Array.from({ length: 11 }).map((_, index) => (
-          <div
-            key={index}
-            className="group border-primary hover:border-primary-dark relative w-full cursor-pointer overflow-hidden rounded-xl border-2 bg-white shadow-lg transition transition-all duration-300 hover:scale-[1.005]"
-          >
-            <div className="flex h-full w-full flex-col justify-between">
-              <div className="bg-primary group-hover:bg-primary-dark flex w-full items-center p-4 transition duration-300">
-                <span className="text-2xl font-bold text-white">
-                  NOME DA UNID. DE NEGÓCIO
-                </span>
-              </div>
-              <div className="flex w-full flex-row justify-between p-4">
-                <div className="flex flex-col gap-4">
-                  <span className="text-[#00A181]">Previsão Receita</span>
-                  <span className="text-lg font-semibold">R$6.000.000,00</span>
+      <div className="grid h-full w-full grid-cols-1 gap-6 px-2 md:grid-cols-2 lg:grid-cols-3">
+        {CostCenter.flat()
+          .filter((item) =>
+            value.trim().length > 0
+              ? item.Ds.toLowerCase().includes(value.trim().toLowerCase())
+              : true,
+          )
+          .map((item: CostCenterProps, index) => (
+            <div
+              key={index}
+              className="group border-primary hover:border-primary-dark relative w-full cursor-pointer overflow-hidden rounded-2xl border-2 bg-white shadow-md transition-all duration-300 hover:scale-[1.01]"
+            >
+              <div className="flex h-full w-full flex-col justify-between">
+                {/* Cabeçalho */}
+                <div className="bg-primary group-hover:bg-primary-dark flex w-full items-center p-4 transition duration-300">
+                  <span className="text-xl font-bold text-white">
+                    {item.ResultCenter}
+                  </span>
                 </div>
-                <div className="flex flex-col gap-4">
-                  <span className="text-[#EF4444]">Previsão Despesa</span>
-                  <span className="text-lg font-semibold">R$6.000.000,00</span>
-                </div>
-              </div>
 
-              <div className="flex w-full items-center justify-center">
-                <div className="flex w-[90%] items-center justify-center border-t border-t-zinc-500/40 p-4">
-                  <button className="text-primary border-primary hover:bg-primary flex cursor-pointer items-center gap-2 rounded-xl border bg-white p-2 transition duration-300 hover:text-white">
-                    <span>Orçamento por Unidade de Negócio</span>
-                    <ChevronRight />
-                  </button>
+                {/* Detalhes do centro de custo */}
+                <div className="flex flex-col gap-2 px-4 py-4 text-sm text-gray-800">
+                  <div className="text-base font-medium text-zinc-700">
+                    {item.Ds}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-zinc-600">Ativo: </span>
+                    <span
+                      className={
+                        item.Ativo === "A" ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      {item.Ativo === "A" ? "Sim" : "Não"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-zinc-600">
+                      Data de Manutenção:{" "}
+                    </span>
+                    {item.MaintenanceDate}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-zinc-600">
+                      Responsável:{" "}
+                    </span>
+                    {item.user}
+                  </div>
+                </div>
+
+                {/* Rodapé com botão e avatares */}
+                <div className="flex flex-col gap-2 border-t border-t-zinc-200 px-4 py-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <button className="text-primary border-primary hover:bg-primary flex items-center gap-2 rounded-lg border bg-white px-3 py-1 text-sm transition duration-300 hover:text-white">
+                      <span>Orçamento por Unidade de Negócio</span>
+                      <ChevronRight />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

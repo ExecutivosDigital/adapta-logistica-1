@@ -1,90 +1,53 @@
 "use client";
+import { useBranch } from "@/context/BranchContext";
+import { BusinessUnit } from "@/mock/business-unit";
 import { cn } from "@/utils/cn";
-import { Building2, NotepadText } from "lucide-react";
-import { useState } from "react";
+import { Building2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function HomeButtonGroup() {
-  const [buttons, setButtons] = useState([
-    {
-      id: "1",
-      label: "Filial",
-      icon: <Building2 className="h-4 w-max" />,
-      selected: true,
-    },
-    {
-      id: "2",
-      label: "Mecânica",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-    {
-      id: "3",
-      label: "Financeiro",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-    {
-      id: "4",
-      label: "Monitoramento",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-    {
-      id: "5",
-      label: "Frota",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-    {
-      id: "6",
-      label: "Armazém",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-    {
-      id: "7",
-      label: "Marketing",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-    {
-      id: "8",
-      label: "Lorem",
-      icon: <NotepadText className="h-4 w-max" />,
-      selected: false,
-    },
-  ]);
-
+  const { selectedBranch } = useBranch();
+  const filteredBusinessUnits = BusinessUnit.filter(
+    (businessUnit) => businessUnit.code === Number(selectedBranch?.id),
+  );
+  const [selectedBusinessUnit, setSelectedBusinessUnit] =
+    useState<BusinessUnit | null>(filteredBusinessUnits[0]);
+  useEffect(() => {
+    setSelectedBusinessUnit(filteredBusinessUnits[0]);
+  }, [selectedBranch]);
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {buttons.map((b) => (
+      {selectedBranch?.parentCompany && (
         <button
           onClick={() => {
-            const newButtons = buttons.map((button) => {
-              if (button.id === b.id) {
-                return {
-                  ...button,
-                  selected: true,
-                };
-              } else {
-                return {
-                  ...button,
-                  selected: false,
-                };
-              }
-            });
-            setButtons(newButtons);
+            setSelectedBusinessUnit(null);
           }}
-          key={b.id}
           className={cn(
             "hover:bg-primary flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 transition duration-300 hover:font-semibold hover:text-white",
-            b.selected
+            selectedBusinessUnit === null
               ? "bg-primary border-primary font-semibold text-white"
               : "text-zinc-600",
           )}
         >
-          {b.icon}
-          {b.label}
+          <Building2 className="h-4 w-4" />
+          Todos
+        </button>
+      )}
+      {filteredBusinessUnits.map((b, index) => (
+        <button
+          onClick={() => {
+            setSelectedBusinessUnit(b);
+          }}
+          key={index}
+          className={cn(
+            "hover:bg-primary flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 transition duration-300 hover:font-semibold hover:text-white",
+            b === selectedBusinessUnit
+              ? "bg-primary border-primary font-semibold text-white"
+              : "text-zinc-600",
+          )}
+        >
+          <Building2 className="h-4 w-max" />
+          {b.businessUnit}
         </button>
       ))}
     </div>

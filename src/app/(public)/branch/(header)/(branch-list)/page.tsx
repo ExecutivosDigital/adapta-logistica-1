@@ -1,104 +1,81 @@
 "use client";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipArrow,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { faker } from "@faker-js/faker";
-import { ChevronRight } from "lucide-react";
+import { useBranch } from "@/context/BranchContext";
+import { BusinessUnit } from "@/mock/business-unit";
+import { ChevronRight, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { NewBusinessButton } from "./components/NewBusinessButton";
 
 export default function BranchDetails() {
   const router = useRouter();
-  const members = [
-    {
-      name: "Alex",
-      value: "userid1",
-      image: faker.image.avatarLegacy(),
-    },
-    {
-      name: "João",
-      value: "userid2",
-      image: faker.image.avatarLegacy(),
-    },
-    {
-      name: "Paulo",
-      value: "userid3",
-      image: faker.image.avatarLegacy(),
-    },
-    {
-      name: "Gabriel",
-      value: "userid4",
-      image: faker.image.avatarLegacy(),
-    },
-  ];
-
+  const [value, setValue] = useState("");
+  const { selectedBranch } = useBranch();
+  const filteredBusinessUnits = BusinessUnit.filter(
+    (businessUnit) => businessUnit.code === Number(selectedBranch?.id),
+  );
   return (
     <div className="grid h-full w-full grid-cols-3 gap-8 p-4">
+      <div className="col-span-3 flex w-full flex-row items-center justify-between">
+        <label
+          htmlFor="search"
+          className="border-primary text-primary flex w-1/2 flex-row items-center gap-2 rounded-lg border p-1"
+        >
+          <Search />
+          <input
+            id="search"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            type="text"
+            placeholder="Pesquisar"
+            className="w-full bg-transparent outline-none focus:outline-none"
+          />
+        </label>
+      </div>
       <NewBusinessButton />
 
-      {Array.from({ length: 11 }).map((_, index) => (
-        <div
-          key={index}
-          onClick={() => router.push("/register/unit-details")}
-          className="border-primary relative h-40 w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition duration-300 hover:scale-[1.005]"
-        >
-          <div className="flex h-full w-full flex-col justify-between">
-            <span className="text-2xl font-bold">NOME DA UNID. DE NEGÓCIO</span>
-
-            <div className="flex w-full items-center justify-between">
-              <div className="flex flex-col">
-                <span>Membros</span>
-                <AvatarGroup
-                  max={3}
-                  total={members.length - 3}
-                  countClass="w-10 h-10"
-                >
-                  {members?.map((item, index) => (
-                    <TooltipProvider key={`task-assigned-members-${index}`}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Avatar className="ring-primary ring-offset-primary h-10 w-10 ring-1 ring-offset-[1px]">
-                            <AvatarImage src={item.image} />
-                            <AvatarFallback>AB</AvatarFallback>
-                          </Avatar>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          color="primary"
-                          side="bottom"
-                          className="px-2 py-[2px]"
-                        >
-                          <p className="text-xs font-medium text-white">
-                            {item.name}
-                          </p>
-                          <TooltipArrow className="fill-primary" />
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ))}
-
-                  <Avatar className="ring-background ring-offset-background h-6 w-6 ring-1 ring-offset-[2px]">
-                    <AvatarFallback className="font-normal">+10</AvatarFallback>
-                  </Avatar>
-                </AvatarGroup>
+      {filteredBusinessUnits
+        .filter((item) =>
+          value.trim().length > 0
+            ? item.corporateName
+                .toLowerCase()
+                .includes(value.trim().toLowerCase())
+            : true,
+        )
+        .map((unit: BusinessUnit, index) => (
+          <div
+            key={index}
+            onClick={() => router.push("/register/unit-details")}
+            className="border-primary relative w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition duration-300 hover:scale-[1.005]"
+          >
+            <div className="flex h-full w-full flex-col justify-between gap-4">
+              {/* Header: Nome e Sigla */}
+              <div className="flex flex-row items-start justify-between">
+                <span className="text-xl font-bold text-gray-800">
+                  {unit.businessUnit}
+                </span>
+                <div className="bg-primary rounded-md px-3 py-1 text-sm font-semibold text-white">
+                  {unit.acronym}
+                </div>
               </div>
-              <button className="border-primary bg-primary/20 text-primary hover:bg-primary flex cursor-pointer items-center gap-2 rounded-xl border px-2 py-1 transition duration-300 hover:text-white">
-                <span>Acessar Unidade</span>
-                <ChevronRight />
-              </button>
+
+              {/* Informações detalhadas */}
+              <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                <div>
+                  <span className="font-semibold">Status da Unidade:</span>{" "}
+                  {unit.businessUnitStatus}
+                </div>
+              </div>
+
+              {/* Botão */}
+              <div className="flex justify-end">
+                <button className="border-primary bg-primary/20 text-primary hover:bg-primary flex items-center gap-2 rounded-xl border px-3 py-1 text-sm transition duration-300 hover:text-white">
+                  <span>Acessar Unidade</span>
+                  <ChevronRight />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 }

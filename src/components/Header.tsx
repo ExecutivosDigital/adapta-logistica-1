@@ -1,6 +1,9 @@
 "use client";
 
+import { useBranch } from "@/context/BranchContext";
 import { useSidebar } from "@/context/SidebarContext";
+import { branches } from "@/mock/branches";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { Bell, ChevronDown, Menu } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,7 +14,7 @@ import {
 
 export default function Header() {
   const { openMobile } = useSidebar();
-
+  const { selectedBranch, setSelectedBranch } = useBranch();
   return (
     <header className="flex h-16 items-center gap-2 bg-white px-4 lg:px-20">
       {/* botão só aparece < lg */}
@@ -38,21 +41,25 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="border-primary text-primary flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 focus:outline-none">
-                <span className="text-sm font-semibold">APROVAÇÕES</span>
-                <ChevronDown />
-              </button>
+              <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">
+                <span className="text-primary font-semibold">
+                  {selectedBranch?.name}
+                </span>
+                <ChevronDown className="text-zinc-400" />
+              </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem ipsum
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                Lorem ipsum
-              </DropdownMenuItem>
+            <DropdownMenuContent className="divide-y divide-zinc-200">
+              <DropdownMenuArrow />
+              {branches.map((branch) => (
+                <DropdownMenuItem
+                  key={branch.id}
+                  className="hover:bg-primary/20 mt-2 mb-2 flex cursor-pointer flex-row items-start gap-2 text-start transition duration-300"
+                  onClick={() => setSelectedBranch(branch)}
+                >
+                  <span>{branch.name}</span>
+                  <span>CNPJ:{branch.CNPJ}</span>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           <button className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">

@@ -225,7 +225,7 @@ export default function CadastroUnidadeNegocioForm({
     const message = form.formState.errors[name]?.message as string | undefined;
     return (
       <div className="absolute -bottom-4 w-full">
-        <p className="text-destructive z-[999] h-4 text-xs">
+        <p className="text-destructive z-[999] h-4 text-xs text-red-400">
           {message || "\u00A0"}
         </p>
       </div>
@@ -351,10 +351,37 @@ export default function CadastroUnidadeNegocioForm({
       {/* Corpo */}
       <div className="grid grid-cols-1 divide-y divide-gray-300 lg:grid-cols-2">
         {fields.map(([name, label, maskFn], index) => {
-          if (name === "logradouro") {
+          if (name === "email") {
             // Render switch antes de seguir com campos de endereço
             return (
               <>
+                {/* Depois continua normalmente */}
+                <Row
+                  key={name}
+                  label={label}
+                  index={index}
+                  lastIndex={fields.length - 1}
+                  field={
+                    <Controller
+                      name={name}
+                      control={control}
+                      render={({ field }) => (
+                        <div className="relative flex w-full flex-col">
+                          <Input
+                            {...field}
+                            value={field.value?.toString() ?? ""}
+                            onChange={
+                              maskFn
+                                ? handleMask(maskFn, field.onChange)
+                                : field.onChange
+                            }
+                          />
+                          <FieldError name={name} />
+                        </div>
+                      )}
+                    />
+                  }
+                />
                 <Row
                   key="end-filial"
                   label="End. da Filial"
@@ -380,33 +407,6 @@ export default function CadastroUnidadeNegocioForm({
                           className="border-primary data-[state=checked]:bg-primary/20 w-10 border p-[1px]"
                           thumbClass="bg-primary"
                         />
-                      )}
-                    />
-                  }
-                />
-                {/* Depois continua normalmente */}
-                <Row
-                  key={name}
-                  label={label}
-                  index={index}
-                  lastIndex={fields.length - 1}
-                  field={
-                    <Controller
-                      name={name}
-                      control={control}
-                      render={({ field }) => (
-                        <div className="relative flex w-full flex-col">
-                          <Input
-                            {...field}
-                            value={field.value?.toString() ?? ""}
-                            onChange={
-                              maskFn
-                                ? handleMask(maskFn, field.onChange)
-                                : field.onChange
-                            }
-                          />
-                          <FieldError name={name} />
-                        </div>
                       )}
                     />
                   }

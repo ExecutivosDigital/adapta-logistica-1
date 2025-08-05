@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Home2ButtonGroup } from "./components/button-group";
+import { CarrierTable } from "./components/carrier";
+import { DriverTable } from "./components/driver";
 import { Header } from "./components/Header";
 import { SupplierTable } from "./components/supplier";
 import { ClientsTable } from "./components/transactions";
@@ -26,7 +28,15 @@ export default function Home2() {
         </div>
 
         <div className={`col-span-12`}>
-          {selectedToolType === 0 ? <ClientsTable /> : <SupplierTable />}
+          {selectedToolType === 0 ? (
+            <ClientsTable />
+          ) : selectedToolType === 1 ? (
+            <SupplierTable />
+          ) : selectedToolType === 2 ? (
+            <DriverTable />
+          ) : (
+            selectedToolType === 3 && <CarrierTable />
+          )}
         </div>
       </div>
     </div>

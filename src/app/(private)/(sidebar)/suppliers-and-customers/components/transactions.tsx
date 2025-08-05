@@ -8,19 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ActiveClients } from "@/mock/active-clients";
+import { InactiveClients } from "@/mock/inactive-clients";
 import { cn } from "@/utils/cn";
 import { EllipsisVertical, Search } from "lucide-react";
-import moment from "moment";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
-/**
- * Tabela de clientes replicando o layout mostrado na imagem de referência.
- * - Colunas: Nome, CPF/CNPJ, Telefone, Categoria, Última Compra, Status, Ações
- * - Filtros: Todos | Ativos | Inativos
- * - Paginação: exemplo de 8 páginas apenas para fins ilustrativos
- */
+type ClientWithActive = ActiveClients & { active: boolean };
 export function ClientsTable() {
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const router = useRouter();
   const [tableType, setTableType] = useState<"all" | "active" | "inactive">(
     "all",
   );
@@ -31,99 +28,10 @@ export function ClientsTable() {
     { key: "cpfCnpj", label: "CPF/CNPJ" },
     { key: "phone", label: "TELEFONE" },
     { key: "category", label: "CATEGORIA" },
-    { key: "lastPurchase", label: "ÚLTIMA COMPRA" },
     { key: "status", label: "STATUS" },
     { key: "actions", label: "AÇÕES" },
   ] as const;
 
-  /** Dados mockados para demonstração */
-  const rows = useMemo(
-    () => [
-      {
-        id: "1",
-        name: "Nome do Clientes",
-        cpfCnpj: "000.000.000-00",
-        phone: "(00) 9 0000-0000",
-        category: "Combustível",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "ATIVO",
-      },
-      {
-        id: "2",
-        name: "Nome do Clientes",
-        cpfCnpj: "000.000.000-00",
-        phone: "(00) 9 0000-0000",
-        category: "Pneu",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "ATIVO",
-      },
-      {
-        id: "3",
-        name: "Nome do Clientes",
-        cpfCnpj: "000.000.000-00",
-        phone: "(00) 9 0000-0000",
-        category: "Mat. Eletrônicos",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "ATIVO",
-      },
-      {
-        id: "4",
-        name: "Nome do Clientes",
-        cpfCnpj: "00.000.000/0001-00",
-        phone: "(00) 9 0000-0000",
-        category: "Peças",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "ATIVO",
-      },
-      {
-        id: "5",
-        name: "Nome do Clientes",
-        cpfCnpj: "00.000.000/0001-00",
-        phone: "(00) 9 0000-0000",
-        category: "Combustível",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "ATIVO",
-      },
-      {
-        id: "6",
-        name: "Nome do Clientes",
-        cpfCnpj: "00.000.000/0001-00",
-        phone: "(00) 9 0000-0000",
-        category: "Pneu",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "DESATIVADO",
-      },
-      {
-        id: "7",
-        name: "Nome do Clientes",
-        cpfCnpj: "000.000.000-00",
-        phone: "(00) 9 0000-0000",
-        category: "Pneu",
-        lastPurchase: moment("2024-03-25").format("DD/MM/YYYY"),
-        status: "DESATIVADO",
-      },
-      // ... rest of the rows ...
-    ],
-    [],
-  );
-
-  /** Filtra as linhas de acordo com o tipo selecionado */
-  const filteredRows = useMemo(() => {
-    if (tableType === "active") return rows.filter((r) => r.status === "ATIVO");
-    if (tableType === "inactive")
-      return rows.filter((r) => r.status === "DESATIVADO");
-    return rows;
-  }, [rows, tableType]);
-
-  /** Estilização de status de acordo com o valor */
-  const statusClasses: Record<string, string> = {
-    ATIVO:
-      "rounded-md border border-[#00A181] bg-[#00A181]/10 px-4 py-1 text-xs font-bold text-[#00A181]",
-    DESATIVADO:
-      "rounded-md border border-[#EF4444] bg-[#EF4444]/10 px-4 py-1 text-xs font-bold text-[#EF4444]",
-  };
-
-  /** Animação do seletor no controle de filtro */
   const getSelectorPosition = () => {
     switch (tableType) {
       case "all":
@@ -144,28 +52,64 @@ export function ClientsTable() {
     if (animate) return;
     setAnimate(true);
   }, [animate]);
+  console.log("tableType", tableType);
+  const [filter, setFilter] = useState("");
+  const [rowsPerPage] = useState<number>(10);
+  const clients =
+    tableType === "all"
+      ? [...ActiveClients, ...InactiveClients].map((client) => ({
+          ...client,
+          active: client["Cliente Pagador"] === "Sim",
+        }))
+      : tableType === "active"
+        ? ActiveClients.map((client) => ({
+            ...client,
+            active: true,
+          }))
+        : InactiveClients.map((client) => ({
+            ...client,
+            active: false,
+          }));
+  console.log("clients", clients);
+  const filteredClients = useMemo(() => {
+    return clients.filter((client) =>
+      client["Cliente Pagador"]
+        .toString()
+        .toLowerCase()
+        .includes(filter.toLowerCase()),
+    );
+  }, [filter, clients, tableType]);
+
+  const paginatedClients = useMemo(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    return filteredClients.slice(startIndex, endIndex);
+  }, [filteredClients, currentPage, rowsPerPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredClients.length / rowsPerPage);
+  }, [filteredClients, rowsPerPage]);
+
   return (
     <div
       className={`relative -mt-10 flex flex-col border border-t-0 border-zinc-500 bg-white pt-8 transition-all duration-300 ${animate ? "opacity-100" : "opacity-0"}`}
     >
-      {/* Cabeçalho */}
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-4 px-4">
         <h2 className="text-primary text-lg font-semibold">Clientes</h2>
 
-        {/* Campo de busca */}
         <div className="border-primary bg-primary/10 flex w-full max-w-md items-center overflow-hidden rounded-lg border">
           <input
             className="flex-1 px-3 py-2 text-sm outline-none"
             placeholder="Escreva o Nome do Cliente"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
           />
           <button className="bg-primary flex h-10 w-10 items-center justify-center text-white">
             <Search size={18} />
           </button>
         </div>
 
-        {/* Filtros */}
         <div className="bg-primary/20 relative flex items-center rounded-md p-1">
-          {/* barra animada */}
           <span
             className={cn(
               "bg-primary absolute top-1 left-0 h-[80%] w-[30%] rounded-md transition-transform duration-300 ease-in-out",
@@ -202,7 +146,6 @@ export function ClientsTable() {
         </div>
       </div>
 
-      {/* Tabela */}
       <Table className="border-collapse">
         <TableHeader>
           <TableRow className="bg-[#D8672F]">
@@ -217,30 +160,40 @@ export function ClientsTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredRows.map((row) => (
+          {paginatedClients.map((row: ClientWithActive, index) => (
             <TableRow
-              key={row.id}
+              onClick={() =>
+                router.push(`/suppliers-and-customers/${row["CNPJ Pagador"]}`)
+              }
+              key={index}
               className="hover:bg-primary/10 h-14 cursor-pointer border-b border-zinc-200"
             >
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.name}
+                {row["Cliente Pagador"]}
               </TableCell>
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.cpfCnpj}
+                {row["CNPJ Pagador"]}
               </TableCell>
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.phone}
+                {row.NRTELEFONE}
               </TableCell>
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.category}
+                {row.DSCATEGCLIENTE}
               </TableCell>
-              <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.lastPurchase}
-              </TableCell>
-              <TableCell className="px-4 whitespace-nowrap">
-                <span className={statusClasses[row.status] || ""}>
-                  {row.status}
+              {/* <TableCell className="px-4 text-sm font-medium whitespace-nowrap"> 
+                25/03/2025
+              </TableCell> */}
+              <TableCell className="flex px-4 whitespace-nowrap">
+                <span
+                  className={
+                    row.active
+                      ? "w-28 rounded-md border border-[#00A181] bg-[#00A181]/10 px-4 py-1 text-center text-xs font-bold text-[#00A181]"
+                      : "w-28 rounded-md border border-[#EF4444] bg-[#EF4444]/10 px-4 py-1 text-center text-xs font-bold text-[#EF4444]"
+                  }
+                >
+                  {row.active ? "ATIVO" : "DESATIVADO"}
                 </span>
+                d
               </TableCell>
               <TableCell className="px-4 text-end whitespace-nowrap text-zinc-400">
                 <EllipsisVertical size={18} />
@@ -255,7 +208,7 @@ export function ClientsTable() {
         <CustomPagination
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-          pages={8} // exemplo fixo
+          pages={totalPages} // exemplo fixo
         />
       </div>
     </div>

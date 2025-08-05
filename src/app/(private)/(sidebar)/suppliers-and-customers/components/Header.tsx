@@ -51,6 +51,28 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
           <Box />
           <span className="text-sm uppercase">Fornecedores</span>
         </button>
+        <button
+          onClick={() => setSelectedToolType(2)}
+          className={`flex-row-gap-2 flex items-center gap-2 py-2 ${
+            selectedToolType === 2
+              ? "text-primary border-b-primary border-b-2 font-bold"
+              : "text-text border-b-2 border-b-transparent"
+          } cursor-pointer transition-all duration-300`}
+        >
+          <User2 />
+          <span className="text-sm uppercase">Motoristas</span>
+        </button>
+        <button
+          onClick={() => setSelectedToolType(3)}
+          className={`flex-row-gap-2 flex items-center gap-2 py-2 ${
+            selectedToolType === 3
+              ? "text-primary border-b-primary border-b-2 font-bold"
+              : "text-text border-b-2 border-b-transparent"
+          } cursor-pointer transition-all duration-300`}
+        >
+          <User2 />
+          <span className="text-sm uppercase">Transportadores</span>
+        </button>
       </div>
     </div>
   );

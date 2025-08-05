@@ -7,7 +7,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useBranch } from "@/context/BranchContext";
 import { CreateBusinessUnitProvider } from "@/context/CreateBusinessUnitContext";
+import { branches } from "@/mock/branches";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { ArrowLeft, ChevronsUpDown, PlusSquare } from "lucide-react";
 import Image from "next/image";
@@ -22,17 +24,21 @@ export default function RegisterLayout({
 
   const routes = [
     { id: "1", name: "Unid. de Negócios", route: "/branch" },
-    { id: "2", name: "Informações da Filial", route: "/branch/branch-details" },
+    {
+      id: "2",
+      name: "Informações da contratante",
+      route: "/branch/branch-details",
+    },
     {
       id: "3",
-      name: "Usuários da Filial",
+      name: "Usuários da contratante",
       route: "/branch/branch-users",
     },
-    { id: "4", name: "Contas da Filial", route: "#" },
+    { id: "4", name: "Contas da contratante", route: "#" },
     { id: "5", name: "Centro de Resultados", route: "/branch/result-center" },
   ];
   const pathname = usePathname();
-
+  const { selectedBranch, setSelectedBranch } = useBranch();
   return (
     <>
       <CreateBusinessUnitProvider>
@@ -79,30 +85,34 @@ export default function RegisterLayout({
                 <div className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-8">
                     <span className="text-xl font-semibold">
-                      Curitiba - Paraná
+                      {selectedBranch?.name}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">
                           <span className="font-semibold">
-                            43.795.283/0001-18
+                            {selectedBranch?.CNPJ}
                           </span>
                           <ChevronsUpDown className="text-zinc-400" />
                         </div>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
+                      <DropdownMenuContent className="divide-y divide-zinc-200">
                         <DropdownMenuArrow />
-                        <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                          12.345.678/9999-99
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                          00.000.000/0000-00
-                        </DropdownMenuItem>
+                        {branches.map((branch) => (
+                          <DropdownMenuItem
+                            key={branch.id}
+                            className="hover:bg-primary/20 mt-2 mb-2 flex cursor-pointer flex-row items-start gap-2 text-start transition duration-300"
+                            onClick={() => setSelectedBranch(branch)}
+                          >
+                            <span>{branch.name}</span>
+                            <span>CNPJ:{branch.CNPJ}</span>
+                          </DropdownMenuItem>
+                        ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                   <button
-                    onClick={() => router.push("/register/new-branch")}
+                    onClick={() => router.push("/branch/create-branch")}
                     className="border-primary hover:bg-primary text-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1 transition duration-300 hover:text-white"
                   >
                     <PlusSquare />
@@ -127,8 +137,7 @@ export default function RegisterLayout({
                   ))}
                 </div>
 
-                {/* AQUI ESTÁ A MÁGICA: A ScrollArea ocupa o espaço restante */}
-                <div className="flex max-h-[80vh] w-full flex-1 py-4">
+                <div className="flex w-full flex-1 py-4">
                   <ScrollArea className="w-full">{children}</ScrollArea>
                 </div>
               </div>
