@@ -52,7 +52,6 @@ export function ClientsTable() {
     if (animate) return;
     setAnimate(true);
   }, [animate]);
-  console.log("tableType", tableType);
   const [filter, setFilter] = useState("");
   const [rowsPerPage] = useState<number>(10);
   const clients =
@@ -70,7 +69,6 @@ export function ClientsTable() {
             ...client,
             active: false,
           }));
-  console.log("clients", clients);
   const filteredClients = useMemo(() => {
     return clients.filter((client) =>
       client["Cliente Pagador"]
@@ -193,7 +191,6 @@ export function ClientsTable() {
                 >
                   {row.active ? "ATIVO" : "DESATIVADO"}
                 </span>
-                d
               </TableCell>
               <TableCell className="px-4 text-end whitespace-nowrap text-zinc-400">
                 <EllipsisVertical size={18} />

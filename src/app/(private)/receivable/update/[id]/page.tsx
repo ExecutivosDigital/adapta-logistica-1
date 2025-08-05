@@ -57,7 +57,6 @@ export default function UpdateReceivable() {
   const router = useRouter();
   const pathname = usePathname();
   const id = pathname.split("/").pop();
-  console.log("id: ", id);
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);

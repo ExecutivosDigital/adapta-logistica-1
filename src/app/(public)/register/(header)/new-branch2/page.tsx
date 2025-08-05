@@ -81,7 +81,6 @@ export default function Home() {
   useEffect(() => {}, []);
 
   async function analyze(buffer: Buffer) {
-    console.log("iniciou ");
     try {
       const file = new File([buffer], "edital.pdf", {
         type: "application/pdf",
@@ -91,8 +90,6 @@ export default function Home() {
         file: file,
         purpose: "assistants",
       });
-
-      console.log("sendFile", sendFile);
 
       const thread = await client.beta.threads.createAndRun({
         assistant_id: summaryAssistant,
@@ -142,11 +139,6 @@ export default function Home() {
           thread.thread_id,
         );
 
-        console.log(
-          "threadMessages",
-          threadMessages.data[0].content[0].text.value,
-        );
-
         // Tenta fazer o parse da string
         return JSON.parse(
           threadMessages.data[0].content[0].text.value
@@ -159,7 +151,7 @@ export default function Home() {
         };
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 

@@ -105,7 +105,7 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
       toast.error(
         "Ocorreu um problema ao processar o arquivo, tente novamente ou mude o arquivo processado.",
       );
-      console.log(error);
+      console.error(error);
       return null;
     }
   }

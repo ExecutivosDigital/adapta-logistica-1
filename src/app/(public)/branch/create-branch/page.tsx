@@ -561,9 +561,8 @@ export default function SubsidiaryForm() {
 
   const handlePrev = () => setActiveStep((s) => s - 1);
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit(() => {
     toast.success("Filial salva com sucesso!");
-    console.log(data);
   });
 
   /* ----------------------------------------------------------------

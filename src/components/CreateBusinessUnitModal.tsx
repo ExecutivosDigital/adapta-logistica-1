@@ -24,10 +24,7 @@ export function CreateBusinessUnitModal() {
   const [unitType, setUnitType] = useState<"receita" | "despesa" | "ambos">(
     "receita",
   );
-  console.log(
-    "isOpenCreateBusinessUnitModal2323",
-    isOpenCreateBusinessUnitModal,
-  );
+
   const [confirmedName, setConfirmedName] = useState("");
   const [name, setName] = useState("");
 

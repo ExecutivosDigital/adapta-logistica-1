@@ -80,7 +80,6 @@ export default function BranchOverview() {
   useEffect(() => {}, []);
 
   async function analyze(buffer: Buffer) {
-    console.log("iniciou ");
     try {
       const file = new File([buffer], "edital.pdf", {
         type: "application/pdf",
@@ -90,8 +89,6 @@ export default function BranchOverview() {
         file: file,
         purpose: "assistants",
       });
-
-      console.log("sendFile", sendFile);
 
       const thread = await client.beta.threads.createAndRun({
         assistant_id: summaryAssistant,
@@ -141,11 +138,6 @@ export default function BranchOverview() {
           thread.thread_id,
         );
 
-        console.log(
-          "threadMessages",
-          threadMessages.data[0].content[0].text.value,
-        );
-
         // Tenta fazer o parse da string
         return JSON.parse(
           threadMessages.data[0].content[0].text.value
@@ -158,7 +150,7 @@ export default function BranchOverview() {
         };
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 

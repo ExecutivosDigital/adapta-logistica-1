@@ -8,15 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Driver, Drivers } from "@/mock/driver";
+import { Driver } from "@/mock/driver";
 import { EllipsisVertical, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import driversData from "../../../../../../public/files/drivers.json";
 
 export function DriverTable() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filter, setFilter] = useState<string>("");
   const [animate, setAnimate] = useState<boolean>(false);
-
+  const Drivers: Driver[] = driversData as Driver[];
   const columns = [
     { key: "Motorista", label: "MOTORISTA" },
     { key: "CPF Motorista", label: "CPF" },

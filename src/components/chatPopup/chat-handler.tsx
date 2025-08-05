@@ -50,8 +50,6 @@ export function useSectionChat({ selectedPrompt }: UseSectionChatParams) {
       aiInstanceRef.current = new GoogleGenAI({ apiKey: API_KEY });
     }
     if (aiInstanceRef.current) {
-      console.log(selectedPrompt);
-
       chatSessionRef.current = aiInstanceRef.current.chats.create({
         model: "gemini-1.5-flash",
         history: initialHistory || [],

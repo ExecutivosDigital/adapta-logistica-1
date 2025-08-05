@@ -10,21 +10,11 @@ import VerificationCodeInput from "./VerificationCodeInput";
 
 export default function RecoverPassword() {
   const router = useRouter();
-  // const [passwordType, setPasswordType] = useState("password");
-  // const togglePasswordType = () => {
-  //   if (passwordType === "text") {
-  //     setPasswordType("password");
-  //   } else if (passwordType === "password") {
-  //     setPasswordType("text");
-  //   }
-  // };
+
   const [steps, setSteps] = useState(1);
-  const [code, setCode] = useState<string>("");
-  const handleComplete = (filledCode: string) => {
-    setCode(filledCode);
-    // aqui você já tem o código completo — pode chamar sua API, validar, navegar, etc.
-    console.log("Código recebido no pai:", filledCode);
-    console.log("Código recebido no filho:", code);
+  // const [code, setCode] = useState<string>("");
+  const handleComplete = () => {
+    // setCode(filledCode);
   };
   function handleBack() {
     if (steps > 1) {

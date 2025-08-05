@@ -66,11 +66,7 @@ export type ContratanteFormData = z.infer<typeof FormSchema>;
 /* ----------------------------------------------------------------
  * Componente principal
  * -------------------------------------------------------------- */
-export default function CadastroContratanteForm({
-  onBack,
-}: {
-  onBack?: () => void;
-}) {
+export default function CadastroContratanteForm() {
   const form = useForm<ContratanteFormData>({
     resolver: zodResolver(FormSchema),
     shouldFocusError: false,
@@ -294,9 +290,8 @@ export default function CadastroContratanteForm({
   /* ----------------------------------------------------------------
    * Submit do formulário
    * -------------------------------------------------------------- */
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit(() => {
     toast.success("Contratante salvo com sucesso!");
-    console.log(data);
   });
 
   /* ----------------------------------------------------------------
@@ -404,7 +399,7 @@ export default function CadastroContratanteForm({
         <Button
           type="button"
           variant="outline"
-          onClick={onBack ?? (() => window.history.back())}
+          onClick={() => window.history.back()}
         >
           Voltar
         </Button>

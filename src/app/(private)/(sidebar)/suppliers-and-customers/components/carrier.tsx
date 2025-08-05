@@ -8,10 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Carrier, Carriers } from "@/mock/carriers";
+import { Carrier } from "@/mock/carriers";
 import { EllipsisVertical, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-
+import carriersData from "../../../../../../public/files/carriers.json";
 /**
  * Componente de tabela para Transportadoras.
  * Colunas: Fornecedor, CNPJ, Telefone, Transportador Tipo, RNTRV, Ações
@@ -20,6 +20,7 @@ export function CarrierTable() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filter, setFilter] = useState<string>("");
   const [animate, setAnimate] = useState<boolean>(false);
+  const Carriers: Carrier[] = carriersData as Carrier[];
 
   const columns = [
     { key: "Fornecedor", label: "FORNECEDOR" },
@@ -34,7 +35,7 @@ export function CarrierTable() {
     return Carriers.filter((carrier: Carrier) =>
       carrier.Fornecedor.toLowerCase().includes(filter.toLowerCase()),
     );
-  }, [filter]);
+  }, [filter, Carriers]);
 
   useEffect(() => {
     if (!animate) setAnimate(true);

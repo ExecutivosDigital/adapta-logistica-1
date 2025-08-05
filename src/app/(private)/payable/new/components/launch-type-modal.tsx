@@ -46,7 +46,6 @@ export default function LaunchTypeModal({
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<LaunchType | null>(null);
-  console.log("showingTaxes", showingTaxes);
   const parsedLaunchTypes = useMemo(() => {
     return launchTypesRaw
       .filter((item) => {
@@ -76,7 +75,6 @@ export default function LaunchTypeModal({
         l.conta.toLowerCase().includes(t),
     );
   }, [filter, parsedLaunchTypes]);
-  console.log("onselect", selected);
   const pageCount = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
   const pages = useMemo(() => {
     const maxButtons = 5;

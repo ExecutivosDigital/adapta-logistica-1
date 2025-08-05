@@ -272,7 +272,6 @@ export function Section() {
     if (!aiInstanceRef.current) return null;
 
     let gfile = await aiInstanceRef.current.files.upload({ file: f });
-    console.log("gfile", gfile);
 
     const maxTries = 30;
     const delayMs = 2_000;
@@ -293,10 +292,7 @@ export function Section() {
 
       await new Promise((res) => setTimeout(res, delayMs));
       gfile = await aiInstanceRef.current.files.get({ name: fileName }); // fileName é string ✔️
-      console.log(`⏳ Tentativa ${tries + 1}: estado =`, gfile.state);
     }
-
-    console.log("✅ Arquivo ACTIVE:", gfile);
 
     return gfile;
   }
@@ -469,7 +465,6 @@ export function Section() {
 
         // gemini
         const gfile = await uploadToGemini(fileToSend);
-        console.log("arquivo enviado com sucesso", gfile);
 
         if (gfile)
           parts.push({
@@ -491,12 +486,10 @@ export function Section() {
 
       if (!chatSessionRef.current)
         throw new Error("Sessão de chat não iniciada.");
-      console.log("chegou aqui e vai enviar parts", parts);
       /* ---------- 4. STREAM ---------- */
       const streamIter = await chatSessionRef.current.sendMessageStream({
         message: parts,
       });
-      console.log("streamIter", streamIter);
       streamBufferRef.current = ""; // zera buffer
       // setIsStreaming(true);
       for await (const chunk of streamIter) {

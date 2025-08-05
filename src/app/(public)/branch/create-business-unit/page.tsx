@@ -59,11 +59,7 @@ export type UnidadeNegocioFormData = z.infer<typeof FormSchema>;
 /* ----------------------------------------------------------------
  * Componente principal
  * -------------------------------------------------------------- */
-export default function CadastroUnidadeNegocioForm({
-  onBack,
-}: {
-  onBack?: () => void;
-}) {
+export default function CadastroUnidadeNegocioForm() {
   const form = useForm<UnidadeNegocioFormData>({
     resolver: zodResolver(FormSchema),
     shouldFocusError: false,
@@ -284,9 +280,8 @@ export default function CadastroUnidadeNegocioForm({
   /* ----------------------------------------------------------------
    * Submit handler
    * -------------------------------------------------------------- */
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit(() => {
     toast.success("Unidade de negócio salva com sucesso!");
-    console.log(data);
   });
 
   /* ----------------------------------------------------------------
@@ -458,7 +453,9 @@ export default function CadastroUnidadeNegocioForm({
         <Button
           type="button"
           variant="outline"
-          onClick={onBack ?? (() => window.history.back())}
+          onClick={() => {
+            window.history.back();
+          }}
         >
           Voltar
         </Button>

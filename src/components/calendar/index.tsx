@@ -353,7 +353,6 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
         }
       }
     }
-    console.log("event: ", event);
   };
 
   const onSelectSlot = (slotInfo: CalendarSlotInfo) => {

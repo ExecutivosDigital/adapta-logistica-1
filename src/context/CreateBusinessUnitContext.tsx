@@ -34,7 +34,6 @@ export function CreateBusinessUnitProvider({
     () => setIsOpenCreateBusinessUnitModal(false),
     [],
   );
-  console.log("isOpenCreateBusinessUnitModal", isOpenCreateBusinessUnitModal);
   const value: CreateBusinessUnitContextValue = {
     isOpenCreateBusinessUnitModal,
     openCreateBusinessUnitModal,
