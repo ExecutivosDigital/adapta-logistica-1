@@ -20,7 +20,7 @@ export type Item = {
 
 const NAV: { heading: string; items: Item[] }[] = [
   {
-    heading: "MENU INICIAL",
+    heading: "WORKFLOW",
     items: [
       {
         label: "Dashboard",
@@ -98,6 +98,16 @@ const NAV: { heading: string; items: Item[] }[] = [
       },
       { label: "Plano de Contas", icon: "/icons/sidebar-plan.png", href: "#" },
       {
+        label: "Aprovação de Compras",
+        icon: "/icons/sidebar-approval.png",
+        href: "/purchase-approval",
+      },
+    ],
+  },
+  {
+    heading: "EMPRESA",
+    items: [
+      {
         label: "Contas Bancárias",
         icon: "/icons/sidebar-accounts.png",
         children: [
@@ -113,27 +123,6 @@ const NAV: { heading: string; items: Item[] }[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    heading: "WORKFLOW",
-    items: [
-      {
-        label: "Relação de Compras",
-        icon: "/icons/sidebar-purchases.png",
-        href: "#",
-      },
-      {
-        label: "Aprovação de Compras",
-        icon: "/icons/sidebar-approval.png",
-        href: "/purchase-approval",
-      },
-      {
-        label: "Pagamentos",
-        icon: "/icons/sidebar-payments.png",
-        href: "#",
-      },
-      { label: "Lorem", icon: "/icons/sidebar-lorem.png", href: "#" },
       {
         label: "Organização",
         icon: "/icons/sidebar-org.png",
