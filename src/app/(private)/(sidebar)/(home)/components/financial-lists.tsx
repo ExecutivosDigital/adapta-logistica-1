@@ -146,8 +146,8 @@ export function HomeFinancialLists() {
           />
         </div>
       </div>
-      <div className="flex w-full items-center justify-between gap-8">
-        <div className="flex w-1/2 flex-col rounded-xl border border-zinc-200 shadow-sm">
+      <div className="flex w-full flex-col items-center justify-between gap-8 xl:flex-row">
+        <div className="flex w-full flex-col rounded-xl border border-zinc-200 shadow-sm xl:w-1/2">
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Receitas</span>
@@ -179,7 +179,7 @@ export function HomeFinancialLists() {
                 key={inc.id}
               >
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-[#00A181]" />
+                  <div className="h-6 max-h-6 min-h-6 w-6 max-w-6 min-w-6 rounded-full bg-[#00A181]" />
                   <span>{inc.label}</span>
                 </div>
                 <span>
@@ -223,7 +223,7 @@ export function HomeFinancialLists() {
             </div>
           </div>
         </div>
-        <div className="flex w-1/2 flex-col rounded-xl border border-zinc-200 shadow-sm">
+        <div className="flex w-full flex-col rounded-xl border border-zinc-200 shadow-sm xl:w-1/2">
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Despesas</span>
@@ -255,7 +255,7 @@ export function HomeFinancialLists() {
                 key={exp.id}
               >
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-[#EF4444]" />
+                  <div className="h-6 max-h-6 min-h-6 w-6 max-w-6 min-w-6 rounded-full bg-[#EF4444]" />
                   <span>{exp.label}</span>
                 </div>
                 <span>

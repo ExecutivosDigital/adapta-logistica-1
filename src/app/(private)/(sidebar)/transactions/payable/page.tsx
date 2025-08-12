@@ -18,8 +18,8 @@ export default function Payable() {
   const router = useRouter();
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
-      <span className="text-lg font-semibold lg:text-xl">Contas á Pagar</span>
+    <div className="flex h-full w-full flex-col gap-2 pb-20 xl:gap-4 xl:pb-0">
+      <span className="text-lg font-semibold xl:text-xl">Contas á Pagar</span>
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12 flex w-full items-center justify-between">
           <PayableButtonGroup />
@@ -64,7 +64,7 @@ export default function Payable() {
           </DropdownMenu>
         </div>
 
-        <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm lg:p-4">
+        <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm xl:p-4">
           <PayableResultsGraph />
         </div>
         <div className="col-span-12">

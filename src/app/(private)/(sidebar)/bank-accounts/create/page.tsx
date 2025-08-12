@@ -28,7 +28,7 @@ export default function Home2() {
   const [city, setCity] = useState("");
 
   const [techFields, setTechFields] = useState<TechField[]>([
-    { id: crypto.randomUUID(), topic: "", type: "", value: "" },
+    { id: "", topic: "", type: "", value: "" },
   ]);
 
   /* ------------------------------ helpers ---------------------------- */
@@ -58,7 +58,7 @@ export default function Home2() {
   const addTechField = () =>
     setTechFields((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), topic: "", type: "", value: "" },
+      { id: "", topic: "", type: "", value: "" },
     ]);
   const [formState, setFormState] = useState({
     bankName: "",

@@ -16,7 +16,7 @@ export function HomeButtonGroup() {
     setSelectedBusinessUnit(filteredBusinessUnits[0]);
   }, [selectedBranch]);
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex w-full flex-wrap items-center gap-1">
       {selectedBranch?.parentCompany && (
         <button
           onClick={() => {

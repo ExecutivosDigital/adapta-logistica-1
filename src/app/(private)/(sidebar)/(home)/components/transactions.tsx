@@ -228,7 +228,7 @@ export function HomeTransactions() {
     <div className="flex flex-col">
       {/* --------------------------- Header --------------------------- */}
       <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
           <span className="font-semibold">Fluxo de Pagamentos</span>
           <button
             onClick={() => router.push("/transactions/payable/all")}
@@ -270,7 +270,7 @@ export function HomeTransactions() {
       </div>
 
       {/* --------------------------- Tabs ---------------------------- */}
-      <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
+      <div className="relative flex w-full gap-2 border-b border-b-zinc-200 xl:gap-8">
         {tableTypes.map((tab) => {
           const isActive = tab.id === selectedTableType.id;
           return (
@@ -336,7 +336,7 @@ export function HomeTransactions() {
                 </TableCell>
 
                 {/* Fornecedor */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                <TableCell className="max-w-60 truncate py-0.5 text-sm whitespace-nowrap">
                   {row.origin}
                 </TableCell>
 
@@ -353,7 +353,7 @@ export function HomeTransactions() {
                 </TableCell>
 
                 {/* Lançamentos */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                <TableCell className="max-w-60 truncate py-0.5 text-sm whitespace-nowrap">
                   {row.category}
                 </TableCell>
 

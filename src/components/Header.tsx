@@ -16,11 +16,11 @@ export default function Header() {
   const { openMobile } = useSidebar();
   const { selectedBranch, setSelectedBranch } = useBranch();
   return (
-    <header className="flex h-16 items-center gap-2 bg-white px-4 lg:px-20">
+    <header className="flex h-16 items-center gap-2 bg-white px-4 xl:px-20">
       {/* botão só aparece < lg */}
       <button
         onClick={openMobile}
-        className="lg:hidden"
+        className="xl:hidden"
         aria-label="Abrir menu"
       >
         <Menu className="h-6 w-6" />
@@ -42,18 +42,18 @@ export default function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">
-                <span className="text-primary font-semibold">
+                <span className="text-primary w-60 truncate font-semibold">
                   {selectedBranch?.name}
                 </span>
                 <ChevronDown className="text-zinc-400" />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="divide-y divide-zinc-200">
+            <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] divide-y divide-zinc-200">
               <DropdownMenuArrow />
               {branches.map((branch) => (
                 <DropdownMenuItem
                   key={branch.id}
-                  className="hover:bg-primary/20 mt-2 mb-2 flex cursor-pointer flex-row items-start gap-2 text-start transition duration-300"
+                  className="hover:bg-primary/20 mt-2 mb-2 flex cursor-pointer flex-col items-start gap-2 text-start transition duration-300 xl:flex-row"
                   onClick={() => setSelectedBranch(branch)}
                 >
                   <span>{branch.name}</span>

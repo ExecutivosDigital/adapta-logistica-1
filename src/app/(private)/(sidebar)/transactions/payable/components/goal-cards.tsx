@@ -1,14 +1,17 @@
 "use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { cn } from "@/utils/cn";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
+
 interface selectedTableType {
   selectedTableType?: string;
 }
 export function PayableGoalCards({ selectedTableType }: selectedTableType) {
   const [date, setDate] = useState<Date | null>(new Date());
+
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
       setDate(null);
@@ -21,10 +24,18 @@ export function PayableGoalCards({ selectedTableType }: selectedTableType) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } else if (value !== null && (value as any) instanceof Date) setDate(value);
   };
+
   return (
     <div className="grid grid-cols-12 gap-8">
       <div
-        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "consolidated" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+        className={cn(
+          "col-span-12 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm xl:col-span-4",
+          selectedTableType
+            ? selectedTableType === "consolidated"
+              ? "border-primary"
+              : "opacity-40"
+            : "",
+        )}
       >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Despesas Consolidado</span>
@@ -64,7 +75,14 @@ export function PayableGoalCards({ selectedTableType }: selectedTableType) {
         </div>
       </div>
       <div
-        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "this-month" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+        className={cn(
+          "col-span-12 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm xl:col-span-4",
+          selectedTableType
+            ? selectedTableType === "this-month"
+              ? "border-primary"
+              : "opacity-40"
+            : "",
+        )}
       >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Pagar este Mês</span>
@@ -103,7 +121,14 @@ export function PayableGoalCards({ selectedTableType }: selectedTableType) {
         </div>
       </div>
       <div
-        className={`col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${selectedTableType === "overdue" ? "border-primary" : selectedTableType ? "opacity-80" : ""}`}
+        className={cn(
+          "col-span-12 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm xl:col-span-4",
+          selectedTableType
+            ? selectedTableType === "overdue"
+              ? "border-primary"
+              : "opacity-40"
+            : "",
+        )}
       >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Atrasados</span>

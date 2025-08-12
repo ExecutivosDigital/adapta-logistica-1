@@ -328,7 +328,7 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
       setView(Views.DAY);
       return;
     }
-    if (event.movementType === "Entrada") {
+    if (event.movementType === "Saida") {
       if (event.status !== "À Pagar") {
         if (accessLevel === "common") {
           if (event.type === "Recorrentes") {
@@ -342,7 +342,7 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
       } else if (event.status === "À Pagar") {
         return router.push(`/payable/pay/${event.id}`);
       }
-    } else if (event.movementType === "Saida") {
+    } else if (event.movementType === "Entrada") {
       if (event.status !== "À Pagar") {
         return router.push(`/receivable/update/${event.id}`);
       } else if (event.status === "À Pagar") {

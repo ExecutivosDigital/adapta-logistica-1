@@ -27,9 +27,9 @@ export function HomeNewRelease() {
             </OrangeButton>
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" className="z-[999]">
+        <DropdownMenuContent side="bottom" align="end" className="z-[999]">
           <DropdownMenuItem
-            onClick={() => router.push("/create-payment")}
+            onClick={() => router.push("/payable/new")}
             className="hover:bg-primary/20 cursor-pointer transition duration-300"
           >
             <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -43,15 +43,12 @@ export function HomeNewRelease() {
               <div className="border-primary h-4 w-4 rounded-md border"></div>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+          <DropdownMenuItem
+            onClick={() => router.push("/payable/recurring/new")}
+            className="hover:bg-primary/20 cursor-pointer transition duration-300"
+          >
             <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
               Desp. Recorrentes
-              <div className="border-primary h-4 w-4 rounded-md border"></div>
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-            <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
-              Criação de Receita
               <div className="border-primary h-4 w-4 rounded-md border"></div>
             </div>
           </DropdownMenuItem>

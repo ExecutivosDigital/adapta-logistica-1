@@ -20,12 +20,12 @@ interface TechField {
 }
 export default function BranchesList() {
   const [techFields, setTechFields] = useState<TechField[]>([
-    { id: crypto.randomUUID(), topic: "", type: "", value: "" },
+    { id: "", topic: "", type: "", value: "" },
   ]);
   const addTechField = () =>
     setTechFields((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), topic: "", type: "", value: "" },
+      { id: "", topic: "", type: "", value: "" },
     ]);
   return (
     <div className="grid w-full grid-cols-2 gap-4">

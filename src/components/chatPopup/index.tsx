@@ -244,7 +244,7 @@ export default function ChatWidget() {
               }
             : {}
         }
-        className="bg-primary hover:bg-primary-dark rounded-full p-4 text-white shadow-lg focus:outline-none"
+        className="bg-primary hover:bg-primary-dark rounded-full p-2 text-white shadow-lg focus:outline-none xl:p-4"
       >
         {isOpen ? (
           <X className="h-6 w-6" />

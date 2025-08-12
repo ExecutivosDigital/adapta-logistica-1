@@ -140,9 +140,9 @@ export default function PayablePay() {
   const [filteredSuppliers, setFilteredSuppliers] = useState("");
 
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden">
+    <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
       {/* HEADER -------------------------------------------------------- */}
-      <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
+      <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-2 py-2 xl:px-8 xl:py-4">
         <Image
           src="/logo/logoFull.png"
           alt="Adapta"
@@ -178,7 +178,7 @@ export default function PayablePay() {
         </button>
       </header>
 
-      <main className="flex flex-1 justify-between overflow-y-auto bg-[#FBEFE9]">
+      <main className="flex flex-1 flex-col justify-between gap-4 overflow-y-auto bg-[#FBEFE9] xl:flex-row">
         <Modal
           show={isOpenSupplierModal}
           onHide={() => setIsOpenSupplierModal(false)}
@@ -312,7 +312,7 @@ export default function PayablePay() {
             </div>
           </div>
         </Modal>
-        <section className="flex w-[49%] flex-col bg-white px-12 pt-10 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)]">
+        <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
           <div className="flex w-full justify-between">
             <div className="flex gap-2">
               <ChevronLeft
@@ -348,40 +348,7 @@ export default function PayablePay() {
           <div className="my-4 h-px bg-zinc-200/60" />
           <Step1 data={data} setData={setData} />
         </section>
-        <section className="flex w-[49%] flex-col bg-white px-12 pt-10 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)]">
-          <div className="flex w-full justify-between">
-            <div className="flex gap-2">
-              <ChevronLeft
-                onClick={() => setSteps((s) => s - 1)}
-                className={cn("cursor-pointer", steps === 1 && "hidden")}
-              />
-              <div className="flex flex-col">
-                <span className="text-lg font-semibold">Faturas à Pagar</span>
-                <span className="flex items-center gap-1 text-sm text-zinc-600">
-                  <Calendar size={16} />
-                  22/03/2025
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <h2 className="flex flex-row items-center gap-1 text-xl font-semibold">
-                <span className="flex flex-row items-center gap-1 text-xs">
-                  <div className="bg-primary/20 text-primary flex h-4 w-4 items-center justify-center rounded-full">
-                    <DollarSign size={14} />
-                  </div>
-                  R$
-                </span>
-                {data.totalValue.toLocaleString("pt-BR", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </h2>
-              <span className="flex items-center gap-1 text-sm text-zinc-600">
-                Preço da Fatura
-              </span>
-            </div>
-          </div>
-          <div className="my-4 h-px bg-zinc-200/60" />
+        <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
           <Step2 data={data} />
         </section>
       </main>

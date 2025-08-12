@@ -45,10 +45,11 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                   <span className="text-zinc-600">
                     Número no Documento - {index + 1}º
                   </span>
-                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                    <div className="flex h-full w-6">
-                      <DollarSign size={16} className="text-primary" />
-                    </div>
+                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                    <DollarSign
+                      size={16}
+                      className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    />
                     <div className="flex h-full flex-1 items-center justify-center text-center">
                       <input
                         placeholder="R$ 0,00"
@@ -59,64 +60,65 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                   </div>
                 </label>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <label className="col-span-3 flex flex-col gap-1">
-                      <span className="text-zinc-600">Data Vencimento</span>
-                      <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                        <div className="flex h-full w-6">
-                          <CalendarIcon className="text-primary" size={16} />
-                        </div>
+                <label className="col-span-3 flex flex-col gap-1">
+                  <span className="text-zinc-600">Vencimento</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                        <CalendarIcon
+                          className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                          size={16}
+                        />
                         <div className="flex-1 text-zinc-700 2xl:text-lg">
                           {data.dueDate
                             ? moment(data.dueDate).format("DD/MM/YYYY")
                             : moment().format("DD/MM/YYYY")}
                         </div>
-                        <div className="flex h-full w-6 justify-end">
-                          <Edit className="text-primary" size={16} />
-                        </div>
+                        <Edit
+                          className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                          size={16}
+                        />
                       </div>
-                    </label>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    side="right"
-                    sideOffset={0}
-                    align="start"
-                    className="z-[999] w-72 border-zinc-200"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={moment(data.dueDate).toDate()}
-                      onSelect={(date) => {
-                        if (date) {
-                          setData({ ...data, dueDate: moment(date).format() });
-                        }
-                      }}
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="right"
+                      sideOffset={0}
+                      align="start"
+                      className="z-[999] w-72 border-zinc-200"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={moment(data.dueDate).toDate()}
+                        onSelect={(date) => {
+                          if (date) {
+                            setData({
+                              ...data,
+                              dueDate: moment(date).format(),
+                            });
+                          }
+                        }}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </label>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <label className="col-span-3 flex flex-col gap-1">
-                      <span className="text-zinc-600">Valor</span>
-                      <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                        <div className="flex h-full w-6">
-                          <CircleDollarSign
-                            className="text-primary"
-                            size={16}
-                          />
-                        </div>
+                <label className="col-span-3 flex flex-col gap-1">
+                  <span className="text-zinc-600">Valor</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                        <CircleDollarSign className="text-primary" size={16} />
                         <div className="flex-1 text-zinc-700 2xl:text-lg">
                           R$ 1.000,00
                         </div>
-                        <div className="flex h-full w-6 justify-end">
-                          <Edit className="text-primary" size={16} />
-                        </div>
+                        <Edit
+                          className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                          size={16}
+                        />
                       </div>
-                    </label>
-                  </DropdownMenuTrigger>
-                </DropdownMenu>
+                    </DropdownMenuTrigger>
+                  </DropdownMenu>
+                </label>
               </div>
               <label className="col-span-12 flex flex-col gap-1">
                 <span className="text-zinc-600">
@@ -128,11 +130,12 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                 </span>
                 <button
                   onClick={() => setIsOpenSupplierModal(true)}
-                  className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+                  className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
                 >
-                  <div className="flex h-full w-6">
-                    <MapPin size={16} className="text-primary" />
-                  </div>
+                  <MapPin
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <div className="flex flex-1 flex-col">
                     <span className="flex-1 2xl:text-lg">
                       {data.supplier.name || "Selecione"}
@@ -141,9 +144,10 @@ export function Step1({ setIsOpenSupplierModal, data, setData }: Props) {
                       {data.supplier.cnpj || ""}
                     </span>
                   </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
+                  <Edit
+                    size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  />
                 </button>
               </label>
               <div className="col-span-12 my-4 h-px bg-zinc-200" />

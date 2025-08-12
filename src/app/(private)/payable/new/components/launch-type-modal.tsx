@@ -1,5 +1,5 @@
 "use client";
-import { Modal } from "@/components/ui/Modal";
+import { cn } from "@/utils/cn";
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import launchTypesRaw from "../data.json";
@@ -106,118 +106,130 @@ export default function LaunchTypeModal({
 
   /* ---------------------- UI --------------------------------*/
   return (
-    <Modal
-      show={show}
-      onHide={onClose}
-      className="w-[720px] border-none bg-transparent shadow-none"
+    <div
+      className="fixed top-0 right-0 bottom-0 left-0 z-[990] flex w-full cursor-pointer items-center justify-center bg-white/50 p-4 text-center backdrop-blur-[4px] transition-opacity duration-300 ease-in-out"
+      style={{ opacity: show ? 1 : 0 }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
-      <div className="scrollbar-hide w-[720px] overflow-scroll rounded-xl bg-white shadow-xl">
-        {/* Cabeçalho */}
-        <div className="bg-primary flex items-center justify-between px-6 py-4">
-          <h2 className="text-lg font-semibold text-white">
-            Tipo de lançamento
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl"
-          >
-            <X />
-          </button>
-        </div>
-
-        {/* Campo de busca */}
-        <div className="flex flex-row items-center gap-2 px-6 py-4">
-          <label className="mb-2 block text-xl text-[#6C7386]">
-            Selecione o Tipo:
-          </label>
-          <div className="bg-primary/20 border-primary relative flex flex-1 items-center rounded-md border px-4 py-2">
-            <input
-              type="text"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              placeholder="Digite o código ou descrição"
-              className="w-full flex-1 px-2 text-sm outline-none"
-            />
-            <span className="text-primary">
-              <Search size={18} />
-            </span>
-          </div>
-        </div>
-
-        {/* Lista */}
-        <ul className="min-h-[300px] space-y-4 px-6">
-          {paginated.length === 0 && (
-            <li className="flex justify-center py-10 text-zinc-500">
-              Nenhum resultado encontrado
-            </li>
-          )}
-          {paginated.map((item, i) => (
-            <li
-              key={`${item.conta}-${i}`}
-              onClick={() => setSelected(item)}
-              className={`hover:bg-primary/10 flex cursor-pointer items-center gap-8 rounded-lg border-b border-zinc-200 p-2 transition-colors ${
-                selected?.conta === item.conta ? "bg-primary/20" : ""
-              }`}
+      <div
+        className={cn(
+          "relative z-20 flex h-[85vh] w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
+        )}
+      >
+        <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
+          {/* Cabeçalho */}
+          <div className="bg-primary flex h-16 items-center justify-between px-6 py-4">
+            <h2 className="text-lg font-semibold text-white">
+              Tipo de lançamento
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl"
             >
-              <div className="flex-1 text-sm">
-                <span className="block text-start font-medium text-zinc-800">
-                  {item.descNivel4}
+              <X />
+            </button>
+          </div>
+
+          <div className="scrollbar-hide h-[calc(100%-8rem)] w-full overflow-scroll">
+            {/* Campo de busca */}
+            <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
+              <label className="mb-2 block text-xl text-[#6C7386]">
+                Selecione o Tipo:
+              </label>
+              <div className="bg-primary/20 border-primary relative flex w-2/3 flex-1 items-center rounded-md border px-4 py-2">
+                <input
+                  type="text"
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  placeholder="Digite o código ou descrição"
+                  className="w-full flex-1 px-2 text-sm outline-none"
+                />
+                <span className="text-primary">
+                  <Search size={18} />
                 </span>
               </div>
-              <div className="flex-1 text-start text-xs text-zinc-500">
-                {item.tipoLancamento}
-              </div>
-              <div className="border-primary bg-primary/20 text-primary rounded-md border px-3 py-1 text-sm font-semibold">
-                {item.conta}
-              </div>
-            </li>
-          ))}
-        </ul>
+            </div>
 
-        {/* Paginação */}
-        <div className="my-6 flex items-center justify-center gap-2 text-sm select-none">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className={`flex h-6 w-6 items-center justify-center rounded-full ${page === 1 ? "text-zinc-300" : "text-primary"}`}
-          >
-            ←
-          </button>
-          {pages.map((p) => (
+            {/* Lista */}
+            <ul className="space-y-2 px-2 xl:space-y-4 xl:px-6">
+              {paginated.length === 0 && (
+                <li className="flex justify-center py-10 text-zinc-500">
+                  Nenhum resultado encontrado
+                </li>
+              )}
+              {paginated.map((item, i) => (
+                <li
+                  key={`${item.conta}-${i}`}
+                  onClick={() => setSelected(item)}
+                  className={`hover:bg-primary/10 flex cursor-pointer items-center gap-8 rounded-lg border-b border-zinc-200 p-2 transition-colors ${
+                    selected?.conta === item.conta ? "bg-primary/20" : ""
+                  }`}
+                >
+                  <div className="flex-1 text-sm">
+                    <span className="block text-start font-medium text-zinc-800">
+                      {item.descNivel4}
+                    </span>
+                  </div>
+                  <div className="flex-1 text-start text-xs text-zinc-500">
+                    {item.tipoLancamento}
+                  </div>
+                  <div className="border-primary bg-primary/20 text-primary rounded-md border px-3 py-1 text-sm font-semibold">
+                    {item.conta}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Paginação */}
+            <div className="my-6 flex items-center justify-center gap-2 text-sm">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className={`flex h-6 w-6 items-center justify-center rounded-full ${page === 1 ? "text-zinc-300" : "text-primary"}`}
+              >
+                ←
+              </button>
+              {pages.map((p) => (
+                <button
+                  key={p}
+                  className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${p === page ? "bg-primary text-white" : "text-primary"}`}
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                disabled={page === pageCount}
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                className={`flex h-6 w-6 items-center justify-center rounded-full ${page === pageCount ? "text-zinc-300" : "text-primary"}`}
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          {/* Ações */}
+          <div className="flex h-16 justify-between border-t border-zinc-200 px-6 py-4">
             <button
-              key={p}
-              className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${p === page ? "bg-primary text-white" : "text-primary"}`}
-              onClick={() => setPage(p)}
+              onClick={onClose}
+              className="text-primary rounded-md border border-zinc-200 px-2 py-1 font-bold xl:px-6 xl:py-2"
             >
-              {p}
+              Cancelar
             </button>
-          ))}
-          <button
-            disabled={page === pageCount}
-            onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-            className={`flex h-6 w-6 items-center justify-center rounded-full ${page === pageCount ? "text-zinc-300" : "text-primary"}`}
-          >
-            →
-          </button>
-        </div>
-
-        {/* Ações */}
-        <div className="flex justify-end gap-4 border-t border-zinc-200 px-6 py-4">
-          <button
-            onClick={onClose}
-            className="text-primary rounded-md border border-zinc-200 px-6 py-2 font-bold"
-          >
-            Cancelar
-          </button>
-          <button
-            disabled={!selected}
-            onClick={handleConfirm}
-            className="bg-primary rounded-md px-6 py-2 font-bold text-white disabled:opacity-50"
-          >
-            Selecionar →
-          </button>
+            <button
+              disabled={!selected}
+              onClick={handleConfirm}
+              className="bg-primary rounded-md px-2 py-1 font-bold text-white disabled:opacity-50 xl:px-6 xl:py-2"
+            >
+              Selecionar →
+            </button>
+          </div>
         </div>
       </div>
-    </Modal>
+    </div>
   );
 }

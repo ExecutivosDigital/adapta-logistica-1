@@ -31,15 +31,12 @@ interface Props {
 }
 export function Step3({ data, setData }: Props) {
   const [invoices, setInvoices] = useState<TechField[]>([
-    { id: crypto.randomUUID(), number: 0, type: "", date: "" },
+    { id: "", number: 0, type: "", date: "" },
   ]);
 
   /* ------------------------------ helpers ---------------------------- */
   const addTechField = () =>
-    setInvoices((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), number: 0, type: "", date: "" },
-    ]);
+    setInvoices((prev) => [...prev, { id: "", number: 0, type: "", date: "" }]);
 
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";

@@ -137,9 +137,9 @@ export default function PayableAddDocument() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden">
+    <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
       {/* HEADER -------------------------------------------------------- */}
-      <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
+      <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-2 py-2 xl:px-8 xl:py-4">
         <Image
           src="/logo/logoFull.png"
           alt="Adapta"
@@ -168,7 +168,7 @@ export default function PayableAddDocument() {
         </button>
       </header>
 
-      <main className="flex flex-1 overflow-y-auto">
+      <main className="flex flex-1 flex-col-reverse overflow-y-auto xl:flex-row">
         <Modal
           show={isOpenSupplierModal}
           onHide={() => setIsOpenSupplierModal(false)}
@@ -302,7 +302,7 @@ export default function PayableAddDocument() {
             </div>
           </div>
         </Modal>
-        <section className="flex flex-1 flex-col px-12 pt-10 pb-4">
+        <section className="flex flex-1 flex-col px-3 py-2 pb-4 xl:px-12 xl:pt-10">
           <div className="flex w-full justify-between">
             <div className="flex gap-2">
               <ChevronLeft

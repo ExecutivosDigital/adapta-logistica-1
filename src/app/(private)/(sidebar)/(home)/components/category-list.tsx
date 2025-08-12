@@ -18,7 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { cn } from "@/utils/cn";
 
@@ -115,11 +114,11 @@ export default function HomeCategoryList() {
         )}
 
         {/* Lista */}
-        <ScrollArea className="h-80 w-full p-2">
+        <div className="scrollbar-hide h-80 w-full overflow-y-scroll p-2">
           {listToDisplay.map((cat) => (
             <CategoryCard key={cat.id} cat={cat} />
           ))}
-        </ScrollArea>
+        </div>
       </div>
     </>
   );
@@ -154,7 +153,7 @@ function CategoryCard({ cat }: { cat: Category }) {
           {cat.descNivel4}
         </span>
       </div>
-      <div className="flex w-full flex-wrap items-end justify-between text-xs">
+      <div className="flex w-full items-end justify-between text-xs">
         <span className="font-semibold text-[#00A181]">
           Recebido:{" "}
           {cat.received.toLocaleString("pt-BR", {

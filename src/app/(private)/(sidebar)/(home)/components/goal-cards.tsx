@@ -22,7 +22,7 @@ export function HomeGoalCards() {
   };
   return (
     <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div className="col-span-12 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm xl:col-span-4">
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2 font-bold text-white">
           <span>Fluxo de Caixa Projetado</span>
           <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
@@ -52,7 +52,7 @@ export function HomeGoalCards() {
           </div>
         </div>
       </div>
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div className="col-span-12 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm xl:col-span-4">
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2 font-bold text-white">
           <span>Análise de Margem</span>
           <div className="flex items-center gap-2">
@@ -85,7 +85,7 @@ export function HomeGoalCards() {
           </div>
         </div>
       </div>
-      <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div className="col-span-12 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm xl:col-span-4">
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2 font-bold text-white">
           <span> Obrigações Fiscais</span>
           <div className="flex items-center gap-2">

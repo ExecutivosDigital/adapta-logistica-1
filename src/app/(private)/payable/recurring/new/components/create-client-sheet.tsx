@@ -35,7 +35,6 @@ import {
 import { toast } from "react-hot-toast";
 import Select, { SingleValue } from "react-select";
 import * as z from "zod";
-
 import { FieldConfig, fieldsConfig, Option } from "./fieldsConfig";
 
 /* ------------------------------------------------------------------ */

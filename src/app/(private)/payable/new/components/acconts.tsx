@@ -5,7 +5,7 @@ export type AccontsType = {
   grupo: string;
   tipoConta: string;
 };
-export const Accounts = [
+export const Accounts: AccontsType[] = [
   {
     contaContabil: "01.01.01.001",
     descricao: "Frete Peso",

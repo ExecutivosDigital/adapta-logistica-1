@@ -208,16 +208,16 @@ export default function Sidebar() {
       <div
         onClick={closeMobile}
         className={clsx(
-          "fixed inset-0 z-40 bg-black/40 transition-opacity lg:hidden",
+          "fixed inset-0 z-[1010] cursor-pointer bg-black/40 backdrop-blur-[2px] transition-opacity xl:hidden",
           isOpenMobile ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
 
       <aside
         className={clsx(
-          "peer fixed z-50 flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] transition-all duration-300 lg:static",
+          "peer fixed z-[1011] flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] transition-all duration-300 xl:static",
           width,
-          isOpenMobile ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          isOpenMobile ? "translate-x-0" : "-translate-x-full xl:translate-x-0",
         )}
       >
         {/* topo/logo */}
@@ -252,7 +252,7 @@ export default function Sidebar() {
         </div>
 
         {/* navegação */}
-        <nav className="flex-1 overflow-hidden px-2 py-4">
+        <nav className="scrollbar-hide flex-1 overflow-y-scroll px-2 py-4">
           {NAV.map(({ heading, items }) => (
             <div key={heading} className="mb-6 flex flex-col gap-1 first:mt-0">
               {/* heading */}

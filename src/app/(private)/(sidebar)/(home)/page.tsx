@@ -9,21 +9,21 @@ import { HomeTransactions } from "./components/transactions";
 
 export default function Home() {
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
-      <span className="text-lg font-semibold lg:text-xl">
+    <div className="flex h-full w-full flex-col gap-2 pb-20 xl:gap-4 xl:pb-0">
+      <span className="text-lg font-semibold xl:text-xl">
         Bem vindo Geovane
       </span>
       <div className="grid w-full grid-cols-12 gap-8">
-        <div className="col-span-7">
+        <div className="col-span-12">
           <HomeButtonGroup />
         </div>
-        <div className="col-span-5 flex items-end justify-end">
+        <div className="col-span-12 flex items-end justify-end">
           <HomeNewRelease />
         </div>
-        <div className="col-span-7 rounded-xl border border-zinc-200 p-2 shadow-sm lg:p-4">
+        <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm xl:col-span-7 xl:p-4">
           <HomeResultsGraph />
         </div>
-        <div className="col-span-5 rounded-xl border border-zinc-200 shadow-sm">
+        <div className="col-span-12 rounded-xl border border-zinc-200 shadow-sm xl:col-span-5">
           <HomeCategoryList />
         </div>
         <div className="col-span-12">

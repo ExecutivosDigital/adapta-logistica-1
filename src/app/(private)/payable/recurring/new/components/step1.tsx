@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { DataType } from "../page";
 import { CostCentersList } from "./cost-centers-list";
 
+import { useScreenWidth } from "@/lib/useScreenWidth";
 import "moment/locale/pt-br";
 import { LaunchTypes } from "./launch-types";
 moment.locale("pt-br");
@@ -156,6 +157,7 @@ export function Step1({
   const [filterInstallments, setFilterInstallments] = useState("");
   const [otherInstallments, setOtherInstallments] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { width } = useScreenWidth();
 
   useEffect(() => {
     if (otherInstallments && inputRef.current) {
@@ -252,16 +254,16 @@ export function Step1({
     <>
       <div className="flex-1">
         <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
-          {/* --------------------- FORNECEDOR --------------------- */}
-          <label className="col-span-8 flex flex-col gap-1">
+          <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">Fornecedor</span>
             <button
               onClick={() => setIsOpenSupplierModal(true)}
-              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <div className="flex h-full w-6">
-                <MapPin size={16} className="text-primary" />
-              </div>
+              <MapPin
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1 2xl:text-lg">
                   {data.supplier.name || "Selecione"}
@@ -270,37 +272,43 @@ export function Step1({
                   {data.supplier.cnpj || ""}
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </button>
           </label>
 
-          <label className="col-span-4 flex flex-col gap-1">
+          <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">Documento Gerador</span>
             <DropdownMenu
               open={isDocumentTypeDropdownOpen}
               onOpenChange={setIsDocumentTypeDropdownOpen}
             >
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <DollarSign size={16} className="text-primary" />
-                  </div>
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DollarSign
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <div className="flex h-full flex-1 items-center">
                     <span className="flex-1 2xl:text-lg">
                       {data.documentType || "Selecione"}
                     </span>
                   </div>
                   <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
+                    <Edit
+                      size={16}
+                      className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    />
                   </div>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="bottom"
+                side={width > 768 ? "bottom" : "top"}
                 sideOffset={0}
-                className="z-[999] w-72 border-zinc-200"
+                align={width > 768 ? "start" : "end"}
+                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
               >
                 <X
                   className="text-primary ml-auto cursor-pointer"
@@ -347,15 +355,18 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          <label className="col-span-4 flex flex-col gap-1">
+          <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">Tipo de Lançamento</span>
             <DropdownMenu
               open={isLaunchTypeDropdownOpen}
               onOpenChange={setIsLaunchTypeDropdownOpen}
             >
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <FileText className="text-primary" size={16} />
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <FileText
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    size={16}
+                  />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.paymentTerms ? (
                       <span className="line-clamp-2 text-sm">
@@ -365,13 +376,17 @@ export function Step1({
                       "Selecione"
                     )}
                   </span>
-                  <Edit className="text-primary ml-auto" size={16} />
+                  <Edit
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    size={16}
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
+                side={width > 768 ? "right" : "top"}
+                align="start"
                 sideOffset={0}
-                className="z-[999] max-h-[80vh] w-72 overflow-y-auto border-zinc-200"
+                className="z-[999] h-80 w-72 overflow-y-auto border-zinc-200"
               >
                 <X
                   className="text-primary ml-auto cursor-pointer"
@@ -420,21 +435,27 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- DETALHES DO PAGAMENTO --------------------- */}
-          <label className="col-span-8 flex flex-col gap-1">
+          <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">Detalhes do Pagamento</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <DollarSign className="text-primary" size={16} />
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DollarSign
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    size={16}
+                  />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.paymentDetails || "Selecione"}
                   </span>
-                  <Edit className="text-primary ml-auto" size={16} />
+                  <Edit
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    size={16}
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
+                side={width > 768 ? "right" : "top"}
+                align={width > 768 ? "start" : "end"}
                 sideOffset={0}
                 className="z-[999] h-80 w-72 overflow-y-auto border-zinc-200"
               >
@@ -528,17 +549,17 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- CENTRO DE CUSTO --------------------- */}
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Centro de Custos</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <Building2 size={16} className="text-primary" />
-                  </div>
+                <div className="relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <Building2
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <div className="flex h-full flex-1 items-center">
-                    <span className="flex flex-1 flex-col text-left">
+                    <span className="ml-4 flex flex-1 flex-col text-left">
                       {selectedCostCenters.length > 0
                         ? `${selectedCostCenters.length} selecionado${selectedCostCenters.length > 1 ? "s" : ""}`
                         : "Selecione"}
@@ -560,13 +581,16 @@ export function Step1({
                     </span>
                   </div>
                   <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
+                    <Edit
+                      size={16}
+                      className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    />
                   </div>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
-                align="end"
+                side={width > 768 ? "right" : "top"}
+                align={width > 768 ? "end" : "start"}
                 className="z-[999] max-h-[500px] overflow-y-auto rounded-lg border-zinc-200"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
@@ -628,17 +652,17 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- CONTA CONTÁBIL --------------------- */}
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Conta Contábil</span>
             <div
               onClick={() => setIsOpenContabilidadeModal(true)}
-              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <div className="flex h-full w-6">
-                <MapPin size={16} className="text-primary" />
-              </div>
-              <div className="flex flex-1 flex-col text-left">
+              <MapPin
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
+              <div className="ml-4 flex flex-1 flex-col overflow-hidden text-left">
                 <span className="flex-1">
                   {data.accountingAccount.code || "-"}
                 </span>
@@ -647,7 +671,10 @@ export function Step1({
                 </span>
               </div>
               <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
+                <Edit
+                  size={16}
+                  className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                />
               </div>
             </div>
           </label>

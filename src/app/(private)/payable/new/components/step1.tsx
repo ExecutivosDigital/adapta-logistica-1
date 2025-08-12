@@ -21,6 +21,7 @@ import { DataType } from "../page";
 import { CategoryModal } from "./category-modal";
 import { CostCentersList } from "./cost-centers-list";
 
+import { useScreenWidth } from "@/lib/useScreenWidth";
 import "moment/locale/pt-br";
 moment.locale("pt-br");
 interface Props {
@@ -307,6 +308,7 @@ export function Step1({
 
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
+  const { width } = useScreenWidth();
 
   const categoryOptions =
     data.costType && categoriesByCostType[data.costType as CostType]
@@ -314,6 +316,7 @@ export function Step1({
           type.toLowerCase().includes(filteredCategories.toLowerCase()),
         )
       : [];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // mantém só 0‑9
     const onlyDigits = e.target.value.replace(/\D/g, "");
@@ -324,6 +327,7 @@ export function Step1({
 
     setData({ ...data, amount: amountNumber });
   };
+
   return (
     <>
       <div className="flex-1">
@@ -357,9 +361,8 @@ export function Step1({
           </div>
         </div>
         <div className="my-4 h-px bg-zinc-200/60" />
-        <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
-          {/* --------------------- FORNECEDOR --------------------- */}
-          <label className="col-span-8 flex flex-col gap-1">
+        <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
+          <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">
               {data.entryType === "DESPESAS"
                 ? "Fornecedor"
@@ -369,11 +372,12 @@ export function Step1({
             </span>
             <button
               onClick={() => setIsOpenSupplierModal(true)}
-              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <div className="flex h-full w-6">
-                <MapPin size={16} className="text-primary" />
-              </div>
+              <MapPin
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1 2xl:text-lg">
                   {data.supplier.name || "Selecione"}
@@ -382,14 +386,14 @@ export function Step1({
                   {data.supplier.cnpj || ""}
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </button>
           </label>
 
-          {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
-          <label className="col-span-4 flex flex-col gap-1">
+          <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">
               {data.entryType === "DESPESAS"
                 ? "Tipo de Lançamento"
@@ -399,97 +403,33 @@ export function Step1({
             </span>
             <button
               onClick={() => setIsOpenLaunchTypeModal(true)}
-              className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+              className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <div className="flex h-full w-6">
-                <DollarSign size={16} className="text-primary" />
-              </div>
+              <DollarSign
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
               <div className="flex h-full flex-1 items-center">
                 <span className="flex-1 2xl:text-lg">
                   {data.documentType || "Selecione"}
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </button>
-            {/* <DropdownMenu
-              open={isDocumentTypeDropdownOpen}
-              onOpenChange={setIsDocumentTypeDropdownOpen}
-            >
-              <DropdownMenuTrigger className="w-full focus:outline-none"> 
-                 <button onClick={() => setIsOpenLaunchTypeModal(true)} className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <DollarSign size={16} className="text-primary" />
-                  </div>
-                  <div className="flex h-full flex-1 items-center">
-                    <span className="flex-1 2xl:text-lg">
-                      {data.documentType || "Selecione"}
-                    </span>
-                  </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
-                </button> 
-               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="bottom"
-                sideOffset={0}
-                className="z-[999] w-72 border-zinc-200"
-              >
-                <X
-                  className="text-primary ml-auto cursor-pointer"
-                  onClick={() => setIsDocumentTypeDropdownOpen(false)}
-                />
-                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
-                  <input
-                    value={filteredDocuments}
-                    onChange={(e) => setFilteredDocuments(e.target.value)}
-                    placeholder="Pesquisar tipos de Documentos"
-                    className="flex-1 focus:outline-none"
-                  />
-                  <Search size={14} />
-                </div>
-                {documents.filter((item) =>
-                  item.toLowerCase().includes(filteredDocuments.toLowerCase()),
-                ).length === 0 && (
-                  <div className="p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
-                {documents
-                  .filter((item) =>
-                    item
-                      .toLowerCase()
-                      .includes(filteredDocuments.toLowerCase()),
-                  )
-                  .map((item, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={() => setData({ ...data, documentType: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {/* Check icon 
-                         {data.documentType === item && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu> */}
           </label>
 
-          <div className="col-span-12 grid grid-cols-11 gap-4">
+          <div className="col-span-12 grid grid-cols-11 gap-2 xl:gap-4">
             <label className="col-span-5 flex flex-col gap-1">
               <span className="text-zinc-600">Valor</span>
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <DollarSign size={16} className="text-primary" />
-                </div>
-                <div className="flex h-full flex-1 items-center justify-center text-center">
+              <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                <DollarSign
+                  size={16}
+                  className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                />
+                <div className="flex h-full w-full flex-1 items-center justify-center text-center">
                   <input
                     value={data.amount.toLocaleString("pt-br", {
                       style: "currency",
@@ -500,87 +440,94 @@ export function Step1({
                     className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                   />
                 </div>
-                <div className="flex h-full w-6"></div>
               </div>
             </label>
 
-            {/* --------------------- DATAS --------------------- */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <label className="col-span-3 flex flex-col gap-1">
-                  <span className="text-zinc-600">Mês Referência</span>
-                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                    <div className="flex h-full w-6">
-                      <CalendarIcon className="text-primary" size={16} />
-                    </div>
+            <label className="col-span-3 flex flex-col gap-1">
+              <span className="text-zinc-600">Mês Referência</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                    <CalendarIcon
+                      size={16}
+                      className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    />
                     <div className="flex-1 text-zinc-700 2xl:text-lg">
                       {data.issueDate
                         ? moment(data.issueDate).format("MMM")
                         : moment().format("MMMM")}
                     </div>
-                    <div className="flex h-full w-6 justify-end">
-                      <Edit className="text-primary" size={16} />
-                    </div>
+                    <Edit
+                      size={16}
+                      className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    />
                   </div>
-                </label>
-              </DropdownMenuTrigger>
-            </DropdownMenu>
+                </DropdownMenuTrigger>
+              </DropdownMenu>
+            </label>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <label className="col-span-3 flex flex-col gap-1">
-                  <span className="text-zinc-600">Vencimento</span>
-                  <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                    <div className="flex h-full w-6">
-                      <CalendarIcon className="text-primary" size={16} />
-                    </div>
+            <label className="col-span-3 flex flex-col gap-1">
+              <span className="text-zinc-600">Vencimento</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                    <CalendarIcon
+                      size={16}
+                      className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    />
                     <div className="flex-1 text-zinc-700 2xl:text-lg">
                       {data.dueDate
                         ? moment(data.dueDate).format("DD/MM/YYYY")
                         : moment().format("DD/MM/YYYY")}
                     </div>
-                    <div className="flex h-full w-6 justify-end">
-                      <Edit className="text-primary" size={16} />
-                    </div>
+                    <Edit
+                      size={16}
+                      className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    />
                   </div>
-                </label>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="right"
-                sideOffset={0}
-                align="start"
-                className="z-[999] w-72 border-zinc-200"
-              >
-                <Calendar
-                  mode="single"
-                  selected={moment(data.dueDate).toDate()}
-                  onSelect={(date) => {
-                    if (date) {
-                      setData({ ...data, dueDate: moment(date).format() });
-                    }
-                  }}
-                />
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side={width > 768 ? "right" : "bottom"}
+                  sideOffset={0}
+                  align={width > 768 ? "start" : "end"}
+                  className="z-[999] w-72 border-zinc-200"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={moment(data.dueDate).toDate()}
+                    onSelect={(date) => {
+                      if (date) {
+                        setData({ ...data, dueDate: moment(date).format() });
+                      }
+                    }}
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </label>
           </div>
 
-          {/* --------------------- CONDIÇÕES DE PAGAMENTO --------------------- */}
-          <label className="col-span-4 flex flex-col gap-1">
+          <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">Condições de Pagamento</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <FileText className="text-primary" size={16} />
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <FileText
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.paymentTerms || "Selecione"}
                   </span>
-                  <Edit className="text-primary ml-auto" size={16} />
+                  <Edit
+                    size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
+                side={width > 768 ? "right" : "top"}
                 sideOffset={0}
-                align="end"
+                align={width > 768 ? "end" : "start"}
                 className="z-[999] w-72 border-zinc-200"
               >
                 {paymentTerms.map((term) => (
@@ -601,22 +548,28 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- DETALHES DO PAGAMENTO --------------------- */}
-          <label className="col-span-8 flex flex-col gap-1">
+          <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">Detalhes do Pagamento</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <DollarSign className="text-primary" size={16} />
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DollarSign
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.paymentDetails || "Selecione"}
                   </span>
-                  <Edit className="text-primary ml-auto" size={16} />
+                  <Edit
+                    size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
+                side={width > 768 ? "right" : "top"}
                 sideOffset={0}
+                align="end"
                 className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
@@ -659,17 +612,17 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- CENTRO DE CUSTO --------------------- */}
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Centro de Custos</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <Building2 size={16} className="text-primary" />
-                  </div>
+                <div className="relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <Building2
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <div className="flex h-full flex-1 items-center">
-                    <span className="flex flex-1 flex-col text-left">
+                    <span className="ml-4 flex flex-1 flex-col text-left">
                       {selectedCostCenters.length > 0
                         ? `${selectedCostCenters.length} selecionado${selectedCostCenters.length > 1 ? "s" : ""}`
                         : "Selecione"}
@@ -690,14 +643,15 @@ export function Step1({
                       )}
                     </span>
                   </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
+                  <Edit
+                    size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
-                align="end"
+                side={width > 768 ? "right" : "top"}
+                align={width > 768 ? "end" : "start"}
                 className="z-[999] max-h-[500px] overflow-y-auto rounded-lg border-zinc-200"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
@@ -759,27 +713,28 @@ export function Step1({
             </DropdownMenu>
           </label>
 
-          {/* --------------------- CONTA CONTÁBIL --------------------- */}
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Conta Contábil</span>
             <div
               onClick={() => setIsOpenContabilidadeModal(true)}
-              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <div className="flex h-full w-6">
-                <MapPin size={16} className="text-primary" />
-              </div>
-              <div className="flex flex-1 flex-col text-left">
+              <MapPin
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
+              <div className="ml-4 flex flex-1 flex-col overflow-hidden text-left">
                 <span className="flex-1">
                   {data.accountingAccount.code || "-"}
                 </span>
-                <span className="text-zinc-400">
+                <span className="truncate text-zinc-400">
                   {data.accountingAccount.description || "Selecione"}
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </div>
           </label>
         </div>

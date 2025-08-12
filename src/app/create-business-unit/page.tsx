@@ -44,24 +44,24 @@ export default function CreateBusinessUnitPage() {
   const [city, setCity] = useState("");
 
   const [techFields, setTechFields] = useState<TechField[]>([
-    { id: crypto.randomUUID(), topic: "", type: "", value: "" },
+    { id: "", topic: "", type: "", value: "" },
   ]);
 
   const [members, setMembers] = useState<MemberField[]>([
-    { id: crypto.randomUUID(), name: "", access: "", confirmed: false },
+    { id: "", name: "", access: "", confirmed: false },
   ]);
 
   /* ------------------------------ helpers ---------------------------- */
   const addTechField = () =>
     setTechFields((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), topic: "", type: "", value: "" },
+      { id: "", topic: "", type: "", value: "" },
     ]);
 
   const addMember = () =>
     setMembers((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), name: "", access: "", confirmed: false },
+      { id: "", name: "", access: "", confirmed: false },
     ]);
 
   /* ------------------------------ dropdown util ---------------------- */
