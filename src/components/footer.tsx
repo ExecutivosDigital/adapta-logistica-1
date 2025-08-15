@@ -8,7 +8,7 @@ export function Footer() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-[1000] flex w-[200px] -translate-x-1/2 items-center justify-between rounded-xl border border-zinc-200 bg-white p-2 shadow-lg xl:hidden">
+    <div className="fixed bottom-6 left-1/2 z-[980] flex w-[200px] -translate-x-1/2 items-center justify-between rounded-xl border border-zinc-200 bg-white p-2 shadow-lg xl:hidden">
       <div
         onClick={() => router.push("/transactions/receivable")}
         className={cn(

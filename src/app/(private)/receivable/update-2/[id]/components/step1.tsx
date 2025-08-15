@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Calendar } from "@/components/ui/calendar";
+import { useScreenWidth } from "@/lib/useScreenWidth";
 import {
   CalendarIcon,
   DollarSign,
@@ -36,6 +37,7 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
   ];
 
   const documents = ["1223", "3334", "3567", "5467", "6859", "7890"];
+  const { width } = useScreenWidth();
 
   const [filteredResponsible, setFilteredResponsible] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState("");
@@ -54,16 +56,16 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
     <>
       <div className="flex-1">
         <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
-          {/* --------------------- FORNECEDOR --------------------- */}
           <label className="col-span-8 flex flex-col gap-1">
             <span className="text-zinc-600">Cliente Pagador</span>
             <button
               onClick={() => setIsOpenClientModal(true)}
-              className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2"
+              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <div className="flex h-full w-6">
-                <MapPin size={16} className="text-primary" />
-              </div>
+              <MapPin
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1 2xl:text-lg">
                   {data.client.name || "Selecione"}
@@ -75,36 +77,38 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                   {data.client.place || ""}
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </button>
           </label>
 
-          {/* --------------------- TIPO DE DOCUMENTO --------------------- */}
           <label className="col-span-4 flex flex-col gap-1">
             <span className="text-zinc-600">Aprovação</span>
 
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <DollarSign size={16} className="text-primary" />
-                  </div>
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DollarSign
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <div className="flex h-full flex-1 items-center">
                     <span className="flex-1 2xl:text-lg">
                       {data.approval ? data.approval : "Selecione"}
                     </span>
                   </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit size={16} className="text-primary" />
-                  </div>
+                  <Edit
+                    size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
+                side={width > 768 ? "right" : "bottom"}
+                align={width > 768 ? "start" : "end"}
                 sideOffset={0}
-                align="start"
                 className="z-[999] w-72 border-zinc-200"
               >
                 <div className="border-primary text-primary mx-auto flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2 text-sm">
@@ -150,13 +154,13 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
             </DropdownMenu>
           </label>
 
-          {/* --------------------- VALOR --------------------- */}
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Preço Final</span>
-            <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-              <div className="flex h-full w-6">
-                <DollarSign size={16} className="text-primary" />
-              </div>
+            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+              <DollarSign
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
               <div className="flex h-full flex-1 flex-col items-center justify-center text-center">
                 <input
                   value={data.amount.toLocaleString("pt-br", {
@@ -174,15 +178,15 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
             </div>
           </label>
 
-          {/* --------------------- MOEDA --------------------- */}
           <label className="col-span-6 flex flex-col gap-1">
-            <span className="text-zinc-600">Quantidades de Documentos</span>
+            <span className="text-zinc-600">Documentos</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                  <div className="flex h-full w-6">
-                    <DollarSign size={16} className="text-primary" />
-                  </div>
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DollarSign
+                    size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  />
                   <div className="flex h-full flex-1 flex-col items-center justify-center text-center">
                     <input
                       value={"223 Documentos"}
@@ -197,7 +201,8 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="bottom"
+                side={width > 768 ? "bottom" : "top"}
+                align={width > 768 ? "start" : "end"}
                 sideOffset={0}
                 className="z-[999] w-72 border-zinc-200"
               >
@@ -241,61 +246,66 @@ export function Step1({ setIsOpenClientModal, data, setData }: Props) {
             </DropdownMenu>
           </label>
 
-          {/* --------------------- TIPO DE CUSTO --------------------- */}
-          <div className="col-span-6 flex flex-col gap-1">
+          <div className="col-span-8 flex flex-col gap-1">
             <span className="text-zinc-600">Email de Fatura:</span>
-            <button className="flex h-16 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-              <div className="flex h-full w-6">
-                <Mail size={16} className="text-primary" />
-              </div>
+            <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+              <Mail
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1 2xl:text-lg">Financeiro</span>
                 <span className="text-zinc-400">
                   financeiro@integrabrasil.com.br
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit size={16} className="text-primary" />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </button>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <label className="col-span-6 flex flex-col gap-1">
-                <span className="text-zinc-600">Agendar Cobrança</span>
-                <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2 text-center">
-                  <div className="flex h-full w-6">
-                    <CalendarIcon className="text-primary" size={16} />
-                  </div>
+          <label className="col-span-4 flex flex-col gap-1">
+            <span className="text-zinc-600">Cobrança</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                  <CalendarIcon
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    size={16}
+                  />
                   <div className="flex-1 text-zinc-700 2xl:text-lg">
                     {data.issueDate
                       ? moment(data.issueDate).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")}
                   </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit className="text-primary" size={16} />
-                  </div>
+                  <Edit
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    size={16}
+                  />
                 </div>
-              </label>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="right"
-              sideOffset={0}
-              align="start"
-              className="z-[999] w-72 border-zinc-200"
-            >
-              <Calendar
-                mode="single"
-                selected={moment(data.issueDate).toDate() || moment().toDate()}
-                onSelect={(date) => {
-                  if (date) {
-                    setData({ ...data, issueDate: moment(date).format() });
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side={width > 768 ? "right" : "top"}
+                sideOffset={0}
+                align={width > 768 ? "start" : "end"}
+                className="z-[999] w-72 border-zinc-200"
+              >
+                <Calendar
+                  mode="single"
+                  selected={
+                    moment(data.issueDate).toDate() || moment().toDate()
                   }
-                }}
-              />
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  onSelect={(date) => {
+                    if (date) {
+                      setData({ ...data, issueDate: moment(date).format() });
+                    }
+                  }}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </label>
         </div>
       </div>
     </>

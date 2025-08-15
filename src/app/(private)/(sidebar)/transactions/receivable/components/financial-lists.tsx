@@ -143,8 +143,8 @@ export function ReceivableFinancialLists() {
           />
         </div>
       </div>
-      <div className="flex w-full items-center justify-between gap-8">
-        <div className="flex w-1/2 flex-col rounded-xl border border-zinc-200 shadow-sm">
+      <div className="flex w-full flex-col items-center justify-between gap-2 xl:flex-row xl:gap-8">
+        <div className="flex w-full flex-col rounded-xl border border-zinc-200 shadow-sm xl:w-1/2">
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Recebido</span>
@@ -215,7 +215,7 @@ export function ReceivableFinancialLists() {
             </button>
           </div>
         </div>
-        <div className="flex w-1/2 flex-col rounded-xl border border-zinc-200 shadow-sm">
+        <div className="flex w-full flex-col rounded-xl border border-zinc-200 shadow-sm xl:w-1/2">
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Á Receber</span>

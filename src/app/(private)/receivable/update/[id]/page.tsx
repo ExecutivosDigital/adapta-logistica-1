@@ -289,9 +289,9 @@ export default function UpdateReceivable() {
     selectedRows.size > 0 && selectedRows.size < sortedRows.length;
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
+    <div className="flex h-full w-full flex-col gap-2 xl:gap-4">
+      <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
+        <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
           <div
             onClick={() => router.back()}
             className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-4 py-2 text-sm text-zinc-400 transition duration-300 hover:bg-zinc-200"
@@ -299,11 +299,11 @@ export default function UpdateReceivable() {
             <ChevronLeft />
             Voltar
           </div>
-          <span className="text-lg font-semibold lg:text-xl">
+          <span className="text-lg font-semibold xl:text-xl">
             Cadastro de Conta Á Receber
           </span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
           {selectedRows.size > 0 && (
             <span className="text-sm text-gray-600">
               {selectedRows.size} linha(s) selecionada(s)
@@ -323,7 +323,7 @@ export default function UpdateReceivable() {
         className="mb-4"
       />
 
-      <div className="flex h-12 w-full items-center justify-between border-b border-b-zinc-200">
+      <div className="mt-10 flex w-full flex-col items-center justify-between gap-2 border-b border-b-zinc-200 pb-2 xl:h-12 xl:flex-row">
         <div className="flex h-full items-center gap-4">
           <div
             className={cn(

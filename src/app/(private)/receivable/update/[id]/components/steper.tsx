@@ -60,7 +60,7 @@ const Stepper: React.FC<StepperProps> = ({
                 />
               </button>
               <span
-                className={`absolute top-6 mt-2 text-center text-xs whitespace-nowrap select-none ${
+                className={`absolute top-6 mt-2 w-10 text-center text-xs select-none md:w-16 xl:whitespace-nowrap ${
                   isCompleted ? "text-gray-800" : "text-gray-400"
                 }`}
               >

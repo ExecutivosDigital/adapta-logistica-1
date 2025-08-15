@@ -2,12 +2,6 @@
 import { OrangeButton } from "@/components/OrangeButton";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table,
   TableBody,
   TableCell,
@@ -17,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { toReceive, TransactionProps } from "@/const/transactions";
 import { cn } from "@/utils/cn";
-
 import {
   ChevronDown,
   ChevronRight,
@@ -27,6 +20,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { NewReceivableModal } from "./new-receivable-modal";
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn =
@@ -43,7 +37,7 @@ export function ReceivableTransactions({ filterType }: Props) {
   /* ----------------------------- State & Consts ---------------------------- */
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
-
+  const [showNewReceivableModal, setShowNewReceivableModal] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
@@ -226,206 +220,194 @@ export function ReceivableTransactions({ filterType }: Props) {
 
   /* --------------------------------- JSX ---------------------------------- */
   return (
-    <div className="flex flex-col">
-      {/* --------------------------- Header --------------------------- */}
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Fluxo de Recebimentos</span>
+    <>
+      <div className="flex flex-col">
+        {/* --------------------------- Header --------------------------- */}
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Fluxo de Recebimentos</span>
+          </div>
+
+          <OrangeButton
+            onClick={() => setShowNewReceivableModal(true)}
+            className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
+          >
+            <span className="text-sm"> Criar Lançamento</span>
+            <ChevronRight />
+          </OrangeButton>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <OrangeButton
-              className="border-primary bg-primary hover:border-primary-dark hover:bg-primary-dark flex items-center gap-2 px-2 py-1 text-white shadow-sm transition"
-              aria-label="Criar Lançamento"
-            >
-              <span className="text-sm">Criar Lançamento</span>
-              <ChevronRight />
-            </OrangeButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom">
-            {[
-              "Lançar Despesa",
-              "Pagamento de Colaboradores",
-              "Desp. Recorrentes",
-            ].map((item) => (
-              <DropdownMenuItem
-                key={item}
-                className="hover:bg-primary/20 cursor-pointer transition"
-              >
-                <div className="flex w-full items-center justify-between gap-2 border-b p-1">
-                  {item}
-                  <div className="border-primary h-4 w-4 rounded-md border" />
-                </div>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* --------------------------- Tabs ---------------------------- */}
-      <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
-        {tableTypes.map((tab) => {
-          const isActive = tab.id === selectedTableType.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setSelectedTableType(tab);
-                setCurrentPage(1); // reset page when changing tab
-              }}
-              className={cn(
-                "flex h-12 items-center gap-2 border-b px-2 text-sm transition",
-                isActive
-                  ? "border-b-primary text-primary"
-                  : "hover:text-primary border-b-transparent",
-              )}
-            >
-              <div
+        {/* --------------------------- Tabs ---------------------------- */}
+        <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
+          {tableTypes.map((tab) => {
+            const isActive = tab.id === selectedTableType.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setSelectedTableType(tab);
+                  setCurrentPage(1); // reset page when changing tab
+                }}
                 className={cn(
-                  "flex h-4 w-4 items-center justify-center rounded-full",
+                  "flex h-12 items-center gap-2 border-b px-2 text-sm transition",
                   isActive
-                    ? "bg-primary/20 text-primary"
-                    : "bg-zinc-400/20 text-zinc-400",
+                    ? "border-b-primary text-primary"
+                    : "hover:text-primary border-b-transparent",
                 )}
               >
-                {isActive ? <ChevronDown /> : <ChevronRight />}
-              </div>
-              {tab.name}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* --------------------------- Table --------------------------- */}
-      <Table className="border-collapse">
-        <TableHeader>
-          <TableRow>
-            {columns.map((column) => (
-              <TableHead
-                key={column.key}
-                className="h-12 cursor-pointer text-sm text-zinc-500"
-                onClick={() => column.sortable && handleSort(column.key)}
-              >
                 <div
-                  className={cn("flex items-center gap-2", {
-                    "justify-center": column.label === "Status",
-                  })}
-                >
-                  {column.label}
-                  {column.sortable && getSortIcon(column.key)}
-                </div>
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {paginatedRows.map((row) => (
-            <Fragment key={row.id}>
-              <TableRow className="hover:bg-primary/20 h-14 cursor-pointer transition">
-                {/* Data */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  {moment(row.date).format("DD/MM/YYYY")}
-                </TableCell>
-
-                {/* Fornecedor */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  {row.origin}
-                </TableCell>
-
-                {/* Valor */}
-                <TableCell
                   className={cn(
-                    "py-0.5 text-sm whitespace-nowrap",
-                    row.type === "toReceive"
-                      ? "text-emerald-600"
-                      : "text-red-500",
+                    "flex h-4 w-4 items-center justify-center rounded-full",
+                    isActive
+                      ? "bg-primary/20 text-primary"
+                      : "bg-zinc-400/20 text-zinc-400",
                   )}
                 >
-                  {row.value}
-                </TableCell>
+                  {isActive ? <ChevronDown /> : <ChevronRight />}
+                </div>
+                {tab.name}
+              </button>
+            );
+          })}
+        </div>
 
-                {/* Lançamentos */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  {row.category}
-                </TableCell>
-
-                {/* Documentos */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  <div className="flex items-center gap-2 font-bold underline">
-                    Ver Documentos
-                    <Files />
+        {/* --------------------------- Table --------------------------- */}
+        <Table className="border-collapse">
+          <TableHeader>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead
+                  key={column.key}
+                  className="h-12 cursor-pointer text-sm text-zinc-500"
+                  onClick={() => column.sortable && handleSort(column.key)}
+                >
+                  <div
+                    className={cn("flex items-center gap-2", {
+                      "justify-center": column.label === "Status",
+                    })}
+                  >
+                    {column.label}
+                    {column.sortable && getSortIcon(column.key)}
                   </div>
-                </TableCell>
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
 
-                {/* Status + Ações */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  <div className="flex items-center gap-4">
-                    {/* Badge */}
-                    <div
-                      className={cn(
-                        "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
-                        {
-                          "border-red-500 bg-red-500/20 text-red-500":
-                            row.status === "a_pagar" ||
-                            row.status === "a_receber",
-                          "border-black bg-black/20 text-black":
-                            row.status === "negado",
-                          "border-emerald-600 bg-emerald-600/20 text-emerald-600":
-                            row.status === "recebido" || row.status === "pago",
-                          "border-yellow-600 bg-yellow-600/20 text-yellow-600":
-                            row.status === "pendente",
-                          "border-zinc-400 bg-zinc-400/20 text-zinc-600":
-                            row.status === "incompleto",
-                          "border-orange-500 bg-orange-500/20 text-orange-500":
-                            row.status === "atrasado",
-                        },
-                      )}
-                    >
-                      {row.status === "a_pagar"
-                        ? "À PAGAR"
-                        : row.status === "negado"
-                          ? "NEGADO"
-                          : row.status === "a_receber"
-                            ? "À RECEBER"
-                            : row.status === "recebido"
-                              ? "RECEBIDO"
-                              : row.status === "pendente"
-                                ? "PENDENTE"
-                                : row.status === "incompleto"
-                                  ? "INCOMPLETO"
-                                  : row.status === "pago"
-                                    ? "PAGO"
-                                    : "ATRASADO"}
+          <TableBody>
+            {paginatedRows.map((row) => (
+              <Fragment key={row.id}>
+                <TableRow className="hover:bg-primary/20 h-14 cursor-pointer transition">
+                  {/* Data */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    {moment(row.date).format("DD/MM/YYYY")}
+                  </TableCell>
+
+                  {/* Fornecedor */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    {row.origin}
+                  </TableCell>
+
+                  {/* Valor */}
+                  <TableCell
+                    className={cn(
+                      "py-0.5 text-sm whitespace-nowrap",
+                      row.type === "toReceive"
+                        ? "text-emerald-600"
+                        : "text-red-500",
+                    )}
+                  >
+                    {row.value}
+                  </TableCell>
+
+                  {/* Lançamentos */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    {row.category}
+                  </TableCell>
+
+                  {/* Documentos */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    <div className="flex items-center gap-2 font-bold underline">
+                      Ver Documentos
+                      <Files />
                     </div>
+                  </TableCell>
 
-                    {/* Menu */}
-                    <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
-                      <EllipsisVertical />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </Fragment>
-          ))}
-          {paginatedRows.length < 10 &&
-            [...Array(10 - paginatedRows.length)].map((_, i) => (
-              <TableRow key={i} className="h-14">
-                <TableCell colSpan={6} className="h-full" />
-              </TableRow>
+                  {/* Status + Ações */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    <div className="flex items-center gap-4">
+                      {/* Badge */}
+                      <div
+                        className={cn(
+                          "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
+                          {
+                            "border-red-500 bg-red-500/20 text-red-500":
+                              row.status === "a_pagar" ||
+                              row.status === "a_receber",
+                            "border-black bg-black/20 text-black":
+                              row.status === "negado",
+                            "border-emerald-600 bg-emerald-600/20 text-emerald-600":
+                              row.status === "recebido" ||
+                              row.status === "pago",
+                            "border-yellow-600 bg-yellow-600/20 text-yellow-600":
+                              row.status === "pendente",
+                            "border-zinc-400 bg-zinc-400/20 text-zinc-600":
+                              row.status === "incompleto",
+                            "border-orange-500 bg-orange-500/20 text-orange-500":
+                              row.status === "atrasado",
+                          },
+                        )}
+                      >
+                        {row.status === "a_pagar"
+                          ? "À PAGAR"
+                          : row.status === "negado"
+                            ? "NEGADO"
+                            : row.status === "a_receber"
+                              ? "À RECEBER"
+                              : row.status === "recebido"
+                                ? "RECEBIDO"
+                                : row.status === "pendente"
+                                  ? "PENDENTE"
+                                  : row.status === "incompleto"
+                                    ? "INCOMPLETO"
+                                    : row.status === "pago"
+                                      ? "PAGO"
+                                      : "ATRASADO"}
+                      </div>
+
+                      {/* Menu */}
+                      <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
+                        <EllipsisVertical />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </Fragment>
             ))}
-        </TableBody>
-      </Table>
+            {paginatedRows.length < 10 &&
+              [...Array(10 - paginatedRows.length)].map((_, i) => (
+                <TableRow key={i} className="h-14">
+                  <TableCell colSpan={6} className="h-full" />
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
 
-      {/* ----------------------- Pagination Footer --------------------- */}
-      <div className="border-t border-t-zinc-200 p-2">
-        <CustomPagination
-          currentPage={currentPage}
-          pages={totalPages}
-          setCurrentPage={setCurrentPage}
-        />
+        {/* ----------------------- Pagination Footer --------------------- */}
+        <div className="border-t border-t-zinc-200 p-2">
+          <CustomPagination
+            currentPage={currentPage}
+            pages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
       </div>
-    </div>
+      {showNewReceivableModal && (
+        <NewReceivableModal
+          show={showNewReceivableModal}
+          onHide={() => setShowNewReceivableModal(false)}
+        />
+      )}
+    </>
   );
 }

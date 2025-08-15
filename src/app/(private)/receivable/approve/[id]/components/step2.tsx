@@ -6,13 +6,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Calendar } from "@/components/ui/calendar";
+import { useScreenWidth } from "@/lib/useScreenWidth";
 import { cn } from "@/utils/cn";
 import {
   ChevronDown,
   CreditCard,
   DollarSign,
   Edit,
-  EllipsisVertical,
   GripVertical,
   Plus,
 } from "lucide-react";
@@ -35,6 +35,8 @@ export function Step2({ data }: Props) {
   const [invoices, setInvoices] = useState<TechField[]>([
     { id: "", number: 0, type: "", date: "" },
   ]);
+
+  const { width } = useScreenWidth();
 
   /* ------------------------------ helpers ---------------------------- */
   const addTechField = () =>
@@ -59,17 +61,18 @@ export function Step2({ data }: Props) {
   return (
     <div className="flex-1">
       <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
-        <label className="col-span-8 flex flex-col gap-1">
+        <label className="col-span-7 flex flex-col gap-1">
           <span className="text-zinc-600">Conta Bancária</span>
-          <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-            <div className="flex h-full w-6">
-              <CreditCard size={16} className="text-primary" />
-            </div>
-            <div className="flex h-full flex-1 items-center text-center">
-              <span className="font-semi-bold flex-1 text-xl">
+          <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <CreditCard
+              size={16}
+              className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+            />
+            <div className="flex h-full w-full flex-1 items-center text-center">
+              <span className="font-semi-bold w-full flex-1 text-xl">
                 <input
                   placeholder="Conta Bancária"
-                  className="flex-1 bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
+                  className="w-full flex-1 pl-4 text-center text-lg text-zinc-700 outline-none"
                 />
               </span>
             </div>
@@ -77,36 +80,39 @@ export function Step2({ data }: Props) {
           </div>
         </label>
 
-        <label className="col-span-4 flex flex-col gap-1">
+        <label className="col-span-5 flex flex-col gap-1">
           <span className="text-zinc-600">Forma de Cobrança</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <DollarSign className="text-primary" size={16} />
-                </div>
-                <div className="flex-1 text-zinc-700 2xl:text-lg">
+              <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                <DollarSign
+                  className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  size={16}
+                />
+                <div className="flex-1 text-lg text-zinc-700">
                   {data.paymentForm || "Selecione"}
                 </div>
-                <div className="flex h-full w-6 justify-end">
-                  <Edit className="text-primary" size={16} />
-                </div>
+                <Edit
+                  className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  size={16}
+                />
               </div>
             </DropdownMenuTrigger>
           </DropdownMenu>
         </label>
 
-        <label className="col-span-8 flex flex-col gap-1">
+        <label className="col-span-6 flex flex-col gap-1">
           <span className="text-zinc-600">Tipo de Serviço</span>
-          <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-            <div className="flex h-full w-6">
-              <CreditCard size={16} className="text-primary" />
-            </div>
+          <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <CreditCard
+              size={16}
+              className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+            />
             <div className="flex h-full flex-1 items-center text-center">
               <span className="font-semi-bold flex-1 text-xl">
                 <input
                   placeholder="00232323232323232232 22"
-                  className="flex-1 bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
+                  className="w-full flex-1 bg-transparent pl-4 text-center text-lg text-zinc-700 outline-none"
                 />
               </span>
             </div>
@@ -114,20 +120,22 @@ export function Step2({ data }: Props) {
           </div>
         </label>
 
-        <label className="col-span-4 flex flex-col gap-1">
-          <span className="text-zinc-600">Condição de Pagamento</span>
+        <label className="col-span-6 flex flex-col gap-1">
+          <span className="text-zinc-600">Pagamento</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-16 items-center gap-2 rounded-2xl border border-zinc-200 px-3 py-2">
-                <div className="flex h-full w-6">
-                  <DollarSign className="text-primary" size={16} />
-                </div>
-                <div className="flex-1 text-zinc-700 2xl:text-lg">
+              <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                <DollarSign
+                  className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                  size={16}
+                />
+                <div className="flex-1 text-lg text-zinc-700">
                   {data.paymentForm || "Selecione"}
                 </div>
-                <div className="flex h-full w-6 justify-end">
-                  <Edit className="text-primary" size={16} />
-                </div>
+                <Edit
+                  className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  size={16}
+                />
               </div>
             </DropdownMenuTrigger>
           </DropdownMenu>
@@ -151,11 +159,11 @@ export function Step2({ data }: Props) {
                   value={formatBRL(valor)}
                   onChange={handleChange}
                   placeholder="R$ 0,00"
-                  className={`h-16 w-full rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.number ? "border-primary" : "border-zinc-200"}`}
+                  className={`h-12 w-full rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 xl:h-16 xl:px-3 xl:py-2 ${field.number ? "border-primary" : "border-zinc-200"}`}
                 />
               </div>
             </div>
-            <div className="col-span-2 flex flex-col text-[13px] font-medium text-zinc-600">
+            <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
               <span className="">Forma</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -163,7 +171,7 @@ export function Step2({ data }: Props) {
                     type="button"
                     className={cn(
                       buttonBase,
-                      "h-16 justify-between rounded-2xl px-3 py-2",
+                      "h-12 justify-between rounded-2xl px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
                       field.type
                         ? "border-primary text-zinc-700"
                         : "border-zinc-200 text-zinc-500",
@@ -206,19 +214,19 @@ export function Step2({ data }: Props) {
                     <span className="">Data</span>
 
                     <div
-                      className={`relative flex h-16 items-center rounded-2xl border px-3 py-2 text-sm placeholder:text-zinc-500 ${field.date ? "border-primary" : "border-zinc-200"}`}
+                      className={`relative flex h-12 items-center rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 xl:h-16 xl:px-3 xl:py-2 ${field.date ? "border-primary" : "border-zinc-200"}`}
                     >
                       {field.date
                         ? moment(field.date).format("DD/MM/YYYY")
                         : moment().format("DD/MM/YYYY")}
-                      <ChevronDown className="absolute top-1/2 right-2 h-4 -translate-y-1/2" />
+                      <ChevronDown className="absolute top-1/2 right-0 h-4 -translate-y-1/2" />
                     </div>
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  side="right"
+                  side={width > 768 ? "right" : "top"}
                   sideOffset={0}
-                  align="start"
+                  align={width > 768 ? "start" : "end"}
                   className="z-[999] w-72 border-zinc-200"
                 >
                   <Calendar
@@ -237,9 +245,6 @@ export function Step2({ data }: Props) {
                   />
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-            <div className="border-primary col-span-1 mt-5 flex h-16 items-center justify-center rounded-2xl border">
-              <EllipsisVertical className="text-zinc-600" />
             </div>
           </div>
         ))}

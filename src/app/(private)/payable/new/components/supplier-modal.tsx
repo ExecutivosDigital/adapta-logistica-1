@@ -50,7 +50,6 @@ export function SupplierModal({
           )}
         >
           <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
-            {/* Cabeçalho */}
             <div className="bg-primary flex h-16 items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
                 Lista de Fornecedores no Sistema
@@ -62,8 +61,8 @@ export function SupplierModal({
                 <Plus />
               </button>
             </div>
+
             <div className="scrollbar-hide h-[calc(100%-8rem)] w-full overflow-scroll">
-              {/* Campo de busca */}
               <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
                 <label className="mb-2 block text-[#6C7386]">
                   Selecione o Fornecedor:
@@ -82,7 +81,6 @@ export function SupplierModal({
                 </div>
               </div>
 
-              {/* Lista de fornecedors */}
               <ul className="space-y-2 px-2 xl:space-y-4 xl:px-6">
                 {suppliers.filter(
                   (fornecedor) =>

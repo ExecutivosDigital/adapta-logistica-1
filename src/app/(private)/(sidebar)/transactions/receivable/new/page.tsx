@@ -286,12 +286,12 @@ export default function NewReceivable() {
     selectedRows.size > 0 && selectedRows.size < sortedRows.length;
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
-      <div className="flex w-full items-center justify-between">
-        <span className="text-lg font-semibold lg:text-xl">
+    <div className="flex h-full w-full flex-col gap-2 xl:gap-4">
+      <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
+        <span className="text-lg font-semibold xl:text-xl">
           Cadastro de Conta Á Receber
         </span>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col items-start gap-0 xl:flex-row xl:items-center xl:gap-4">
           {selectedRows.size > 0 && (
             <span className="text-sm text-gray-600">
               {selectedRows.size} linha(s) selecionada(s)
@@ -311,7 +311,7 @@ export default function NewReceivable() {
         className="mb-4"
       />
 
-      <div className="flex h-12 w-full items-center justify-between border-b border-b-zinc-200">
+      <div className="mt-10 flex w-full flex-col items-center justify-between gap-2 border-b border-b-zinc-200 pb-2 xl:h-12 xl:flex-row">
         <div className="flex h-full items-center gap-4">
           <div
             className={cn(

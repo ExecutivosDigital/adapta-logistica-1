@@ -5,8 +5,8 @@ import { ReceivableResultsGraph } from "./components/results-graph";
 import { ReceivableTransactions } from "./components/transactions";
 export default function Receivable() {
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
-      <span className="text-lg font-semibold lg:text-xl">
+    <div className="flex h-full w-full flex-col gap-2 pb-20 xl:gap-4 xl:pb-0">
+      <span className="text-lg font-semibold xl:text-xl">
         Títulos á Receber
       </span>
 
@@ -15,7 +15,7 @@ export default function Receivable() {
           <ReceivableButtonGroup />
         </div>
 
-        <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm lg:p-4">
+        <div className="col-span-12 rounded-xl border border-zinc-200 p-2 shadow-sm xl:p-4">
           <ReceivableResultsGraph />
         </div>
 
