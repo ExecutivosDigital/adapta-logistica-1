@@ -7,7 +7,7 @@ export default function Calendar() {
   const [accessLevel, setAccessLevel] = useState("common");
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
+    <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">
         genda de Pagamentos
       </span>

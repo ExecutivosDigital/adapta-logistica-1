@@ -138,6 +138,59 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
+
+    // WIP rotated month events
+
+    //  <TooltipProvider>
+    //   <Tooltip>
+    //     <TooltipTrigger asChild>
+    //       <div
+    //         style={{
+    //           display: "flex",
+    //           fontSize: 12,
+    //           lineHeight: 1.1,
+    //         }}
+    //         className="sum-card h-[150px] p-0 md:h-auto md:p-2"
+    //       >
+    //         <div className="text-primary flex h-max w-full rotate-90 flex-col text-[14px] transition duration-500 md:h-auto md:translate-y-0 md:rotate-0">
+    //           <div className="h-10 w-full pt-2">{event.name}</div>
+    //           <div className="h-10 w-full font-bold">
+    //             {event.count} - {event.formattedValue}
+    //           </div>{" "}
+    //         </div>
+    //       </div>
+    //     </TooltipTrigger>
+    //     <TooltipContent
+    //       side="top"
+    //       align="start"
+    //       className="border-primary z-[999] border bg-white p-3"
+    //     >
+    //       <div className="font-bold text-[#6C7386]">
+    //         <span className="mr-1">Nome:</span>
+    //         <span className="text-primary">{event.name}</span>
+    //       </div>
+    //       <div className="font-bold text-[#6C7386]">
+    //         <span className="mr-1">Data:</span>
+    //         <span className="text-primary">
+    //           {event.start.toLocaleDateString()}
+    //         </span>
+    //       </div>
+    //       <div className="font-bold text-[#6C7386]">
+    //         <span className="mr-1">Movimento:</span>
+    //         <span className="text-primary">{event.movementType}</span>
+    //       </div>
+    //       <div className="font-bold text-[#6C7386]">
+    //         <span className="mr-1">Quantidade de itens:</span>
+    //         <span className="text-primary">{event.count}</span>
+    //       </div>
+    //       <div className="font-bold text-[#6C7386]">
+    //         <span className="mr-1">Valor Total:</span>
+    //         <span className="text-primary">{event.formattedValue}</span>
+    //       </div>
+    //       <TooltipArrow className="fill-primary" />
+    //     </TooltipContent>
+    //   </Tooltip>
+    // </TooltipProvider>
   );
 }
 
