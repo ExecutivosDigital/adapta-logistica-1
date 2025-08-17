@@ -1,5 +1,6 @@
 "use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
@@ -10,6 +11,7 @@ interface selectedTableType {
   selectedTableType?: string;
 }
 export function PayableGoalCards({ selectedTableType }: selectedTableType) {
+  const { viewAllValues } = useValueContext();
   const [date, setDate] = useState<Date | null>(new Date());
 
   const handleDateChange = (value: DateValue | null) => {
@@ -59,7 +61,13 @@ export function PayableGoalCards({ selectedTableType }: selectedTableType) {
               <span className="text-md text-zinc-400">Despesas</span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
@@ -105,7 +113,13 @@ export function PayableGoalCards({ selectedTableType }: selectedTableType) {
               <span className="text-md text-zinc-400">Em Aberto</span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
@@ -150,7 +164,13 @@ export function PayableGoalCards({ selectedTableType }: selectedTableType) {
               <span className="text-md text-zinc-400">Atrasados</span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />

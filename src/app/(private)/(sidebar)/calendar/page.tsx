@@ -9,7 +9,7 @@ export default function Calendar() {
   return (
     <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">
-        genda de Pagamentos
+        Agenda de Pagamentos
       </span>
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12">

@@ -6,9 +6,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useValueContext } from "@/context/ValueContext";
 import { EllipsisVertical, Filter } from "lucide-react";
 
 export function Home2FinancialLists() {
+  const { viewAllValues } = useValueContext();
   const incomeList = [
     {
       id: "1",
@@ -144,7 +146,9 @@ export function Home2FinancialLists() {
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Receitas</span>
-              <span className="font-semibold text-[#00A181]">R$12,890.00</span>
+              <span className="font-semibold text-[#00A181]">
+                {viewAllValues ? "R$12,890.00" : "********"}
+              </span>
             </div>
             <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
               <EllipsisVertical />
@@ -161,10 +165,12 @@ export function Home2FinancialLists() {
                   <span>{inc.label}</span>
                 </div>
                 <span>
-                  {inc.value.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  {viewAllValues
+                    ? inc.value.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "********"}
                 </span>
               </div>
             ))}
@@ -174,26 +180,46 @@ export function Home2FinancialLists() {
               <span className="text-sm text-zinc-400">
                 Média dos Últimos 3 meses
               </span>
-              <span className="text-[#00A181]">R$42.000,00</span>
+              <span className="text-[#00A181]">
+                {viewAllValues ? "R$42.000,00" : "********"}
+              </span>
             </div>
             <div className="flex items-end gap-2">
               <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold">
-                  R$<span className="text-sm">1M</span>
+                  {viewAllValues ? (
+                    <>
+                      R$<span className="text-sm">1M</span>
+                    </>
+                  ) : (
+                    "********"
+                  )}
                 </span>
                 <div className="from-primary/40 border-t-primary flex h-10 w-10 flex-col border-t-2 bg-gradient-to-b to-transparent" />
                 <span className="text-xs font-semibold">Abril</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold">
-                  R$<span className="text-sm">250k</span>
+                  {viewAllValues ? (
+                    <>
+                      R$<span className="text-sm">250k</span>
+                    </>
+                  ) : (
+                    "********"
+                  )}
                 </span>
                 <div className="from-primary/40 border-t-primary flex h-4 w-10 flex-col border-t-2 bg-gradient-to-b to-transparent" />
                 <span className="text-xs font-semibold">Maio</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold">
-                  R$<span className="text-sm">800k</span>
+                  {viewAllValues ? (
+                    <>
+                      R$<span className="text-sm">800k</span>
+                    </>
+                  ) : (
+                    "********"
+                  )}
                 </span>
                 <div className="from-primary/40 border-t-primary flex h-8 w-10 flex-col border-t-2 bg-gradient-to-b to-transparent" />
                 <span className="text-xs font-semibold">Junho</span>
@@ -205,7 +231,9 @@ export function Home2FinancialLists() {
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Despesas</span>
-              <span className="font-semibold text-[#EF4444]">-R$8,890.00</span>
+              <span className="font-semibold text-[#EF4444]">
+                {viewAllValues ? "-R$8,890.00" : "********"}
+              </span>
             </div>
             <div className="flex items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400">
               <EllipsisVertical />
@@ -222,10 +250,12 @@ export function Home2FinancialLists() {
                   <span>{exp.label}</span>
                 </div>
                 <span>
-                  {exp.value.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  {viewAllValues
+                    ? exp.value.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "********"}
                 </span>
               </div>
             ))}
@@ -235,26 +265,46 @@ export function Home2FinancialLists() {
               <span className="text-sm text-zinc-400">
                 Média dos Últimos 3 meses
               </span>
-              <span className="text-[#EF4444]">-R$42.000,00</span>
+              <span className="text-[#EF4444]">
+                {viewAllValues ? "-R$42.000,00" : "********"}
+              </span>
             </div>
             <div className="flex items-end gap-2">
               <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold">
-                  R$<span className="text-sm">2k</span>
+                  {viewAllValues ? (
+                    <>
+                      R$<span className="text-sm">2k</span>
+                    </>
+                  ) : (
+                    "********"
+                  )}
                 </span>
                 <div className="from-primary/40 border-t-primary flex h-3 w-10 flex-col border-t-2 bg-gradient-to-b to-transparent" />
                 <span className="text-xs font-semibold">Abril</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold">
-                  R$<span className="text-sm">12k</span>
+                  {viewAllValues ? (
+                    <>
+                      R$<span className="text-sm">12k</span>
+                    </>
+                  ) : (
+                    "********"
+                  )}
                 </span>
                 <div className="from-primary/40 border-t-primary flex h-8 w-10 flex-col border-t-2 bg-gradient-to-b to-transparent" />
                 <span className="text-xs font-semibold">Maio</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-xs font-semibold">
-                  R$<span className="text-sm">8k</span>
+                  {viewAllValues ? (
+                    <>
+                      R$<span className="text-sm">8k</span>
+                    </>
+                  ) : (
+                    "********"
+                  )}
                 </span>
                 <div className="from-primary/40 border-t-primary flex h-5 w-10 flex-col border-t-2 bg-gradient-to-b to-transparent" />
                 <span className="text-xs font-semibold">Junho</span>

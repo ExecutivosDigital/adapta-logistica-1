@@ -1,5 +1,6 @@
 "use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { getLocalTimeZone } from "@internationalized/date";
 import { ApexOptions } from "apexcharts";
 import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
@@ -11,6 +12,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function HomeResultsGraph() {
+  const { viewAllValues } = useValueContext();
   const [state] = useState({
     series: [
       {
@@ -144,13 +146,19 @@ export function HomeResultsGraph() {
           />
         </div>
       </div>
-      <span className="text-2xl font-semibold">R$180.789,00</span>
+      <span className="text-2xl font-semibold">
+        {viewAllValues ? "R$180.789,00" : "********"}
+      </span>
       <div className="flex h-6 items-center gap-2">
         <ArrowUpRight className="text-green-500" />
-        <span className="text-sm">R$522.000,00</span>
+        <span className="text-sm">
+          {viewAllValues ? "R$522.000,00" : "********"}
+        </span>
         <div className="h-full w-px bg-zinc-400" />
         <ArrowDownRight className="text-red-500" />
-        <span className="text-sm">R$329.802,00</span>
+        <span className="text-sm">
+          {viewAllValues ? "R$329.802,00" : "********"}
+        </span>
       </div>
       <div className="w-full">
         <ReactApexChart

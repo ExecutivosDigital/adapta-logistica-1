@@ -1,5 +1,6 @@
 "use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
@@ -10,8 +11,9 @@ interface selectedTableType {
   selectedTableType?: string;
 }
 export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
-  const [date, setDate] = useState<Date | null>(new Date());
+  const { viewAllValues } = useValueContext();
   const router = useRouter();
+  const [date, setDate] = useState<Date | null>(new Date());
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
       setDate(null);
@@ -56,7 +58,13 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
               <span className="text-md text-zinc-400">Recebido</span>
             </div>
             <span className="text-2xl font-semibold text-[#00A181]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
@@ -95,11 +103,17 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
         <div className="relative flex flex-col gap-2 p-2 px-4">
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-2">
-              <div className="h-full w-1 bg-[#00A181]" />
+              <div className="h-full w-1 bg-[#003ffd]" />
               <span className="text-md text-zinc-400">Em Aberto</span>
             </div>
-            <span className="text-2xl font-semibold text-[#00A181]">
-              R$ <span className="">1.322.890,00</span>
+            <span className="text-2xl font-semibold text-[#003ffd]">
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
@@ -142,7 +156,13 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
               <span className="text-md text-zinc-400">Atrasados</span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />

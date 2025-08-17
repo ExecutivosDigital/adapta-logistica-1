@@ -1,12 +1,14 @@
 "use client";
 
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
 
 export function HomeGoalCards() {
+  const { viewAllValues } = useValueContext();
   const [date, setDate] = useState<Date | null>(new Date());
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
@@ -41,14 +43,14 @@ export function HomeGoalCards() {
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Á Receber</span>
             </div>
-            <span>R$ 9.999.999,99</span>
+            <span>{viewAllValues ? "R$ 9.999.999,99" : "********"}</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Á Pagar</span>
             </div>
-            <span>R$ 9.999.999,99</span>
+            <span>{viewAllValues ? "R$ 9.999.999,99" : "********"}</span>
           </div>
         </div>
       </div>
@@ -74,14 +76,14 @@ export function HomeGoalCards() {
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Margem Bruta</span>
             </div>
-            <span>100%</span>
+            <span>{viewAllValues ? "100%" : "********"}</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Margem Líquida</span>
             </div>
-            <span>100%</span>
+            <span>{viewAllValues ? "100%" : "********"}</span>
           </div>
         </div>
       </div>
@@ -106,14 +108,14 @@ export function HomeGoalCards() {
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Pago</span>
             </div>
-            <span>R$ 9.999.999,99</span>
+            <span>{viewAllValues ? "R$ 9.999.999,99" : "********"}</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">À Pagar</span>
             </div>
-            <span>R$ 9.999.999,99</span>
+            <span>{viewAllValues ? "R$ 9.999.999,99" : "********"}</span>
           </div>
         </div>
       </div>

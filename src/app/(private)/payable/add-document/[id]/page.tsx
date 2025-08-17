@@ -163,7 +163,7 @@ export default function PayableAddDocument() {
           onClick={() => router.back()}
           className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
         >
-          Abortar
+          Encerrar
           <X size={16} />
         </button>
       </header>
@@ -346,7 +346,7 @@ export default function PayableAddDocument() {
               onClick={() => router.back()}
               className="h-9 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
             >
-              Sair
+              Salvar e sair
             </button>
 
             <OrangeButton

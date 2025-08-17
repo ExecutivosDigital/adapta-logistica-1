@@ -195,7 +195,7 @@ export function CreateBusinessUnitModal() {
                 onClick={() => closeCreateBusinessUnitModal()}
                 className="rounded-md border border-zinc-200 px-4 py-2 font-medium text-zinc-700 transition hover:bg-zinc-50"
               >
-                Salvar e sair
+                Salvar rascunho
               </button>
 
               <OrangeButton

@@ -1,5 +1,6 @@
 import ChatWidget from "@/components/chatPopup";
 import { ContextProviders } from "@/context/ContextProviders";
+import { SidebarProvider } from "@/context/SidebarContext";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import Script from "next/script";
@@ -44,7 +45,7 @@ export default function RootLayout({
       </head>
       <ContextProviders>
         <body className={`${poppins.variable}`}>
-          {children}
+          <SidebarProvider>{children}</SidebarProvider>
           <Toaster
             position="top-center"
             toastOptions={{ duration: 5000, className: "z-[1000000]" }}

@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toPay, toReceive, TransactionProps } from "@/const/transactions";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 
 import {
@@ -39,6 +40,7 @@ type SortableColumn =
   | "status";
 
 export function HomeTransactions() {
+  const { viewAllValues } = useValueContext();
   const router = useRouter();
 
   /* ----------------------------- State & Consts ---------------------------- */
@@ -241,30 +243,41 @@ export function HomeTransactions() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <OrangeButton
-              className="border-primary bg-primary hover:border-primary-dark hover:bg-primary-dark flex items-center gap-2 px-2 py-1 text-white shadow-sm transition"
-              aria-label="Criar Lançamento"
-            >
-              <span className="text-sm">Criar Lançamento</span>
-              <ChevronRight />
-            </OrangeButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom">
-            {[
-              "Lançar Despesa",
-              "Pagamento de Colaboradores",
-              "Desp. Recorrentes",
-            ].map((item) => (
-              <DropdownMenuItem
-                key={item}
-                className="hover:bg-primary/20 cursor-pointer transition"
+            <div>
+              <OrangeButton
+                disabled
+                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
               >
-                <div className="flex w-full items-center justify-between gap-2 border-b p-1">
-                  {item}
-                  <div className="border-primary h-4 w-4 rounded-md border" />
-                </div>
-              </DropdownMenuItem>
-            ))}
+                <span className="text-sm"> Criar Lançamento</span>
+                <ChevronRight />
+              </OrangeButton>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="bottom" align="end" className="z-[999]">
+            <DropdownMenuItem
+              onClick={() => router.push("/payable/new")}
+              className="hover:bg-primary/20 cursor-pointer transition duration-300"
+            >
+              <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                Lançar Despesa
+                <div className="border-primary h-4 w-4 rounded-md border"></div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                Pagamento de Colaboradores
+                <div className="border-primary h-4 w-4 rounded-md border"></div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push("/payable/recurring/new")}
+              className="hover:bg-primary/20 cursor-pointer transition duration-300"
+            >
+              <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                Desp. Recorrentes
+                <div className="border-primary h-4 w-4 rounded-md border"></div>
+              </div>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -349,7 +362,7 @@ export function HomeTransactions() {
                       : "text-red-500",
                   )}
                 >
-                  {row.value}
+                  {viewAllValues ? row.value : "********"}
                 </TableCell>
 
                 {/* Lançamentos */}
@@ -383,7 +396,7 @@ export function HomeTransactions() {
                           "border-yellow-600 bg-yellow-600/20 text-yellow-600":
                             row.status === "pendente",
                           "border-zinc-400 bg-zinc-400/20 text-zinc-600":
-                            row.status === "incompleto",
+                            row.status === "rascunho",
                           "border-orange-500 bg-orange-500/20 text-orange-500":
                             row.status === "atrasado",
                         },
@@ -399,8 +412,8 @@ export function HomeTransactions() {
                               ? "RECEBIDO"
                               : row.status === "pendente"
                                 ? "PENDENTE"
-                                : row.status === "incompleto"
-                                  ? "INCOMPLETO"
+                                : row.status === "rascunho"
+                                  ? "RASCUNHO"
                                   : row.status === "pago"
                                     ? "PAGO"
                                     : "ATRASADO"}

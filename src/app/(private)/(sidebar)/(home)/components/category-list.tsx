@@ -19,11 +19,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 
 export default function HomeCategoryList() {
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
   const randomisedCategories = useRandomisedCategories();
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   // Run once, but only in the browser
   useEffect(() => {
     setAllCategories(randomisedCategories); // ← may call Math.random()
@@ -128,6 +129,7 @@ export default function HomeCategoryList() {
 /*  Card da categoria (pago / recebido)                                       */
 /* -------------------------------------------------------------------------- */
 function CategoryCard({ cat }: { cat: Category }) {
+  const { viewAllValues } = useValueContext();
   return (
     <div className="relative my-1 flex w-full flex-col items-center justify-between gap-2 rounded-lg border border-zinc-200 p-3 shadow-sm">
       <div className="flex w-full items-center gap-2">
@@ -156,17 +158,21 @@ function CategoryCard({ cat }: { cat: Category }) {
       <div className="flex w-full items-end justify-between text-xs">
         <span className="font-semibold text-[#00A181]">
           Recebido:{" "}
-          {cat.received.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+          {viewAllValues
+            ? cat.received.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            : "********"}
         </span>
         <span className="font-semibold text-[#EF4444]">
           Pago:{" "}
-          {cat.paid.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+          {viewAllValues
+            ? cat.paid.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            : "********"}
         </span>
       </div>
     </div>

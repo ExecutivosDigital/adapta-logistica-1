@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import {
   Tooltip,
   TooltipArrow,
@@ -6,10 +7,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/chat/tooltip";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { Layers } from "lucide-react";
 
 export function CustomEventWeek({ event, onView }: any) {
+  const { viewAllValues } = useValueContext();
   const viewHandler = (viewName: string) => {
     onView(viewName);
   };
@@ -37,7 +40,9 @@ export function CustomEventWeek({ event, onView }: any) {
                 <span className="truncate text-sm font-bold">{event.name}</span>
               </div>
               <div className="flex flex-row items-center gap-2">
-                <small className="text-xs">{event.value}</small>
+                <small className="text-xs">
+                  {viewAllValues ? event.value : "********"}
+                </small>
                 {event.installments && (
                   <small className="font-bold">{event.installments}</small>
                 )}
@@ -65,7 +70,9 @@ export function CustomEventWeek({ event, onView }: any) {
             </div>
             <div className="font-bold text-[#6C7386]">
               <span className="mr-1">Valor:</span>
-              <span className="text-primary">{event.value}</span>
+              <span className="text-primary">
+                {viewAllValues ? event.value : "********"}
+              </span>
             </div>
             <div className="font-bold text-[#6C7386]">
               <span className="mr-1">Parcelas:</span>

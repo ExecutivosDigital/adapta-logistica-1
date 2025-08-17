@@ -1,12 +1,16 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useValueContext } from "@/context/ValueContext";
 import { EllipsisVertical, Plus } from "lucide-react";
 
 export function Home2GoalCards() {
+  const { viewAllValues } = useValueContext();
+
   return (
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
@@ -68,14 +72,14 @@ export function Home2GoalCards() {
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Lorem</span>
             </div>
-            <span>Lorem - R$12.000,00</span>
+            <span>Lorem - {viewAllValues ? "R$12.000,00" : "********"}</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Lorem</span>
             </div>
-            <span>Lorem - R$12.000,00</span>
+            <span>Lorem - {viewAllValues ? "R$12.000,00" : "********"}</span>
           </div>
         </div>
       </div>
@@ -140,14 +144,14 @@ export function Home2GoalCards() {
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Lorem</span>
             </div>
-            <span>Lorem - R$12.000,00</span>
+            <span>Lorem - {viewAllValues ? "R$12.000,00" : "********"}</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Lorem</span>
             </div>
-            <span>Lorem - R$12.000,00</span>
+            <span>Lorem - {viewAllValues ? "R$12.000,00" : "********"}</span>
           </div>
         </div>
       </div>
@@ -197,14 +201,14 @@ export function Home2GoalCards() {
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Lorem</span>
             </div>
-            <span>Lorem - R$12.000,00</span>
+            <span>Lorem - {viewAllValues ? "R$12.000,00" : "********"}</span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-zinc-400">
               <span className="text-sm">Lorem</span>
             </div>
-            <span>Lorem - R$12.000,00</span>
+            <span>Lorem - {viewAllValues ? "R$12.000,00" : "********"}</span>
           </div>
         </div>
       </div>

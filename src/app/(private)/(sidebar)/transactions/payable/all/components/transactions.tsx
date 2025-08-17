@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import debounce from "lodash.debounce";
 import {
@@ -24,6 +25,7 @@ import {
   EllipsisVertical,
   Search,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 interface TransactionProps {
@@ -55,6 +57,8 @@ type SortableColumn =
   | "status";
 
 export function AllPayableTransactions() {
+  const { viewAllValues } = useValueContext();
+  const router = useRouter();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
@@ -183,7 +187,7 @@ export function AllPayableTransactions() {
           value: "R$ 1.000,00",
           category: "Categoria 5",
           cc: "Centro de Custos 5",
-          status: "Incompleto",
+          status: "Rascunho",
           documents: [
             { id: "1", name: "Documento 1", file: "file.pdf" },
             { id: "2", name: "Documento 2", file: "file.pdf" },
@@ -307,7 +311,7 @@ export function AllPayableTransactions() {
         </div>
       </TableCell>
       <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#00A181]">
-        {transaction.value}
+        {viewAllValues ? transaction.value : "********"}
       </TableCell>
       <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
         {transaction.category}
@@ -458,26 +462,37 @@ export function AllPayableTransactions() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <OrangeButton className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
-                <span className="text-sm"> Criar Lançamento</span>
-                <ChevronRight />
-              </OrangeButton>
+              <div>
+                <OrangeButton
+                  disabled
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
+                >
+                  <span className="text-sm"> Criar Lançamento</span>
+                  <ChevronRight />
+                </OrangeButton>
+              </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom">
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1">
+            <DropdownMenuContent side="bottom" align="end" className="z-[999]">
+              <DropdownMenuItem
+                onClick={() => router.push("/payable/new")}
+                className="hover:bg-primary/20 cursor-pointer transition duration-300"
+              >
+                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
                   Lançar Despesa
                   <div className="border-primary h-4 w-4 rounded-md border"></div>
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1">
+                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
                   Pagamento de Colaboradores
                   <div className="border-primary h-4 w-4 rounded-md border"></div>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1">
+              <DropdownMenuItem
+                onClick={() => router.push("/payable/recurring/new")}
+                className="hover:bg-primary/20 cursor-pointer transition duration-300"
+              >
+                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
                   Desp. Recorrentes
                   <div className="border-primary h-4 w-4 rounded-md border"></div>
                 </div>
@@ -566,7 +581,7 @@ export function AllPayableTransactions() {
                       </div>
                     </TableCell>
                     <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#00A181]">
-                      {firstTransaction.value}
+                      {viewAllValues ? firstTransaction.value : "********"}
                     </TableCell>
                     <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
                       {firstTransaction.category}

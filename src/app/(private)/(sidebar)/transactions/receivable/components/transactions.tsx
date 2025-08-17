@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toReceive, TransactionProps } from "@/const/transactions";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import {
   ChevronDown,
@@ -34,6 +35,7 @@ interface Props {
   filterType?: string;
 }
 export function ReceivableTransactions({ filterType }: Props) {
+  const { viewAllValues } = useValueContext();
   /* ----------------------------- State & Consts ---------------------------- */
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
@@ -317,7 +319,7 @@ export function ReceivableTransactions({ filterType }: Props) {
                         : "text-red-500",
                     )}
                   >
-                    {row.value}
+                    {viewAllValues ? row.value : "********"}
                   </TableCell>
 
                   {/* Lançamentos */}
@@ -352,7 +354,7 @@ export function ReceivableTransactions({ filterType }: Props) {
                             "border-yellow-600 bg-yellow-600/20 text-yellow-600":
                               row.status === "pendente",
                             "border-zinc-400 bg-zinc-400/20 text-zinc-600":
-                              row.status === "incompleto",
+                              row.status === "rascunho",
                             "border-orange-500 bg-orange-500/20 text-orange-500":
                               row.status === "atrasado",
                           },
@@ -368,8 +370,8 @@ export function ReceivableTransactions({ filterType }: Props) {
                                 ? "RECEBIDO"
                                 : row.status === "pendente"
                                   ? "PENDENTE"
-                                  : row.status === "incompleto"
-                                    ? "INCOMPLETO"
+                                  : row.status === "rascunho"
+                                    ? "RASCUNHO"
                                     : row.status === "pago"
                                       ? "PAGO"
                                       : "ATRASADO"}

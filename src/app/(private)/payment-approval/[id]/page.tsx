@@ -224,7 +224,7 @@ export default function FinalPaymentApproval() {
           <footer className="flex items-center justify-center gap-6 border-t border-zinc-200 bg-white px-8 py-4">
             <button
               onClick={() => router.back()}
-              className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+              className="h-9 w-max rounded-lg border border-zinc-300 px-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
             >
               Rejeitar
             </button>

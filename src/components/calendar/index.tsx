@@ -23,6 +23,7 @@ import {
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 // ---- Seus componentes/arquivos já existentes ----
+import { useValueContext } from "@/context/ValueContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/date-picker";
@@ -79,6 +80,7 @@ interface ButtonGroupProps {
 }
 
 function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
+  const { viewAllValues } = useValueContext();
   return (
     <TooltipProvider>
       <Tooltip>
@@ -102,7 +104,9 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
               </div>
               <div className="flex w-full flex-row items-center gap-2">
                 <span className="text-sm">Total:</span>
-                <span className="flex-1 font-bold">{event.formattedValue}</span>
+                <span className="flex-1 font-bold">
+                  {viewAllValues ? event.formattedValue : "********"}
+                </span>
               </div>
             </div>
           </div>
@@ -132,7 +136,9 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
           </div>
           <div className="font-bold text-[#6C7386]">
             <span className="mr-1">Valor Total:</span>
-            <span className="text-primary">{event.formattedValue}</span>
+            <span className="text-primary">
+              {viewAllValues ? event.formattedValue : "********"}
+            </span>
           </div>
           <TooltipArrow className="fill-primary" />
         </TooltipContent>

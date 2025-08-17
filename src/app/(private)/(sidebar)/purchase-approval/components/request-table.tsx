@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { ChevronDown, ChevronUp, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
@@ -53,6 +54,7 @@ export function RequestTable({
   openEditModal,
   openDeleteModal,
 }: TableProps) {
+  const { viewAllValues } = useValueContext();
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const columns: ColumnProps[] = [
@@ -296,10 +298,12 @@ export function RequestTable({
                 </TableCell>
                 <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
                   <div className="flex flex-col">
-                    {row.value.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
+                    {viewAllValues
+                      ? row.value.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : "********"}
                     <span className="text-xs">
                       x {row.amount} unidade{row.amount > 1 && "s"}
                     </span>

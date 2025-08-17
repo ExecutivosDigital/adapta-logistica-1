@@ -232,7 +232,7 @@ export default function NewRecurringPayment() {
             onClick={() => router.back()}
             className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
           >
-            Abortar
+            Encerrar
             <X size={16} />
           </button>
         </header>
@@ -290,9 +290,9 @@ export default function NewRecurringPayment() {
               <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
                 <button
                   onClick={() => router.back()}
-                  className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                  className="h-9 w-max rounded-lg border border-zinc-300 px-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
                 >
-                  Salvar e sair
+                  Salvar rascunho
                 </button>
 
                 <OrangeButton
@@ -308,9 +308,9 @@ export default function NewRecurringPayment() {
               <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
                 <button
                   onClick={() => router.back()}
-                  className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                  className="h-9 w-max rounded-lg border border-zinc-300 px-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
                 >
-                  Salvar e sair
+                  Salvar rascunho
                 </button>
 
                 <OrangeButton

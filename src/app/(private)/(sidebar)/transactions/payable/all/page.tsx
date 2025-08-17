@@ -28,14 +28,19 @@ export default function AllPayable() {
           <AllPayableButtonGroup />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <OrangeButton className="bg-primary hover:bg-primary-dark hover:border-primary-dark border-primary flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300">
-                <span className="text-sm"> Criar Lançamento</span>
-                <ChevronRight />
-              </OrangeButton>
+              <div>
+                <OrangeButton
+                  disabled
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
+                >
+                  <span className="text-sm"> Criar Lançamento</span>
+                  <ChevronRight />
+                </OrangeButton>
+              </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom" className="z-[999]">
+            <DropdownMenuContent side="bottom" align="end" className="z-[999]">
               <DropdownMenuItem
-                onClick={() => router.push("/create-payment")}
+                onClick={() => router.push("/payable/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -49,7 +54,10 @@ export default function AllPayable() {
                   <div className="border-primary h-4 w-4 rounded-md border"></div>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+              <DropdownMenuItem
+                onClick={() => router.push("/payable/recurring/new")}
+                className="hover:bg-primary/20 cursor-pointer transition duration-300"
+              >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
                   Desp. Recorrentes
                   <div className="border-primary h-4 w-4 rounded-md border"></div>

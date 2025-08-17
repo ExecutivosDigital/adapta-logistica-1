@@ -1,5 +1,6 @@
 "use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { DateValue, getLocalTimeZone } from "@internationalized/date";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
@@ -9,6 +10,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function PayableResultsGraph() {
+  const { viewAllValues } = useValueContext();
   const [state] = useState({
     series: [
       {
@@ -35,7 +37,7 @@ export function PayableResultsGraph() {
         background: "transparent",
       },
       tooltip: {
-        enabled: true,
+        enabled: false,
       },
       dataLabels: {
         enabled: false,
@@ -147,7 +149,13 @@ export function PayableResultsGraph() {
               <span className="text-zinc-400 2xl:text-2xl">Pago</span>
             </div>
             <span className="text-2xl font-semibold text-[#ef8b44]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="flex w-1/2 flex-col gap-1 xl:w-auto">
@@ -156,7 +164,13 @@ export function PayableResultsGraph() {
               <span className="text-zinc-400 2xl:text-2xl">Á Pagar</span>
             </div>
             <span className="text-2xl font-semibold text-[#fa0303]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
         </div>

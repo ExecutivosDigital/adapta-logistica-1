@@ -1,12 +1,16 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useValueContext } from "@/context/ValueContext";
 import { EllipsisVertical, Filter } from "lucide-react";
 
 export function AllPayableGoalCards() {
+  const { viewAllValues } = useValueContext();
+
   return (
     <div className="grid grid-cols-12 gap-8">
       <div className="col-span-4 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
@@ -45,7 +49,13 @@ export function AllPayableGoalCards() {
               </span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
@@ -87,7 +97,13 @@ export function AllPayableGoalCards() {
               </span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}{" "}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
@@ -129,7 +145,13 @@ export function AllPayableGoalCards() {
               </span>
             </div>
             <span className="text-2xl font-semibold text-[#EF4444]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}{" "}
             </span>
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />

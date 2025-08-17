@@ -2,9 +2,10 @@
 
 import { useBranch } from "@/context/BranchContext";
 import { useSidebar } from "@/context/SidebarContext";
+import { useValueContext } from "@/context/ValueContext";
 import { branches } from "@/mock/branches";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
-import { Bell, ChevronDown, Menu } from "lucide-react";
+import { Bell, ChevronDown, Eye, EyeOff, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,8 @@ import {
 export default function Header() {
   const { openMobile } = useSidebar();
   const { selectedBranch, setSelectedBranch } = useBranch();
+  const { viewAllValues, setViewAllValues } = useValueContext();
+
   return (
     <header className="flex h-16 items-center gap-2 bg-white px-4 xl:px-20">
       {/* botão só aparece < lg */}
@@ -39,6 +42,12 @@ export default function Header() {
           />
         </label> */}
         <div className="flex items-center gap-2">
+          <div
+            onClick={() => setViewAllValues(!viewAllValues)}
+            className="hover:text-primary hover:border-primary flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 p-1 text-zinc-400 transition duration-150"
+          >
+            {viewAllValues ? <EyeOff /> : <Eye />}
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">

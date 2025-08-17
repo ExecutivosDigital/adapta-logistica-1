@@ -377,9 +377,9 @@ export default function CreateBusinessUnitPage() {
       <footer className="flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
         <button
           onClick={() => router.back()}
-          className="h-9 w-[108px] rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+          className="h-9 w-max rounded-lg border border-zinc-300 px-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
         >
-          Salvar e sair
+          Salvar rascunho
         </button>
 
         <OrangeButton

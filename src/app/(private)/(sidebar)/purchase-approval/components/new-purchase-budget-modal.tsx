@@ -131,7 +131,7 @@ export function NewPurchaseBudgetModal({
                     className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-8"
                   >
                     <X className="text-red-500" />
-                    Salvar e Sair
+                    Salvar rascunho
                   </button>
                   <button
                     onClick={onHide}

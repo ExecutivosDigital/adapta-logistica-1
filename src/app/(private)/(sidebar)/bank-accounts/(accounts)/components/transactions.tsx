@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { CreditCard, EllipsisVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,7 @@ interface BankAccountProps {
   setOpen: (open: boolean) => void;
 }
 export function BankAccount({ setOpen }: BankAccountProps) {
+  const { viewAllValues } = useValueContext();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
@@ -172,14 +174,14 @@ export function BankAccount({ setOpen }: BankAccountProps) {
                 <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
                   <div className="flex items-center gap-4 text-center">
                     <span className="bg-primary h-5 w-5 rounded-full" />
-                    {row.initialBalance}
+                    {viewAllValues ? row.initialBalance : "********"}
                   </div>
                 </TableCell>
 
                 <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
                   <div className="flex items-center gap-4 text-center">
                     <span className="bg-primary h-5 w-5 rounded-full" />
-                    {row.currentBalance}
+                    {viewAllValues ? row.currentBalance : "********"}
                   </div>
                 </TableCell>
                 <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">

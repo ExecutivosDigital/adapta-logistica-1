@@ -2,6 +2,7 @@ import { CookiesProvider } from "next-client-cookies/server";
 import { ApiContextProvider } from "./ApiContext";
 import { BranchProvider } from "./BranchContext";
 import { SampleContextProvider } from "./SampleContext";
+import { ValueContextProvider } from "./ValueContext";
 
 export function ContextProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,9 @@ export function ContextProviders({ children }: { children: React.ReactNode }) {
       <CookiesProvider>
         <ApiContextProvider>
           <SampleContextProvider>
-            <BranchProvider>{children}</BranchProvider>
+            <BranchProvider>
+              <ValueContextProvider>{children}</ValueContextProvider>
+            </BranchProvider>
           </SampleContextProvider>
         </ApiContextProvider>
       </CookiesProvider>

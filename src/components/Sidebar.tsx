@@ -215,7 +215,7 @@ export default function Sidebar() {
 
       <aside
         className={clsx(
-          "peer fixed z-[1011] flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] transition-all duration-300 xl:static",
+          "peer fixed z-[1011] flex h-full min-h-screen flex-col overflow-hidden bg-[#FAFBFD] transition-all duration-300",
           width,
           isOpenMobile ? "translate-x-0" : "-translate-x-full xl:translate-x-0",
         )}

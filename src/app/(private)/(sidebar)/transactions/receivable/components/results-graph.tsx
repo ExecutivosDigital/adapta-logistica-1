@@ -1,5 +1,6 @@
 "use client";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { getLocalTimeZone } from "@internationalized/date";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
@@ -10,6 +11,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function ReceivableResultsGraph() {
+  const { viewAllValues } = useValueContext();
   const [state] = useState({
     series: [
       {
@@ -21,6 +23,13 @@ export function ReceivableResultsGraph() {
       },
       {
         name: "Á Receber",
+        data: Array.from(
+          { length: 13 },
+          () => Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
+        ),
+      },
+      {
+        name: "Atrasado",
         data: Array.from(
           { length: 13 },
           () => Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
@@ -39,7 +48,7 @@ export function ReceivableResultsGraph() {
         background: "transparent",
       },
       tooltip: {
-        enabled: true,
+        enabled: false,
       },
       dataLabels: {
         enabled: false,
@@ -49,7 +58,7 @@ export function ReceivableResultsGraph() {
       },
       fill: {
         type: "gradient",
-        colors: ["#00A181", "#003ffd"],
+        colors: ["#00A181", "#003ffd", "#ff0000"],
         gradient: {
           shadeIntensity: 1,
           inverseColors: false,
@@ -143,23 +152,50 @@ export function ReceivableResultsGraph() {
             />
           </div>
         </div>
-        <div className="flex items-center justify-between gap-4 xl:flex-col xl:items-start xl:justify-normal xl:gap-0">
-          <div className="flex w-1/2 flex-col gap-1 xl:w-auto">
+        <div className="flex flex-wrap items-center justify-between gap-4 xl:flex-col xl:items-start xl:justify-normal xl:gap-0">
+          <div className="mx-auto flex w-auto flex-col gap-1 xl:mx-0">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#00A181]" />
               <span className="text-zinc-400 2xl:text-2xl">Recebido</span>
             </div>
             <span className="text-2xl font-semibold text-[#00A181]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
-          <div className="flex w-1/2 flex-col gap-1 xl:w-auto">
+          <div className="mx-auto flex w-auto flex-col gap-1 xl:mx-0">
             <div className="flex flex-row items-center gap-2">
               <div className="h-full w-1 bg-[#003ffd]" />
               <span className="text-zinc-400 2xl:text-2xl">Á Receber</span>
             </div>
             <span className="text-2xl font-semibold text-[#003ffd]">
-              R$ <span className="">1.322.890,00</span>
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
+            </span>
+          </div>
+          <div className="mx-auto flex w-auto flex-col gap-1 xl:mx-0">
+            <div className="flex flex-row items-center gap-2">
+              <div className="h-full w-1 bg-[#ff0000]" />
+              <span className="text-zinc-400 2xl:text-2xl">Atrasado</span>
+            </div>
+            <span className="text-2xl font-semibold text-[#ff0000]">
+              {viewAllValues ? (
+                <>
+                  R$ <span className="">1.322.890,00</span>
+                </>
+              ) : (
+                "********"
+              )}
             </span>
           </div>
         </div>

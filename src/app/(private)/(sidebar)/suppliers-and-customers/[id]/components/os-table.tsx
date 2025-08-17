@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toPay, toReceive, TransactionProps } from "@/const/transactions";
+import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 
 import {
@@ -33,6 +34,7 @@ type SortableColumn =
   | "status";
 
 export function SuppliersAndCustomersTable() {
+  const { viewAllValues } = useValueContext();
   const router = useRouter();
 
   /* ----------------------------- State & Consts ---------------------------- */
@@ -325,7 +327,7 @@ export function SuppliersAndCustomersTable() {
                       : "text-red-500",
                   )}
                 >
-                  {row.value}
+                  {viewAllValues ? row.value : "********"}
                 </TableCell>
 
                 {/* Lançamentos */}
@@ -359,7 +361,7 @@ export function SuppliersAndCustomersTable() {
                           "border-yellow-600 bg-yellow-600/20 text-yellow-600":
                             row.status === "pendente",
                           "border-zinc-400 bg-zinc-400/20 text-zinc-600":
-                            row.status === "incompleto",
+                            row.status === "rascunho",
                           "border-orange-500 bg-orange-500/20 text-orange-500":
                             row.status === "atrasado",
                         },
@@ -375,8 +377,8 @@ export function SuppliersAndCustomersTable() {
                               ? "RECEBIDO"
                               : row.status === "pendente"
                                 ? "PENDENTE"
-                                : row.status === "incompleto"
-                                  ? "INCOMPLETO"
+                                : row.status === "rascunho"
+                                  ? "RASCUNHO"
                                   : row.status === "pago"
                                     ? "PAGO"
                                     : "ATRASADO"}

@@ -5,6 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useValueContext } from "@/context/ValueContext";
 import { ApexOptions } from "apexcharts";
 import { ChevronDown } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -14,6 +15,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function Home2ResultsGraph() {
+  const { viewAllValues } = useValueContext();
   const [state] = useState({
     series: [
       {
@@ -141,7 +143,13 @@ export function Home2ResultsGraph() {
           </DropdownMenu>
         </div>
         <span className="text-2xl font-semibold text-[#00A181]">
-          R$ <span className="font-bold">1.322.890,00</span>
+          {viewAllValues ? (
+            <>
+              R$ <span className="font-bold">1.322.890,00</span>
+            </>
+          ) : (
+            "********"
+          )}
         </span>
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
@@ -150,7 +158,7 @@ export function Home2ResultsGraph() {
               <span className="text-xs text-zinc-400">Entradas</span>
             </div>
             <span className="text-sm font-semibold text-[#00A181]">
-              R$2.220.890,00
+              {viewAllValues ? "R$2.220.890,00" : "********"}
             </span>
           </div>
           <div className="flex items-center justify-between">
@@ -159,7 +167,7 @@ export function Home2ResultsGraph() {
               <span className="text-xs text-zinc-400">Saídas</span>
             </div>
             <span className="text-sm font-semibold text-[#EF4444]">
-              -R$822.890,00
+              {viewAllValues ? "-R$822.890,00" : "********"}
             </span>
           </div>
         </div>

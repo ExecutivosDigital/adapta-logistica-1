@@ -13,6 +13,7 @@ import { NewReleaseSheet } from "./new-release-sheet";
 export function HomeNewRelease() {
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
   const router = useRouter();
+
   return (
     <>
       <DropdownMenu>

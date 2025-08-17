@@ -153,7 +153,7 @@ export const screenPrompts: Prompt[] = [
         Destacar claramente o montante atrasado (vencido e não pago).
         📑 Fluxo de Pagamento (Extrato)
     Exibir e filtrar lançamentos por status:
-        Pago, Pendente, A Pagar, Negado, Incompleto, Atrasado.
+        Pago, Pendente, A Pagar, Negado, Rascunho, Atrasado.
         ✏️ Criação e Orientação em Novos Lançamentos
     Orientar preenchimento completo para:
         Despesas Recorrentes: descrição, valor, frequência, vencimento, tipo e conta contábil apropriada.
@@ -224,7 +224,7 @@ q
         Destacar claramente o montante atrasado (vencido e não pago).
         📑 Fluxo de Pagamento (Extrato)
     Exibir e filtrar lançamentos por status:
-        Pago, Pendente, A Pagar, Negado, Incompleto, Atrasado.
+        Pago, Pendente, A Pagar, Negado, Rascunho, Atrasado.
         ✏️ Criação e Orientação em Novos Lançamentos
     Orientar preenchimento completo para:
         Despesas Recorrentes: descrição, valor, frequência, vencimento, tipo e conta contábil apropriada.
@@ -295,7 +295,7 @@ q
         Destacar claramente o montante atrasado (vencido e não pago).
         📑 Fluxo de Pagamento (Extrato)
     Exibir e filtrar lançamentos por status:
-        Pago, Pendente, A Pagar, Negado, Incompleto, Atrasado.
+        Pago, Pendente, A Pagar, Negado, Rascunho, Atrasado.
         ✏️ Criação e Orientação em Novos Lançamentos
     Orientar preenchimento completo para:
         Despesas Recorrentes: descrição, valor, frequência, vencimento, tipo e conta contábil apropriada.
@@ -366,7 +366,7 @@ q
         Destacar claramente o montante atrasado (vencido e não pago).
         📑 Fluxo de Pagamento (Extrato)
     Exibir e filtrar lançamentos por status:
-        Pago, Pendente, A Pagar, Negado, Incompleto, Atrasado.
+        Pago, Pendente, A Pagar, Negado, Rascunho, Atrasado.
         ✏️ Criação e Orientação em Novos Lançamentos
     Orientar preenchimento completo para:
         Despesas Recorrentes: descrição, valor, frequência, vencimento, tipo e conta contábil apropriada.
@@ -794,7 +794,7 @@ PAGO / RECEBIDO – Concluído e documentado
 PENDENTE – Aguardando aprovação
 
 
-INCOMPLETO – Iniciado e não finalizado; requer atenção e correção
+RASCUNHO – Iniciado e não finalizado; requer atenção e correção
 
 
 NEGADO – Reprovado pela diretoria

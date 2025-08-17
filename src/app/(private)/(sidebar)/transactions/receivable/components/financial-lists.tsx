@@ -7,11 +7,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { getLocalTimeZone } from "@internationalized/date";
 import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
 export function ReceivableFinancialLists() {
+  const { viewAllValues } = useValueContext();
   const incomeList = [
     {
       id: "1",
@@ -148,7 +150,9 @@ export function ReceivableFinancialLists() {
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Recebido</span>
-              <span className="font-semibold text-[#00A181]">R$12,890.00</span>
+              <span className="font-semibold text-[#00A181]">
+                {viewAllValues ? "R$12,890.00" : "********"}
+              </span>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -180,10 +184,12 @@ export function ReceivableFinancialLists() {
                   <span>{inc.label}</span>
                 </div>
                 <span>
-                  {inc.value.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  {viewAllValues
+                    ? inc.value.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "********"}
                 </span>
               </div>
             ))}
@@ -219,7 +225,9 @@ export function ReceivableFinancialLists() {
           <div className="flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
             <div className="flex flex-col">
               <span className="text-sm">Á Receber</span>
-              <span className="font-semibold text-[#00A181]">-R$8,890.00</span>
+              <span className="font-semibold text-[#003ffd]">
+                {viewAllValues ? "-R$8,890.00" : "********"}
+              </span>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -247,14 +255,16 @@ export function ReceivableFinancialLists() {
                 key={exp.id}
               >
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-[#00A181]" />
+                  <div className="h-6 w-6 rounded-full bg-[#003ffd]" />
                   <span>{exp.label}</span>
                 </div>
                 <span>
-                  {exp.value.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  {viewAllValues
+                    ? exp.value.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "********"}
                 </span>
               </div>
             ))}

@@ -5,7 +5,7 @@ export type Status =
   | "pago"
   | "atrasado"
   | "negado"
-  | "incompleto"
+  | "rascunho"
   | "recebido";
 
 export interface TransactionProps {
@@ -67,7 +67,7 @@ export const toPay: ToPay[] = [
     type: "toPay",
     category: "Oper - Locação de Equipamentos",
     cc: "CC3456",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_pay_004",
     documents: [],
   },
@@ -159,7 +159,7 @@ export const toPay: ToPay[] = [
     type: "toPay",
     category: "Oper - Fechamento Agregados",
     cc: "CC7777",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_pay_012",
     documents: [],
   },
@@ -229,7 +229,7 @@ export const toPay: ToPay[] = [
     type: "toPay",
     category: "Oper - Contratação Fretes Terceiro",
     cc: "CC1313",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_pay_018",
     documents: [],
   },
@@ -338,7 +338,7 @@ export const toReceive: ToReceive[] = [
     type: "toReceive",
     category: "Provisão - Bloqueios e Estornos Faturamento(-)",
     cc: "CC0987",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_rec_005",
     documents: [{ id: "doc5", name: "Order", file: "order.pdf" }],
   },
@@ -393,7 +393,7 @@ export const toReceive: ToReceive[] = [
     type: "toReceive",
     category: "Receitas - Faturamento Clientes(+)",
     cc: "CC2222",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_rec_010",
     documents: [{ id: "doc7", name: "Proposal", file: "proposal.pdf" }],
   },
@@ -448,7 +448,7 @@ export const toReceive: ToReceive[] = [
     type: "toReceive",
     category: "Provisão - Bloqueios e Estornos Faturamento(-)",
     cc: "CC7777",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_rec_015",
     documents: [{ id: "doc9", name: "Enrollment", file: "enrollment.pdf" }],
   },
@@ -505,7 +505,7 @@ export const toReceive: ToReceive[] = [
     type: "toReceive",
     category: "Provisão - Bloqueios e Estornos Faturamento(-)",
     cc: "CC1313",
-    status: "incompleto",
+    status: "rascunho",
     id: "txn_rec_020",
     documents: [
       { id: "doc11", name: "Lease Agreement", file: "lease_agreement.pdf" },

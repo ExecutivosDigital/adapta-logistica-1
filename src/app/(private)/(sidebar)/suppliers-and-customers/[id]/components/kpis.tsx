@@ -1,11 +1,13 @@
 "use client";
 
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useValueContext } from "@/context/ValueContext";
 import { getLocalTimeZone } from "@internationalized/date";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
 
 export function Kpis() {
+  const { viewAllValues } = useValueContext();
   const [date, setDate] = useState<Date | null>(new Date());
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
@@ -42,7 +44,7 @@ export function Kpis() {
             kpi1
           </span>
           <span className="text-2xl font-bold text-white xl:text-3xl">
-            R$33.000,00
+            {viewAllValues ? "R$33.000,00" : "********"}
           </span>
         </div>
         <div className="flex h-40 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-md bg-[url('/static/materials-2.png')] bg-cover bg-center bg-no-repeat xl:h-60 xl:w-1/5 xl:gap-4">
@@ -50,20 +52,24 @@ export function Kpis() {
             kpi2
           </span>
           <span className="text-center text-2xl font-bold text-white xl:text-3xl">
-            XYZ
+            {viewAllValues ? "XYZ" : "********"}
           </span>
         </div>
         <div className="flex h-40 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-md bg-[url('/static/materials-3.png')] bg-cover bg-center bg-no-repeat xl:h-60 xl:w-1/5 xl:gap-4">
           <span className="bg-primary p-1 text-center text-xs font-semibold text-white xl:text-base">
             kpi3
           </span>
-          <span className="text-2xl font-bold text-white xl:text-3xl">XYZ</span>
+          <span className="text-2xl font-bold text-white xl:text-3xl">
+            {viewAllValues ? "XYZ" : "********"}
+          </span>
         </div>
         <div className="flex h-40 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-md bg-[url('/static/materials-4.png')] bg-cover bg-center bg-no-repeat xl:h-60 xl:w-1/5 xl:gap-4">
           <span className="bg-primary p-1 text-center text-xs font-semibold text-white xl:text-base">
             kpi4
           </span>
-          <span className="text-2xl font-bold text-white xl:text-3xl">XYZ</span>
+          <span className="text-2xl font-bold text-white xl:text-3xl">
+            {viewAllValues ? "XYZ" : "********"}
+          </span>
         </div>
       </div>
     </div>
