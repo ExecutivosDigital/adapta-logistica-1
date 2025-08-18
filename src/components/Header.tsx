@@ -51,7 +51,7 @@ export default function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">
-                <span className="text-primary w-60 truncate font-semibold">
+                <span className="text-primary w-40 truncate font-semibold xl:w-60">
                   {selectedBranch?.name}
                 </span>
                 <ChevronDown className="text-zinc-400" />
