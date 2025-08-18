@@ -679,7 +679,7 @@ Defina a data correta para cobrança.
 
 Após isso, analisarei automaticamente as regras específicas de cobrança para Transportes Brasil, recomendarei a melhor opção bancária (PIX, boleto) e, no dia agendado, enviarei automaticamente toda a documentação ao cliente.”
 `,
-    screen: "/create-receivable",
+    screen: "/receivable/new",
   },
   {
     id: "general",

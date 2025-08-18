@@ -55,15 +55,16 @@ export default function PurchaseApproval() {
         <span className="text-lg font-semibold lg:text-xl">
           Aprovação de Compras
         </span>
+        <div className="w-full px-8 xl:px-0">
+          <Stepper
+            steps={steps}
+            current={currentStep}
+            onStepClick={(i) => setCurrentStep(i)}
+            className="mb-4"
+          />
+        </div>
 
-        <Stepper
-          steps={steps}
-          current={currentStep}
-          onStepClick={(i) => setCurrentStep(i)}
-          className="mb-4"
-        />
-
-        <div className="flex items-center gap-4">
+        <div className="mt-10 flex w-full flex-col items-center justify-between gap-2 border-b border-b-zinc-200 pb-2 xl:h-12 xl:flex-row">
           <OrangeButton icon={<ClipboardList />}>Ver Todos</OrangeButton>
         </div>
 
@@ -90,34 +91,36 @@ export default function PurchaseApproval() {
           )}
         </div>
 
-        {currentStep === 0 ? (
-          <RequestTable
-            openJustifyModal={() => {
-              setShowNewPurchaseRequestModal(true);
-              setShowNewPurchaseRequestModalEditable(false);
-            }}
-            openEditModal={() => {
-              setShowNewPurchaseRequestModal(true);
-              setShowNewPurchaseRequestModalEditable(false);
-            }}
-            openDeleteModal={() => setShowDeleteRequestModal(true)}
-          />
-        ) : currentStep === 1 ? (
-          <ApprovalTable
-            openModal={handleOpenModal}
-            openJustifyModal={() => setShowNewPurchaseRequestModal(true)}
-          />
-        ) : currentStep === 2 ? (
-          <BudgetApprovalTable
-            openModal={handleOpenModal}
-            openJustifyModal={() => setShowNewPurchaseApprovalModal(true)}
-          />
-        ) : (
-          <FinalApprovalTable
-            openModal={handleOpenModal}
-            openJustifyModal={() => setShowNewPurchaseBudgetModal(true)}
-          />
-        )}
+        <div className="w-full">
+          {currentStep === 0 ? (
+            <RequestTable
+              openJustifyModal={() => {
+                setShowNewPurchaseRequestModal(true);
+                setShowNewPurchaseRequestModalEditable(false);
+              }}
+              openEditModal={() => {
+                setShowNewPurchaseRequestModal(true);
+                setShowNewPurchaseRequestModalEditable(false);
+              }}
+              openDeleteModal={() => setShowDeleteRequestModal(true)}
+            />
+          ) : currentStep === 1 ? (
+            <ApprovalTable
+              openModal={handleOpenModal}
+              openJustifyModal={() => setShowNewPurchaseRequestModal(true)}
+            />
+          ) : currentStep === 2 ? (
+            <BudgetApprovalTable
+              openModal={handleOpenModal}
+              openJustifyModal={() => setShowNewPurchaseApprovalModal(true)}
+            />
+          ) : (
+            <FinalApprovalTable
+              openModal={handleOpenModal}
+              openJustifyModal={() => setShowNewPurchaseBudgetModal(true)}
+            />
+          )}
+        </div>
       </div>
       {showNewPurchaseRequestModal && (
         <NewPurchaseRequestModal

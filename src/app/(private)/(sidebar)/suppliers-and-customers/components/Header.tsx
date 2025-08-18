@@ -28,10 +28,10 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
           fornecedores <br /> cadastrados em sua filial
         </p>
       </div>
-      <div className="z-[1] -mb-2 flex h-20 w-full flex-row items-center justify-center gap-8 rounded-t-full bg-white">
+      <div className="z-[1] -mb-2 flex h-20 w-full flex-row gap-8 overflow-x-scroll bg-white xl:items-center xl:justify-center xl:overflow-x-auto xl:rounded-t-full">
         <button
           onClick={() => setSelectedToolType(0)}
-          className={`flex-row-gap-2 flex items-center gap-2 py-2 ${
+          className={`flex w-max flex-row items-center gap-2 py-2 xl:w-auto ${
             selectedToolType === 0
               ? "text-primary border-b-primary border-b-2 font-bold"
               : "text-text border-b-2 border-b-transparent"
@@ -42,7 +42,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
         </button>
         <button
           onClick={() => setSelectedToolType(1)}
-          className={`flex-row-gap-2 flex items-center gap-2 py-2 ${
+          className={`flex w-max flex-row items-center gap-2 py-2 xl:w-auto ${
             selectedToolType === 1
               ? "text-primary border-b-primary border-b-2 font-bold"
               : "text-text border-b-2 border-b-transparent"
@@ -53,7 +53,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
         </button>
         <button
           onClick={() => setSelectedToolType(2)}
-          className={`flex-row-gap-2 flex items-center gap-2 py-2 ${
+          className={`flex w-max flex-row items-center gap-2 py-2 xl:w-auto ${
             selectedToolType === 2
               ? "text-primary border-b-primary border-b-2 font-bold"
               : "text-text border-b-2 border-b-transparent"
@@ -64,7 +64,7 @@ export function Header({ selectedToolType, setSelectedToolType }: HeaderProps) {
         </button>
         <button
           onClick={() => setSelectedToolType(3)}
-          className={`flex-row-gap-2 flex items-center gap-2 py-2 ${
+          className={`flex w-max flex-row items-center gap-2 py-2 xl:w-auto ${
             selectedToolType === 3
               ? "text-primary border-b-primary border-b-2 font-bold"
               : "text-text border-b-2 border-b-transparent"

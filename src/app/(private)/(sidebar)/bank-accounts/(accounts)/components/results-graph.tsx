@@ -118,8 +118,8 @@ export function Home2ResultsGraph() {
   });
 
   return (
-    <div className="flex h-full w-full justify-between gap-2">
-      <div className="flex h-full w-80 flex-col justify-between border-r border-r-zinc-200 p-2">
+    <div className="flex h-full w-full flex-col justify-between gap-2 xl:flex-row">
+      <div className="flex h-full w-full flex-col justify-between p-2 xl:w-80 xl:border-r xl:border-r-zinc-200">
         <div className="flex items-center justify-between">
           <span className="w-max text-sm font-semibold">Res. Consolidado</span>
           <DropdownMenu>

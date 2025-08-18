@@ -37,8 +37,8 @@ export function NewPurchaseBudgetModal({
           <div className="relative z-50 flex max-h-[85vh] w-max flex-col items-center justify-center">
             <div
               className={twMerge(
-                "relative z-20 flex w-full max-w-[40vw] flex-col items-center justify-start overflow-hidden rounded-md border bg-white shadow-md",
-                "scrollbar-hide h-[85vh] w-[40vw] overflow-y-scroll rounded-2xl border-none",
+                "relative z-20 flex w-full flex-col items-center justify-start overflow-hidden rounded-md border bg-white shadow-md xl:max-w-[40vw]",
+                "scrollbar-hide w-[95vw] overflow-y-scroll rounded-2xl border-none xl:h-full xl:w-[40vw]",
               )}
             >
               <div className="flex w-full flex-col">
@@ -58,15 +58,15 @@ export function NewPurchaseBudgetModal({
                     <X className="text-zinc-400" />
                   </button>
                 </div>
-                <div className="flex h-full w-full flex-col px-8 shadow-[0_-1px_10px_0_rgba(0,0,0,0.2)]">
-                  <div className="flex w-full items-center justify-between border-b border-b-zinc-200 px-6 py-4 text-black">
+                <div className="flex h-full w-full flex-col px-2 shadow-[0_-1px_10px_0_rgba(0,0,0,0.2)] xl:px-8">
+                  <div className="flex w-full items-center justify-between border-b border-b-zinc-200 px-2 py-2 text-black xl:px-6 xl:py-4">
                     <span className="font-semibold">Orçamento</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-zinc-400">12/06/2025</span>
                       <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
                     </div>
                   </div>
-                  <div className="flex w-full flex-col gap-4 p-6">
+                  <div className="flex w-full flex-col gap-2 p-2 xl:gap-4 xl:p-6">
                     <div className="flex items-center gap-4">
                       <div className="border-primary text-primary bg-primary/20 flex h-12 w-12 items-center justify-center rounded-full border">
                         <Plus />
@@ -125,10 +125,10 @@ export function NewPurchaseBudgetModal({
                     </div>
                   </div>
                 </div>
-                <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-4 px-8">
+                <div className="flex h-20 w-full items-center justify-between gap-2 border-t border-t-zinc-200 p-2 px-2 xl:p-4 xl:px-8">
                   <button
                     onClick={onHide}
-                    className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-8"
+                    className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-200 px-2 xl:px-8"
                   >
                     <X className="text-red-500" />
                     Salvar rascunho

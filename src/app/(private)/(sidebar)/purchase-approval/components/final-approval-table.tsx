@@ -1,6 +1,5 @@
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -151,174 +150,171 @@ export function FinalApprovalTable({
 
   return (
     <div className="flex max-h-[80vh] flex-1 py-4">
-      <ScrollArea className="w-full">
-        <Table className="border-collapse">
-          <TableHeader>
-            <TableRow>
-              {columns.map((column) => (
-                <TableHead
-                  key={column.key}
-                  className={cn(
-                    "h-12 cursor-pointer text-sm font-normal text-zinc-500",
-                  )}
-                  onClick={() =>
-                    column.sortable && handleSort(column.key as SortableColumn)
-                  }
-                >
-                  <div
-                    className={cn(
-                      "flex w-max items-center gap-2",
-                      column.key === "sent" && "mx-auto",
-                    )}
-                  >
-                    <div className="flex flex-col">
-                      {column.label}
-                      <span className="text-xs">
-                        {column.key === "value" && "Quantidade"}
-                      </span>
-                    </div>
-                    {column.sortable &&
-                      getSortIcon(column.key as SortableColumn)}
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={`row-${row.id}`}
-                className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
+      <Table wrapperClass="w-full" className="border-collapse">
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead
+                key={column.key}
+                className={cn(
+                  "h-12 cursor-pointer text-sm font-normal text-zinc-500",
+                )}
+                onClick={() =>
+                  column.sortable && handleSort(column.key as SortableColumn)
+                }
               >
-                <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
-                  <div className="flex h-full w-full items-center gap-2 text-start">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-400">
-                      <EllipsisVertical className="h-4 w-4 text-zinc-400" />
-                    </div>
-                    {row.sent}
-                  </div>
-                </TableCell>
-                <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
-                  <div className="flex h-full w-full items-center gap-2 text-start">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md border border-red-500">
-                      <Image
-                        src={"/icons/flag.svg"}
-                        alt=""
-                        width={40}
-                        height={40}
-                        className="h-4 w-4 fill-red-500 text-red-500"
-                      />
-                    </div>
-                    {row.deadline}
-                  </div>
-                </TableCell>
-                <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
-                  <div className="flex items-center gap-4 text-center">
-                    {row.item}
-                    {row.tag && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              className={cn(
-                                "flex w-20 flex-row items-center justify-between gap-1 rounded-md p-1 text-center text-xs font-semibold",
-                                row.tag === "extreme"
-                                  ? "bg-red-500 text-white"
-                                  : row.tag === "high"
-                                    ? "bg-yellow-500 text-black"
-                                    : row.tag === "medium"
-                                      ? "bg-orange-500 text-white"
-                                      : row.tag === "low"
-                                        ? "bg-blue-500 text-white"
-                                        : "",
-                              )}
-                            >
-                              <span className="flex-1 text-center">
-                                {row.tag === "extreme"
-                                  ? "Urgente"
-                                  : row.tag === "high"
-                                    ? "Alta"
-                                    : row.tag === "medium"
-                                      ? "Média"
-                                      : row.tag === "low"
-                                        ? "Baixa"
-                                        : ""}
-                              </span>
-                              <div className="flex h-4 w-4 items-center justify-center rounded-full border border-white text-xs">
-                                ?
-                              </div>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="top"
-                            className="bg-transparent p-0"
-                          >
-                            <span
-                              className={cn(
-                                "min-w-44 rounded-md p-1 text-xs font-semibold",
-                                row.tag === "extreme"
-                                  ? "bg-red-500 text-white"
-                                  : row.tag === "high"
-                                    ? "bg-yellow-500 text-black"
-                                    : row.tag === "medium"
-                                      ? "bg-orange-500 text-white"
-                                      : row.tag === "low"
-                                        ? "bg-blue-500 text-white"
-                                        : "",
-                              )}
-                            >
-                              {row.tag === "extreme"
-                                ? "Estritamente Urgente !!"
-                                : row.tag === "high"
-                                  ? "Alta Prioridade !!"
-                                  : row.tag === "medium"
-                                    ? "Média Prioridade"
-                                    : row.tag === "low"
-                                      ? "Baixa Prioridade"
-                                      : ""}
-                            </span>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
+                <div
+                  className={cn(
+                    "flex w-max items-center gap-2",
+                    column.key === "sent" && "mx-auto",
+                  )}
+                >
                   <div className="flex flex-col">
-                    {viewAllValues
-                      ? row.value.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })
-                      : "********"}
+                    {column.label}
                     <span className="text-xs">
-                      x {row.amount} unidade{row.amount > 1 && "s"}
+                      {column.key === "value" && "Quantidade"}
                     </span>
                   </div>
-                </TableCell>
-                <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
-                  <button
-                    onClick={openJustifyModal}
-                    className="cursor-pointer font-semibold underline"
-                  >
-                    Ver Justificativa
-                  </button>
-                </TableCell>
-                <TableCell className="h-full py-0.5 text-start text-sm font-normal whitespace-nowrap">
-                  <div className="flex h-full w-full items-center">
-                    <span className="mr-auto w-max">{row.who}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
-                  <OrangeButton onClick={openModal} className="text-xs">
-                    Enviar orçamento
-                  </OrangeButton>
-                </TableCell>
-              </TableRow>
+                  {column.sortable && getSortIcon(column.key as SortableColumn)}
+                </div>
+              </TableHead>
             ))}
-          </TableBody>
-        </Table>
-      </ScrollArea>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={`row-${row.id}`}
+              className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
+            >
+              <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
+                <div className="flex h-full w-full items-center gap-2 text-start">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-400">
+                    <EllipsisVertical className="h-4 w-4 text-zinc-400" />
+                  </div>
+                  {row.sent}
+                </div>
+              </TableCell>
+              <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
+                <div className="flex h-full w-full items-center gap-2 text-start">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md border border-red-500">
+                    <Image
+                      src={"/icons/flag.svg"}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="h-4 w-4 fill-red-500 text-red-500"
+                    />
+                  </div>
+                  {row.deadline}
+                </div>
+              </TableCell>
+              <TableCell className="py-0.5 text-sm font-normal whitespace-nowrap">
+                <div className="flex items-center gap-4 text-center">
+                  {row.item}
+                  {row.tag && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className={cn(
+                              "flex w-20 flex-row items-center justify-between gap-1 rounded-md p-1 text-center text-xs font-semibold",
+                              row.tag === "extreme"
+                                ? "bg-red-500 text-white"
+                                : row.tag === "high"
+                                  ? "bg-yellow-500 text-black"
+                                  : row.tag === "medium"
+                                    ? "bg-orange-500 text-white"
+                                    : row.tag === "low"
+                                      ? "bg-blue-500 text-white"
+                                      : "",
+                            )}
+                          >
+                            <span className="flex-1 text-center">
+                              {row.tag === "extreme"
+                                ? "Urgente"
+                                : row.tag === "high"
+                                  ? "Alta"
+                                  : row.tag === "medium"
+                                    ? "Média"
+                                    : row.tag === "low"
+                                      ? "Baixa"
+                                      : ""}
+                            </span>
+                            <div className="flex h-4 w-4 items-center justify-center rounded-full border border-white text-xs">
+                              ?
+                            </div>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="top"
+                          className="bg-transparent p-0"
+                        >
+                          <span
+                            className={cn(
+                              "min-w-44 rounded-md p-1 text-xs font-semibold",
+                              row.tag === "extreme"
+                                ? "bg-red-500 text-white"
+                                : row.tag === "high"
+                                  ? "bg-yellow-500 text-black"
+                                  : row.tag === "medium"
+                                    ? "bg-orange-500 text-white"
+                                    : row.tag === "low"
+                                      ? "bg-blue-500 text-white"
+                                      : "",
+                            )}
+                          >
+                            {row.tag === "extreme"
+                              ? "Estritamente Urgente !!"
+                              : row.tag === "high"
+                                ? "Alta Prioridade !!"
+                                : row.tag === "medium"
+                                  ? "Média Prioridade"
+                                  : row.tag === "low"
+                                    ? "Baixa Prioridade"
+                                    : ""}
+                          </span>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
+                <div className="flex flex-col">
+                  {viewAllValues
+                    ? row.value.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "********"}
+                  <span className="text-xs">
+                    x {row.amount} unidade{row.amount > 1 && "s"}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
+                <button
+                  onClick={openJustifyModal}
+                  className="cursor-pointer font-semibold underline"
+                >
+                  Ver Justificativa
+                </button>
+              </TableCell>
+              <TableCell className="h-full py-0.5 text-start text-sm font-normal whitespace-nowrap">
+                <div className="flex h-full w-full items-center">
+                  <span className="mr-auto w-max">{row.who}</span>
+                </div>
+              </TableCell>
+              <TableCell className="py-0.5 text-start text-sm font-normal whitespace-nowrap">
+                <OrangeButton onClick={openModal} className="text-xs">
+                  Enviar orçamento
+                </OrangeButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

@@ -93,8 +93,8 @@ export function NewPurchaseApprovalModal({
           <div className="relative z-50 flex max-h-[85vh] w-max flex-col items-center justify-center">
             <div
               className={twMerge(
-                "relative z-20 flex w-full max-w-[55vw] flex-col items-center justify-start overflow-hidden rounded-md border bg-white shadow-md",
-                "scrollbar-hide h-[85vh] w-[55vw] overflow-y-scroll rounded-2xl border-none",
+                "relative z-20 flex w-[95vw] flex-col items-center justify-start overflow-hidden rounded-md border bg-white shadow-md xl:w-full xl:max-w-[55vw]",
+                "scrollbar-hide overflow-y-scroll rounded-2xl border-none xl:h-full xl:w-[55vw]",
               )}
             >
               <div className="flex w-full flex-col">
@@ -115,13 +115,13 @@ export function NewPurchaseApprovalModal({
                   </button>
                 </div>
                 <div className="w-full px-8">
-                  <div className="flex h-full w-full justify-between bg-[#FCF0EA]">
-                    <div className="flex h-full w-[45%] flex-col items-start justify-start bg-white">
-                      <div className="flex h-full w-full flex-col gap-4 px-6 pt-2 pb-6 text-zinc-400">
+                  <div className="flex h-full w-full flex-col justify-between bg-[#FCF0EA] xl:flex-row">
+                    <div className="flex h-full w-full flex-col items-start justify-start bg-white xl:w-[45%]">
+                      <div className="flex h-full w-full flex-col gap-2 px-2 pt-2 pb-6 text-zinc-400 xl:gap-4 xl:px-6">
                         <div className="flex w-full flex-col">
                           <div className="flex w-full items-center justify-between text-black">
                             <span className="font-semibold">
-                              asd s Nome da Unidade de Negócio
+                              Nome da Unidade de Negócio
                             </span>
                             <div className="flex items-center gap-1 rounded-md border border-zinc-200 px-2 py-1 text-sm font-semibold">
                               <span>Ajustar</span>
@@ -190,8 +190,8 @@ export function NewPurchaseApprovalModal({
                         />
                       </div>
                     </div>
-                    <div className="flex h-full w-1/2 flex-col items-start justify-start bg-white">
-                      <div className="flex h-full w-full flex-col gap-4 px-6 pt-2 pb-6 text-zinc-400">
+                    <div className="flex h-full w-full flex-col items-start justify-start bg-white xl:w-1/2">
+                      <div className="flex h-full w-full flex-col gap-2 px-2 pt-2 pb-6 text-zinc-400 xl:gap-4 xl:px-6">
                         <div className="flex w-full items-center justify-between text-black">
                           <span className="font-semibold">
                             Aprovação de Compra
@@ -264,10 +264,10 @@ export function NewPurchaseApprovalModal({
                   </div>
                 </div>
 
-                <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-4 px-8 shadow-[0_-1px_10px_0_rgba(0,0,0,0.1)]">
+                <div className="flex h-20 w-full items-center justify-between border-t border-t-zinc-200 p-2 px-2 shadow-[0_-1px_10px_0_rgba(0,0,0,0.1)] xl:p-4 xl:px-8">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 text-xs text-green-600 italic">
-                      <CircleDollarSign className="h-5 w-5 fill-green-600/50" />
+                      <CircleDollarSign className="h-5 max-h-5 min-h-5 w-5 max-w-5 min-w-5 fill-green-600/50" />
                       <span className="font-semibold">
                         Plano de Contas: {""}{" "}
                         <span className="font-normal">
@@ -276,7 +276,7 @@ export function NewPurchaseApprovalModal({
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-red-600 italic">
-                      <Info className="h-5 w-5 fill-red-600 text-white" />
+                      <Info className="h-5 max-h-5 min-h-5 w-5 max-w-5 min-w-5 fill-red-600 text-white" />
                       <span>
                         Ajuste o Valor para encaixar no plano de contas: {""}
                         <span className="font-semibold">R$ 2.000,00</span>

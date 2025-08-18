@@ -223,7 +223,7 @@ export function SuppliersAndCustomersTable() {
   return (
     <div className="flex flex-col">
       {/* --------------------------- Header --------------------------- */}
-      <div className="flex w-full items-center justify-between">
+      <div className="flex w-full flex-col items-center justify-between xl:flex-row">
         <div className="flex items-center gap-2">
           <span className="font-semibold">Histórico de Pagamentos</span>
           <button

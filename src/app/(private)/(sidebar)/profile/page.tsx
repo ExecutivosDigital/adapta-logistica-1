@@ -2,7 +2,7 @@ import { Pencil } from "lucide-react";
 
 export default function profile() {
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
+    <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">Meu Perfil</span>
       <div className="w-full rounded-xl border border-gray-300">
         <div className="flex w-full justify-between px-6 py-4">

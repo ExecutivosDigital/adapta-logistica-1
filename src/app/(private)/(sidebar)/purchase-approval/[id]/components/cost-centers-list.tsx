@@ -163,11 +163,11 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
       </div>
 
       <ScrollArea className="h-40 w-full">
-        <div className="grid w-full grid-cols-2 gap-4">
+        <div className="grid w-full grid-cols-2 gap-2 xl:gap-4">
           {data.costCenters.map((item, index) => (
             <div
               key={index}
-              className={`flex w-full flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-2 ${
+              className={`col-span-1 flex w-full flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-1 xl:px-3 xl:py-2 ${
                 item.locked
                   ? "border-primary bg-primary/20 text-primary"
                   : "border-zinc-200"
@@ -182,7 +182,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex w-full items-center gap-2">
                 <button
                   onClick={() => toggleCostCenterLock(index)}
                   className={`rounded p-1 transition-colors ${
@@ -221,7 +221,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
                     handleCostCenterValueChange(index, e.target.value)
                   }
                   disabled={item.locked}
-                  className={`rounded border px-2 py-1 text-right focus:outline-none ${
+                  className={`w-full rounded border px-2 py-1 text-right focus:outline-none ${
                     item.locked
                       ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
                       : "focus:border-primary border-zinc-300"

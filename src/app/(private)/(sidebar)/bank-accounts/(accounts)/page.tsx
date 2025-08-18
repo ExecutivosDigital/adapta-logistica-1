@@ -22,7 +22,7 @@ export default function Home2() {
     },
   };
   return (
-    <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
+    <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">Contas Bancárias</span>
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12">

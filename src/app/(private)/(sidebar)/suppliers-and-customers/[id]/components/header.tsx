@@ -2,8 +2,6 @@
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, Edit, LayersIcon } from "lucide-react";
@@ -43,17 +41,6 @@ export function Header() {
               <span className="hidden xl:block">Dados Cadastrais</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="left">
-            <DropdownMenuItem>
-              <span>Criar OS</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Editar Equipamento</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Excluir Equipamento</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </div>

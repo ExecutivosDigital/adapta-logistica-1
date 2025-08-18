@@ -42,7 +42,7 @@ export function NewPurchaseRequestModal({
           <div className="relative z-50 flex max-h-[85vh] w-max flex-col items-center justify-center">
             <div
               className={twMerge(
-                "relative z-20 flex w-full max-w-[50vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-md border bg-white px-2 py-4 shadow-md",
+                "relative z-20 flex w-[95vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-md border bg-white px-2 py-4 shadow-md xl:w-full xl:max-w-[50vw]",
                 "scrollbar-hide overflow-y-scroll rounded-2xl border-none px-0",
               )}
             >

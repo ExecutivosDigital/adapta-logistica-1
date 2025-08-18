@@ -69,10 +69,10 @@ export default function Home2() {
     branchNumber: "",
   });
   return (
-    <div className="border-primary flex h-full w-full flex-col gap-2 overflow-hidden rounded-2xl border lg:gap-4">
-      <div className="grid w-full flex-1 grid-cols-12 gap-8">
-        <div className="col-span-7 flex w-full flex-col gap-8 p-4">
-          <section className="flex-1 px-12 py-10">
+    <div className="border-primary flex h-full w-full flex-col gap-2 overflow-hidden rounded-2xl border pb-20 lg:gap-4 xl:pb-0">
+      <div className="grid w-full flex-1 grid-cols-12 gap-2 xl:gap-8">
+        <div className="col-span-12 flex w-full flex-col gap-2 p-2 xl:col-span-7 xl:gap-8 xl:p-4">
+          <section className="flex-1 px-4 py-2 xl:px-12 xl:py-10">
             <h2 className="mb-6 text-xl font-semibold">
               Criação da Unidade de Negócio
             </h2>
@@ -423,7 +423,7 @@ export default function Home2() {
             </div>
           </section>
         </div>
-        <div className="bg-primary col-span-5 flex h-full w-full flex-col items-center justify-center gap-8">
+        <div className="bg-primary col-span-12 flex h-full w-full flex-col items-center justify-center gap-2 p-2 xl:col-span-5 xl:gap-8 xl:p-0">
           <div className="relative flex">
             <Image
               src="/card.png"
