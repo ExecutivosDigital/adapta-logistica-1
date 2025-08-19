@@ -1,7 +1,12 @@
 "use client";
 import { cn } from "@/utils/cn";
-import { Home, MoveDownLeft, MoveUpRight } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { FooterHome } from "../../public/icons/footer-home";
+import { FooterHomeActive } from "../../public/icons/footer-home-active";
+import { FooterPayable } from "../../public/icons/footer-payable";
+import { FooterPayableActive } from "../../public/icons/footer-payable-active";
+import { FooterReceivable } from "../../public/icons/footer-receivable";
+import { FooterReceivableActive } from "../../public/icons/footer-receivable-active";
 
 export function Footer() {
   const router = useRouter();
@@ -12,33 +17,40 @@ export function Footer() {
       <div
         onClick={() => router.push("/transactions/receivable")}
         className={cn(
-          "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border transition duration-200",
-          (pathname === "/transactions/receivable" ||
-            pathname.includes("/transactions/receivable")) &&
-            "bg-primary border-white text-white",
+          "flex h-7 w-7 cursor-pointer items-center justify-center rounded-full transition duration-200",
         )}
       >
-        <MoveDownLeft />
+        {pathname === "/transactions/receivable" ||
+        pathname.includes("/transactions/receivable") ? (
+          <FooterReceivableActive className="text-primary" />
+        ) : (
+          <FooterReceivable className="text-primary" />
+        )}
       </div>
       <div
         onClick={() => router.push("/")}
         className={cn(
-          "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border p-1 transition duration-200",
-          pathname === "/" && "bg-primary border-white text-white",
+          "flex h-7 w-7 cursor-pointer items-center justify-center rounded-full transition duration-200",
         )}
       >
-        <Home />
+        {pathname === "/" ? (
+          <FooterHomeActive className="text-primary" />
+        ) : (
+          <FooterHome className="text-primary" />
+        )}
       </div>
       <div
         onClick={() => router.push("/transactions/payable")}
         className={cn(
-          "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border transition duration-200",
-          (pathname === "/transactions/payable" ||
-            pathname.includes("/transactions/payable")) &&
-            "bg-primary border-white text-white",
+          "flex h-7 w-7 cursor-pointer items-center justify-center rounded-full transition duration-200",
         )}
       >
-        <MoveUpRight />
+        {pathname === "/transactions/payable" ||
+        pathname.includes("/transactions/payable") ? (
+          <FooterPayableActive className="text-primary" />
+        ) : (
+          <FooterPayable className="text-primary" />
+        )}
       </div>
     </div>
   );
