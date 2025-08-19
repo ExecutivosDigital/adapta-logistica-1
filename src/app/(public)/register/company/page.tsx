@@ -13,7 +13,6 @@ import { maskCep, maskCnpj } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -22,16 +21,9 @@ import { z } from "zod";
 
 interface CnpjCardResponse {
   fullName: string;
-  fantasyName: string;
   cnpj: string;
-  openDate: string;
-  juridicNature: string;
-  mainActivity: string;
-  secondaryActivities: string;
-  registerSituation: string;
-  contactNumber: string;
-  situationDate: string;
   email: string;
+  contactNumber: string;
   address: {
     address: string;
     number: string;
@@ -42,34 +34,32 @@ interface CnpjCardResponse {
   };
 }
 
+type Regime = { id: string; code: string; name: string };
+
 const FormSchema = z.object({
-  razaoSocial: z.string().min(1, "Razão social obrigatória"),
+  nomeEmpresa: z.string().min(1, "Nome da empresa obrigatório"),
   cnpj: z
     .string()
     .regex(
       /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/,
       "Formato CNPJ 00.000.000/0000-00",
     ),
-  cep: z.string().regex(/\d{5}-\d{3}/, "Formato CEP 00000-000"),
-  cidade: z.string().min(1, "Cidade obrigatória"),
   logradouro: z.string().min(1, "Logradouro obrigatório"),
+  cep: z.string().regex(/\d{5}-\d{3}/, "CEP inválido"),
+  cidade: z.string().min(1, "Cidade obrigatória"),
   bairro: z.string().min(1, "Bairro obrigatório"),
   uf: z.string().length(2, "UF inválida"),
   numero: z.string().min(1, "Número obrigatório"),
   complemento: z.string().nullable().optional(),
-  qtdUsuarios: z.coerce.number().min(0, "Qtd. Usuários obrigatória"),
-  qtdFiliais: z.coerce.number().min(0, "Qtd. Filiais obrigatória"),
-  inscEstadual: z.string().nullable().optional(),
-  inscMunicipal: z.string().nullable().optional(),
+  tributaryRegimeId: z.string().min(1, "Regime tributário obrigatório"),
+  stateRegistration: z.string().nullable().optional(),
 });
 
-export type ContratanteFormData = z.infer<typeof FormSchema>;
-
-type Regime = { id: string; code: string; name: string };
+export type CompanyFormData = z.infer<typeof FormSchema>;
 
 const onlyDigits = (v: string) => (v ?? "").replace(/\D/g, "");
 
-type HoldingPayload = {
+type CompanyPayload = {
   address: string;
   city: string;
   cnpj: string;
@@ -83,53 +73,48 @@ type HoldingPayload = {
   stateRegistration?: string | null;
 };
 
-function toHoldingPayload(
-  values: ContratanteFormData,
-  tributaryRegimeId: string,
-): HoldingPayload {
+function toCompanyPayload(values: CompanyFormData): CompanyPayload {
   return {
     address: values.logradouro.trim(),
     city: values.cidade.trim(),
     cnpj: onlyDigits(values.cnpj),
-    name: values.razaoSocial.trim(),
+    name: values.nomeEmpresa.trim(),
     neighborhood: values.bairro.trim(),
     number: String(values.numero ?? "").trim(),
     postalCode: onlyDigits(values.cep),
     state: values.uf.trim().toUpperCase(),
-    tributaryRegimeId,
+    tributaryRegimeId: values.tributaryRegimeId.trim(),
     complement: values.complemento?.trim() || null,
-    stateRegistration: values.inscEstadual?.trim() || null,
+    stateRegistration: values.stateRegistration?.trim() || null,
   };
 }
 
-export default function CadastroContratanteForm() {
-  const router = useRouter();
+export default function CadastroCompanyForm() {
   const { PostAPI, GetAPI } = useApiContext();
 
-  const form = useForm<ContratanteFormData>({
+  const form = useForm<CompanyFormData>({
     resolver: zodResolver(FormSchema),
     shouldFocusError: false,
     mode: "onBlur",
     defaultValues: {
-      razaoSocial: "",
+      nomeEmpresa: "",
       cnpj: "",
+      logradouro: "",
       cep: "",
       cidade: "",
-      logradouro: "",
       bairro: "",
       uf: "",
       numero: "",
       complemento: "",
-      qtdUsuarios: 0,
-      qtdFiliais: 0,
-      inscEstadual: "",
-      inscMunicipal: "",
+      tributaryRegimeId: "",
+      stateRegistration: "",
     },
   });
 
   const { control, handleSubmit, setValue, watch } = form;
 
   const [loadingCard, setLoadingCard] = useState(false);
+  const [regimes, setRegimes] = useState<Regime[]>([]);
   const openaiRef = useRef<OpenAI | null>(null);
   if (!openaiRef.current) {
     openaiRef.current = new OpenAI({
@@ -141,14 +126,14 @@ export default function CadastroContratanteForm() {
   const summaryAssistant = "asst_Q6Xw1vrYYzYrF9c4m3rsnvDx";
 
   const fillWithSummary = (summary: CnpjCardResponse) => {
-    setValue("razaoSocial", summary.fullName);
+    setValue("nomeEmpresa", summary.fullName);
     setValue("cnpj", maskCnpj(summary.cnpj));
-    setValue("cep", maskCep(summary.address.postalCode));
     setValue("logradouro", summary.address.address);
     setValue("numero", summary.address.number);
     setValue("bairro", summary.address.province);
     setValue("cidade", summary.address.city);
     setValue("uf", summary.address.state);
+    setValue("cep", maskCep(summary.address.postalCode));
   };
 
   useEffect(() => {
@@ -176,6 +161,19 @@ export default function CadastroContratanteForm() {
     return () => sub.unsubscribe();
   }, [watch, setValue]);
 
+  useEffect(() => {
+    (async () => {
+      const res = await GetAPI("/tributary-regime", true);
+      console.log("resposta da api get tributary", res);
+
+      if (res?.status === 200 && Array.isArray(res.body?.regimes)) {
+        setRegimes(res.body.regimes as Regime[]);
+      } else {
+        toast.error(res?.body?.message ?? "Não foi possível carregar regimes.");
+      }
+    })();
+  }, [GetAPI]);
+
   const handleMask =
     (fn: (v: string) => string, onChange: (v: string) => void) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -198,10 +196,7 @@ export default function CadastroContratanteForm() {
               role: "user",
               content: "transcreva",
               attachments: [
-                {
-                  file_id: sendFile.id,
-                  tools: [{ type: "file_search" }],
-                },
+                { file_id: sendFile.id, tools: [{ type: "file_search" }] },
               ],
             },
           ],
@@ -230,7 +225,8 @@ export default function CadastroContratanteForm() {
     }
   }
 
-  const FieldError = ({ name }: { name: keyof ContratanteFormData }) => {
+  type FieldName = keyof CompanyFormData;
+  const FieldError = ({ name }: { name: FieldName }) => {
     const message = form.formState.errors[name]?.message as string | undefined;
     return (
       <div className="absolute -bottom-4 w-full">
@@ -252,11 +248,7 @@ export default function CadastroContratanteForm() {
     index: number;
     lastIndex: number;
   }) => (
-    <div
-      className={cn(
-        "- flex min-w-[calc(50%-14px)] items-center gap-4 px-6 py-5",
-      )}
-    >
+    <div className="flex min-w-[calc(50%-14px)] items-center gap-4 px-6 py-5">
       <div
         className={cn(
           "border-r-primary/50 grid w-full grid-cols-12 items-center gap-4",
@@ -271,54 +263,28 @@ export default function CadastroContratanteForm() {
     </div>
   );
 
-  const fields: (readonly [
-    keyof ContratanteFormData,
-    string,
-    ((v: string) => string)?,
-  ])[] = [
-    ["razaoSocial", "Razão Social"],
+  const fields: (readonly [FieldName, string, ((v: string) => string)?])[] = [
+    ["nomeEmpresa", "Nome da Empresa"],
     ["cnpj", "CNPJ", maskCnpj],
     ["cep", "CEP", maskCep],
-    ["cidade", "Cidade"],
     ["logradouro", "Logradouro"],
-    ["bairro", "Bairro"],
-    ["uf", "UF"],
     ["numero", "Número"],
+    ["bairro", "Bairro"],
+    ["cidade", "Cidade"],
+    ["uf", "UF"],
+    ["tributaryRegimeId", "Regime Tributário"],
     ["complemento", "Complemento"],
-    ["qtdUsuarios", "Qnt. Usuários"],
-    ["qtdFiliais", "Qnt. Filiais"],
-    ["inscEstadual", "Insc. Estadual"],
-    ["inscMunicipal", "Insc. Municipal"],
+    ["stateRegistration", "Inscrição Estadual"],
   ];
 
-  const [regimes, setRegimes] = useState<Regime[]>([]);
-  const [selectedRegimeId, setSelectedRegimeId] = useState<string>("");
-
-  async function handleGetTributaryRegime() {
-    const res = await GetAPI("/tributary-regime", true);
-    if (res?.status === 200 && Array.isArray(res.body?.regimes)) {
-      setRegimes(res.body.regimes as Regime[]);
-    } else {
-      toast.error(res?.body?.message ?? "Não foi possível carregar regimes.");
-    }
-  }
-
-  useEffect(() => {
-    handleGetTributaryRegime();
-  }, []);
-
   const onSubmit = handleSubmit(async (values) => {
-    if (!selectedRegimeId) {
-      toast.error("Selecione um regime tributário.");
-      return;
-    }
-    const payload = toHoldingPayload(values, selectedRegimeId);
-    const res = await PostAPI("/holding", payload, true);
+    const payload = toCompanyPayload(values);
+    const res = await PostAPI("/company", payload, true);
+    console.log("response", res);
     if (res?.status === 200) {
-      toast.success("Contratante salvo com sucesso!");
-      router.push("/register/branches-list");
+      toast.success("Empresa salva com sucesso!");
     } else {
-      toast.error(res?.body?.message ?? "Erro ao salvar contratante.");
+      toast.error(res?.body?.message ?? "Erro ao salvar empresa.");
     }
   });
 
@@ -334,12 +300,11 @@ export default function CadastroContratanteForm() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-800">
-              Cadastro de Contratante
+              Cadastro de Empresa
             </h1>
             <p className="text-sm text-gray-600">Preencha os dados abaixo</p>
           </div>
         </div>
-
         <Button
           type="button"
           className="group border-primary text-primary hover:border-primary-dark hover:text-primary-dark hover:bg-primary-dark/10 bg-primary/20 relative flex h-20 cursor-pointer flex-col items-center rounded-xl border border-dashed px-2 py-4 font-medium transition duration-300"
@@ -378,101 +343,104 @@ export default function CadastroContratanteForm() {
       </div>
 
       <div className="grid grid-cols-1 divide-y divide-gray-300 lg:grid-cols-2">
-        {fields.map(([name, label, maskFn], index) => (
-          <Row
-            key={name}
-            label={label}
-            index={index}
-            lastIndex={fields.length - 1}
-            field={
-              <Controller
-                name={name}
-                control={control}
-                render={({ field }) => (
-                  <div className="relative flex w-full flex-col">
-                    <Input
-                      {...field}
-                      value={field.value?.toString() ?? ""}
-                      type={
-                        name === "qtdUsuarios"
-                          ? "number"
-                          : name === "qtdFiliais"
-                            ? "number"
-                            : "text"
-                      }
-                      maxLength={name === "uf" ? 2 : undefined}
-                      onChange={
-                        maskFn
-                          ? handleMask(maskFn, field.onChange)
-                          : field.onChange
-                      }
-                    />
-                    <FieldError name={name} />
-                  </div>
-                )}
-              />
-            }
-          />
-        ))}
-
-        <Row
-          label="Regime Tributário"
-          index={fields.length}
-          lastIndex={fields.length}
-          field={
-            <div className="w-full">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Input
-                    value={
-                      selectedRegimeId
-                        ? (regimes.find((r) => r.id === selectedRegimeId)
-                            ?.name ?? "Selecione um regime")
-                        : "Selecione um regime"
-                    }
-                    readOnly
-                    className="text-start"
+        {fields.map(([name, label, maskFn], index) => {
+          if (name === "tributaryRegimeId") {
+            return (
+              <Row
+                key={name}
+                label={label}
+                index={index}
+                lastIndex={fields.length - 1}
+                field={
+                  <Controller
+                    name="tributaryRegimeId"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="w-full">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Input
+                              value={
+                                field.value
+                                  ? (regimes.find((r) => r.id === field.value)
+                                      ?.name ?? "Selecione um regime")
+                                  : "Selecione um regime"
+                              }
+                              readOnly
+                              className="text-start"
+                            />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="z-[999999999] max-h-60 w-[var(--radix-dropdown-menu-trigger-width)] overflow-y-auto bg-white">
+                            {regimes.length === 0 ? (
+                              <DropdownMenuItem className="text-black">
+                                Nenhum regime encontrado
+                              </DropdownMenuItem>
+                            ) : (
+                              regimes.map((opt) => (
+                                <DropdownMenuItem
+                                  key={opt.id}
+                                  className={cn(
+                                    "hover:bg-secondary text-black hover:text-white",
+                                    field.value === opt.id &&
+                                      "bg-secondary text-white",
+                                  )}
+                                  onSelect={() => field.onChange(opt.id)}
+                                >
+                                  {opt.name}
+                                </DropdownMenuItem>
+                              ))
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <FieldError name="tributaryRegimeId" />
+                      </div>
+                    )}
                   />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="z-[999999999] max-h-60 w-[var(--radix-dropdown-menu-trigger-width)] overflow-y-auto bg-white">
-                  {regimes.length === 0 ? (
-                    <DropdownMenuItem className="text-black">
-                      Nenhum regime encontrado
-                    </DropdownMenuItem>
-                  ) : (
-                    regimes.map((opt) => (
-                      <DropdownMenuItem
-                        key={opt.id}
-                        className={cn(
-                          "text-black transition-all duration-300 hover:bg-zinc-400/40",
-                          selectedRegimeId === opt.id &&
-                            "bg-primary text-white",
-                        )}
-                        onSelect={() => setSelectedRegimeId(opt.id)}
-                      >
-                        {opt.name}
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              {!selectedRegimeId ? (
-                <p className="text-destructive mt-1 h-4 text-xs text-red-400">
-                  {"\u00A0"}
-                </p>
-              ) : (
-                <p className="mt-1 h-4 text-xs text-transparent">.</p>
-              )}
-            </div>
+                }
+              />
+            );
           }
-        />
+          return (
+            <Row
+              key={name}
+              label={label}
+              index={index}
+              lastIndex={fields.length - 1}
+              field={
+                <Controller
+                  name={name}
+                  control={control}
+                  render={({ field }) => (
+                    <div className="relative flex w-full flex-col">
+                      <Input
+                        {...field}
+                        value={field.value?.toString() ?? ""}
+                        maxLength={
+                          name === "uf" ? 2 : name === "cnpj" ? 18 : undefined
+                        }
+                        onChange={
+                          maskFn
+                            ? handleMask(maskFn, field.onChange)
+                            : field.onChange
+                        }
+                      />
+                      <FieldError name={name} />
+                    </div>
+                  )}
+                />
+              }
+            />
+          );
+        })}
       </div>
 
       <div className="flex justify-between border-t border-gray-300 bg-gray-50 px-6 py-6">
         <Button
           type="button"
           variant="outline"
-          onClick={() => window.history.back()}
+          onClick={() => {
+            window.history.back();
+          }}
         >
           Voltar
         </Button>

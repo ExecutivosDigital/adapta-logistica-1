@@ -2,23 +2,62 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useApiContext } from "@/context/ApiContext";
 import { cn } from "@/utils/cn";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
+import { useCookies } from "next-client-cookies";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
+
+const LoginSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(4, "Senha deve ter ao menos 6 caracteres"),
+});
+type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
   const router = useRouter();
-  const [passwordType, setPasswordType] = useState("password");
-  const togglePasswordType = () => {
-    if (passwordType === "text") {
-      setPasswordType("password");
-    } else if (passwordType === "password") {
-      setPasswordType("text");
-    }
-  };
+  const cookies = useCookies();
+  const { PostAPI } = useApiContext();
+  const { register, handleSubmit } = useForm<LoginForm>({
+    resolver: zodResolver(LoginSchema),
+    mode: "onBlur",
+    shouldFocusError: true,
+    defaultValues: { email: "", password: "" },
+  });
+  const [passwordType, setPasswordType] = useState<"text" | "password">(
+    "password",
+  );
+  const togglePasswordType = () =>
+    setPasswordType((p) => (p === "text" ? "password" : "text"));
+
+  const onSubmit = handleSubmit(
+    async ({ email, password }) => {
+      const res = await PostAPI("/user/signin", { email, password }, false);
+      console.log("response", res);
+      if (res?.status === 200) {
+        toast.success("Login realizado com sucesso!");
+        cookies.set(
+          process.env.NEXT_PUBLIC_USER_TOKEN as string,
+          res.body.accessToken,
+        );
+        router.push("/register/branches");
+      } else {
+        toast.error(res?.body?.message ?? "Não foi possível realizar o login.");
+      }
+    },
+    (errors) => {
+      const first = Object.values(errors)[0];
+      const message = first?.message || "Preencha os campos corretamente.";
+      toast.error(String(message));
+    },
+  );
 
   return (
     <div className="flex min-h-screen w-full">
@@ -42,7 +81,7 @@ export default function Login() {
             </span>
           </div>
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={onSubmit}
             className="flex w-full flex-col gap-8 lg:w-2/3"
           >
             <div className="relative">
@@ -56,6 +95,7 @@ export default function Login() {
                 className={cn(
                   "peer active:border-primary focus:border-primary border-zinc-200 text-base",
                 )}
+                {...register("email")}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -67,8 +107,8 @@ export default function Login() {
                   type={passwordType}
                   id="password"
                   className="peer active:border-primary focus:border-primary border-zinc-200 text-base"
+                  {...register("password")}
                 />
-
                 <div
                   className="absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer opacity-50 ltr:right-4 rtl:left-4"
                   onClick={togglePasswordType}
@@ -103,7 +143,7 @@ export default function Login() {
               </div>
             </div>
             <button
-              onClick={() => router.push("/register/branches")}
+              type="submit"
               className="bg-primary hover:bg-primary-dark h-12 w-full cursor-pointer rounded-lg font-semibold text-white transition duration-300"
             >
               Entrar Agora
