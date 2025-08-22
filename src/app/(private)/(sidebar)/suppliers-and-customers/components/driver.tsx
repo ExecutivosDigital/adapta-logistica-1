@@ -55,7 +55,7 @@ export function DriverTable() {
 
   return (
     <div
-      className={`-mt-10 flex flex-col border border-t-0 border-zinc-500 bg-white pt-8 transition-all duration-300 ${
+      className={`flex flex-col bg-white pt-8 transition-all duration-300 ${
         animate ? "opacity-100" : "opacity-0"
       }`}
     >
@@ -95,8 +95,8 @@ export function DriverTable() {
               key={idx}
               className="hover:bg-primary/10 h-14 cursor-pointer border-b border-zinc-200"
             >
-              <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.Motorista}
+              <TableCell className="w-[500px] truncate px-4 text-sm font-medium whitespace-nowrap">
+                <div className="w-[500px] truncate">{row.Motorista}</div>
               </TableCell>
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
                 {formatCPF(row["CPF Motorista"])}
@@ -114,7 +114,7 @@ export function DriverTable() {
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
                 {row["CNH Validade"]}
               </TableCell>
-              <TableCell className="px-4 text-end whitespace-nowrap text-zinc-400">
+              <TableCell className="w-20 px-4 text-end whitespace-nowrap text-zinc-400">
                 <EllipsisVertical size={18} />
               </TableCell>
             </TableRow>

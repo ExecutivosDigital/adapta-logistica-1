@@ -1,4 +1,3 @@
-/* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
 import {
@@ -52,8 +51,8 @@ export interface DataType {
   };
   paymentForm: string;
   documentNumber: string;
-  issueDate: string; // Format: 'YYYY-MM-DD'
-  dueDate: string; // Format: 'YYYY-MM-DD'
+  issueDate: string;
+  dueDate: string;
   paymentTerms: string;
   paymentDetails: string;
   description: string;
@@ -63,6 +62,15 @@ export interface DataType {
 
 export default function ApprovePayable() {
   const router = useRouter();
+
+  const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
+  const [filteredSuppliers, setFilteredSuppliers] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [steps, setSteps] = useState(1);
+  const [selectedClient, setSelectedClient] = useState({
+    name: "",
+    cnpj: "",
+  });
 
   const [data, setData] = useState<DataType>({
     totalValue: 100000,
@@ -95,10 +103,7 @@ export default function ApprovePayable() {
     approval: "",
     mail: "",
   });
-  /* render */
 
-  const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
-  useState(false);
   const suppliers = [
     {
       name: "Fornecedor 1",
@@ -131,17 +136,9 @@ export default function ApprovePayable() {
       status: "ATIVO",
     },
   ];
-  const [currentPage, setCurrentPage] = useState(1);
-  const [steps, setSteps] = useState(1);
-  const [selectedClient, setSelectedClient] = useState({
-    name: "",
-    cnpj: "",
-  });
-  const [filteredSuppliers, setFilteredSuppliers] = useState("");
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
-      {/* HEADER -------------------------------------------------------- */}
       <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-2 py-2 xl:px-8 xl:py-4">
         <Image
           src="/logo/logoFull.png"
@@ -343,7 +340,7 @@ export default function ApprovePayable() {
                 })}
               </h2>
               <span className="flex items-center gap-1 text-sm text-zinc-600">
-                Preço do Documento
+                Valor da Fatura
               </span>
             </div>
           </div>
@@ -356,13 +353,6 @@ export default function ApprovePayable() {
         </section>
       </main>
       <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
-        <button
-          onClick={() => router.back()}
-          className="h-9 w-max rounded-lg border border-zinc-300 px-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
-        >
-          Salvar rascunho
-        </button>
-
         <OrangeButton
           className="h-9 w-[132px]"
           onClick={() => {

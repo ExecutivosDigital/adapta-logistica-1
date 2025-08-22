@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Home2ButtonGroup } from "./components/button-group";
 import { CarrierTable } from "./components/carrier";
 import { DriverTable } from "./components/driver";
-import { Header } from "./components/Header";
 import { SupplierTable } from "./components/supplier";
 import { ClientsTable } from "./components/transactions";
 
@@ -17,11 +16,7 @@ export default function Home2() {
       </span>
       <div className="grid w-full grid-cols-12 gap-8">
         <div className="col-span-12">
-          <Home2ButtonGroup />
-        </div>
-
-        <div className="col-span-12">
-          <Header
+          <Home2ButtonGroup
             selectedToolType={selectedToolType}
             setSelectedToolType={setSelectedToolType}
           />

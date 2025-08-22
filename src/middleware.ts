@@ -3,12 +3,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 export const config = {
-  matcher: [
-    "/",
-    "/register/company",
-    "/branch/create-branch",
-    "/sample/:path*",
-  ],
+  matcher: ["/test"],
 };
 
 export async function middleware(req: NextRequest) {

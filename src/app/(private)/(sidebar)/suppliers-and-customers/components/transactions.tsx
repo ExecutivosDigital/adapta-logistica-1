@@ -90,7 +90,7 @@ export function ClientsTable() {
 
   return (
     <div
-      className={`relative -mt-10 flex flex-col border border-t-0 border-zinc-500 bg-white pt-8 transition-all duration-300 ${animate ? "opacity-100" : "opacity-0"}`}
+      className={`relative flex flex-col bg-white pt-8 transition-all duration-300 ${animate ? "opacity-100" : "opacity-0"}`}
     >
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-4 px-4">
         <h2 className="text-primary text-lg font-semibold">Clientes</h2>
@@ -166,8 +166,10 @@ export function ClientsTable() {
               key={index}
               className="hover:bg-primary/10 h-14 cursor-pointer border-b border-zinc-200"
             >
-              <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row["Cliente Pagador"]}
+              <TableCell className="w-[500px] truncate px-4 text-sm font-medium whitespace-nowrap">
+                <div className="w-[500px] truncate">
+                  {row["Cliente Pagador"]}
+                </div>
               </TableCell>
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
                 {row["CNPJ Pagador"]}
@@ -192,7 +194,7 @@ export function ClientsTable() {
                   {row.active ? "ATIVO" : "DESATIVADO"}
                 </span>
               </TableCell>
-              <TableCell className="px-4 text-end whitespace-nowrap text-zinc-400">
+              <TableCell className="w-20 px-4 text-end whitespace-nowrap text-zinc-400">
                 <EllipsisVertical size={18} />
               </TableCell>
             </TableRow>

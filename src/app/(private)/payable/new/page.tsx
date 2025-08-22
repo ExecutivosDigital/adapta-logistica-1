@@ -24,6 +24,7 @@ import LaunchTypeModal from "./components/launch-type-modal";
 import { Step1 } from "./components/step1";
 import { Step3 } from "./components/step3";
 import { SupplierModal } from "./components/supplier-modal";
+
 export interface DataType {
   totalValue: number;
   entryType: "DESPESAS" | "IMPOSTOS" | "C. VENDAS";
@@ -51,8 +52,8 @@ export interface DataType {
   };
   paymentForm: string;
   documentNumber: string;
-  issueDate: string; // Format: 'YYYY-MM-DD'
-  dueDate: string; // Format: 'YYYY-MM-DD'
+  issueDate: Date | null;
+  dueDate: string;
   paymentTerms: string;
   paymentDetails: string;
   description: string;
@@ -74,7 +75,7 @@ export interface ClientProps {
 
 interface LaunchType {
   tipoLancamento: string;
-  descNivel4: string; // só o texto depois do “-”
+  descNivel4: string;
   conta: string;
   centroResultado: string;
 }
@@ -82,8 +83,32 @@ interface LaunchType {
 export default function NewPayable() {
   const router = useRouter();
 
+  const ITEMS_PER_PAGE = 6;
+  const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
+  const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
+  const [filteredSuppliers, setFilteredSuppliers] = useState("");
+  const [filteredContabilAccounts, setFilteredContabilAccounts] = useState("");
+  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [steps, setSteps] = useState(1);
+  const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
+    useState(false);
+  const [selectedCostCenters, setSelectedCostCenters] = useState<
+    { name: string; value: string; locked?: boolean }[]
+  >([]);
+  const [selectedClient, setSelectedClient] = useState<ClientProps>({
+    name: "",
+    cnpj: "",
+  });
+  const [selectedAccount, setSelectedAccount] = useState<AccontsType>({
+    contaContabil: "",
+    descricao: "",
+    tipoCusto: "",
+    grupo: "",
+    tipoConta: "",
+  });
   const [data, setData] = useState<DataType>({
-    totalValue: 100000,
+    totalValue: 0,
     entryType: "DESPESAS",
     supplier: {
       name: "",
@@ -105,7 +130,7 @@ export default function NewPayable() {
     },
     paymentForm: "",
     documentNumber: "",
-    issueDate: "",
+    issueDate: null,
     dueDate: "",
     paymentTerms: "",
     paymentDetails: "",
@@ -113,12 +138,7 @@ export default function NewPayable() {
     approval: "",
     mail: "",
   });
-  /* render */
 
-  const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
-  const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
-  const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
-    useState(false);
   const suppliers: SupplierProps[] = [
     {
       name: "Fornecedor 1",
@@ -151,21 +171,6 @@ export default function NewPayable() {
       status: "ATIVO",
     },
   ];
-  const [currentPage, setCurrentPage] = useState(1);
-  const [steps, setSteps] = useState(1);
-  const [selectedClient, setSelectedClient] = useState<ClientProps>({
-    name: "",
-    cnpj: "",
-  });
-  const [filteredSuppliers, setFilteredSuppliers] = useState("");
-  const [filteredContabilAccounts, setFilteredContabilAccounts] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<AccontsType>({
-    contaContabil: "",
-    descricao: "",
-    tipoCusto: "",
-    grupo: "",
-    tipoConta: "",
-  });
 
   const filteredAccounts = useMemo(() => {
     if (!filteredContabilAccounts.trim()) return Accounts;
@@ -178,7 +183,6 @@ export default function NewPayable() {
     );
   }, [Accounts, filteredContabilAccounts]);
 
-  const ITEMS_PER_PAGE = 6;
   const pageCount = Math.max(
     1,
     Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE),
@@ -221,12 +225,6 @@ export default function NewPayable() {
     });
   };
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredContabilAccounts]);
-  const [selectedCostCenters, setSelectedCostCenters] = useState<
-    { name: string; value: string; locked?: boolean }[]
-  >([]);
   const handleCostCenterToggle = (costCenterName: string) => {
     const isSelected = selectedCostCenters.some(
       (cc) => cc.name === costCenterName,
@@ -311,7 +309,11 @@ export default function NewPayable() {
       setData({ ...data, costCenters: [] });
     }
   };
-  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredContabilAccounts]);
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">

@@ -216,6 +216,7 @@ export default function CadastroContratanteForm() {
         }
       };
       await wait(thread.id, thread.thread_id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const msgs: any = await client.beta.threads.messages.list(
         thread.thread_id,
       );

@@ -16,21 +16,21 @@ export const FooterPayable = (props: SVGProps<SVGSVGElement>) => (
     <path
       d="M43.0007 46.75V27.1667M43.0007 27.1667L35.1673 36.3054M43.0007 27.1667L50.834 36.3054"
       stroke="currentColor"
-      stroke-width="5.875"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="5.875"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M70.416 42.8333C70.416 50.2187 70.416 53.9114 68.1217 56.2057C65.8274 58.5 62.1347 58.5 54.7493 58.5L31.2494 58.5C23.8641 58.5 20.1715 58.5 17.8771 56.2057C15.5827 53.9114 15.5827 50.2187 15.5827 42.8333L15.5827 19.3333C15.5827 11.9481 15.5827 8.25544 17.8771 5.96105C20.1715 3.66667 23.8641 3.66667 31.2494 3.66667L54.7493 3.66667C62.1347 3.66667 65.8274 3.66667 68.1217 5.96105C70.416 8.25544 70.416 11.9481 70.416 19.3333V42.8333Z"
       stroke="currentColor"
-      stroke-width="5.875"
+      strokeWidth="5.875"
     />
     <path
       d="M70.416 15.418L39.0827 15.418M15.5827 15.418L23.416 15.418"
       stroke="currentColor"
-      stroke-width="5.875"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="5.875"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

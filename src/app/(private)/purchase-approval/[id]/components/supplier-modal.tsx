@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/utils/cn";
 import { Plus, Search } from "lucide-react";
-import DollarIcon from "../../../../../../../public/icons/dollar";
+import DollarIcon from "../../../../../../public/icons/dollar";
 import { ClientProps, DataType, SupplierProps } from "../page";
 
 interface SupplierModalProps {

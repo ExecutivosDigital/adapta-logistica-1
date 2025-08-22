@@ -21,8 +21,11 @@ import { DataType } from "../page";
 import { CategoryModal } from "./category-modal";
 import { CostCentersList } from "./cost-centers-list";
 
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { useScreenWidth } from "@/lib/useScreenWidth";
+import { getLocalTimeZone } from "@internationalized/date";
 import "moment/locale/pt-br";
+import { DateValue } from "react-aria-components";
 moment.locale("pt-br");
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
@@ -301,11 +304,11 @@ export function Step1({
     "Outra - Digite aqui",
   ];
 
-  const paymentTerms = ["Total no Ato", "Parcelado", "Recorrente"];
+  const paymentTerms = ["Total no Ato", "Parcelado"];
 
   const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
-
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
   const { width } = useScreenWidth();
@@ -326,6 +329,19 @@ export function Step1({
     const amountNumber = Number(onlyDigits) / 100;
 
     setData({ ...data, amount: amountNumber });
+  };
+
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) {
+      setData({ ...data, issueDate: null });
+      return;
+    }
+
+    if ("toDate" in value) {
+      setData({ ...data, issueDate: value.toDate(getLocalTimeZone()) });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } else if (value !== null && (value as any) instanceof Date)
+      setData({ ...data, issueDate: value });
   };
 
   return (
@@ -367,7 +383,7 @@ export function Step1({
               {data.entryType === "DESPESAS"
                 ? "Fornecedor"
                 : data.entryType === "IMPOSTOS"
-                  ? "Sefaz"
+                  ? "Impostos"
                   : "Parceiro"}
             </span>
             <button
@@ -461,6 +477,12 @@ export function Step1({
                       size={16}
                       className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
                     />
+                    <SimpleDatePicker
+                      value={data.issueDate}
+                      view="month"
+                      invisible
+                      onChange={handleDateChange}
+                    />
                   </div>
                 </DropdownMenuTrigger>
               </DropdownMenu>
@@ -468,7 +490,10 @@ export function Step1({
 
             <label className="col-span-3 flex flex-col gap-1">
               <span className="text-zinc-600">Vencimento</span>
-              <DropdownMenu>
+              <DropdownMenu
+                open={isDateDropdownOpen}
+                onOpenChange={setIsDateDropdownOpen}
+              >
                 <DropdownMenuTrigger asChild>
                   <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
                     <CalendarIcon
@@ -498,6 +523,7 @@ export function Step1({
                     onSelect={(date) => {
                       if (date) {
                         setData({ ...data, dueDate: moment(date).format() });
+                        setIsDateDropdownOpen(false);
                       }
                     }}
                   />
@@ -570,7 +596,7 @@ export function Step1({
                 side={width > 768 ? "right" : "top"}
                 sideOffset={0}
                 align="end"
-                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
+                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200 pt-4"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
@@ -652,7 +678,7 @@ export function Step1({
               <DropdownMenuContent
                 side={width > 768 ? "right" : "top"}
                 align={width > 768 ? "end" : "start"}
-                className="z-[999] max-h-[500px] overflow-y-auto rounded-lg border-zinc-200"
+                className="z-[999] h-[500px] overflow-y-auto rounded-lg border-zinc-200 pt-4"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input

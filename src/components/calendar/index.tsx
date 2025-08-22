@@ -33,12 +33,12 @@ import { CustomEventWeek } from "./CustomEventWeek";
 import { Events2 } from "./EventData"; // lista inicial de eventos
 import CustomToolbar from "./toolbar";
 
-// -------------------------------------------------
+// ----
 
 moment.locale("pt-br");
 const localizer = momentLocalizer(moment);
 
-// ===== Tipagens =====
+// ==== Tipagens ====
 export interface EventType2 {
   id: string;
   type: "Recorrentes" | "Avulso" | "Colaborador";
@@ -77,6 +77,7 @@ interface CalendarSlotInfo extends SlotInfo {
 interface ButtonGroupProps {
   accessLevel: string;
   setAccessLevel: React.Dispatch<React.SetStateAction<string>>;
+  filter: string;
 }
 
 function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
@@ -105,7 +106,7 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
               <div className="flex w-full flex-row items-center gap-2">
                 <span className="text-sm">Total:</span>
                 <span className="flex-1 font-bold">
-                  {viewAllValues ? event.formattedValue : "********"}
+                  {viewAllValues ? event.formattedValue : "****"}
                 </span>
               </div>
             </div>
@@ -137,7 +138,7 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
           <div className="font-bold text-[#6C7386]">
             <span className="mr-1">Valor Total:</span>
             <span className="text-primary">
-              {viewAllValues ? event.formattedValue : "********"}
+              {viewAllValues ? event.formattedValue : "****"}
             </span>
           </div>
           <TooltipArrow className="fill-primary" />
@@ -149,59 +150,59 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
 
     //  <TooltipProvider>
     //   <Tooltip>
-    //     <TooltipTrigger asChild>
-    //       <div
-    //         style={{
-    //           display: "flex",
-    //           fontSize: 12,
-    //           lineHeight: 1.1,
-    //         }}
-    //         className="sum-card h-[150px] p-0 md:h-auto md:p-2"
-    //       >
-    //         <div className="text-primary flex h-max w-full rotate-90 flex-col text-[14px] transition duration-500 md:h-auto md:translate-y-0 md:rotate-0">
-    //           <div className="h-10 w-full pt-2">{event.name}</div>
-    //           <div className="h-10 w-full font-bold">
-    //             {event.count} - {event.formattedValue}
-    //           </div>{" "}
-    //         </div>
-    //       </div>
-    //     </TooltipTrigger>
-    //     <TooltipContent
-    //       side="top"
-    //       align="start"
-    //       className="border-primary z-[999] border bg-white p-3"
-    //     >
-    //       <div className="font-bold text-[#6C7386]">
-    //         <span className="mr-1">Nome:</span>
-    //         <span className="text-primary">{event.name}</span>
-    //       </div>
-    //       <div className="font-bold text-[#6C7386]">
-    //         <span className="mr-1">Data:</span>
-    //         <span className="text-primary">
-    //           {event.start.toLocaleDateString()}
-    //         </span>
-    //       </div>
-    //       <div className="font-bold text-[#6C7386]">
-    //         <span className="mr-1">Movimento:</span>
-    //         <span className="text-primary">{event.movementType}</span>
-    //       </div>
-    //       <div className="font-bold text-[#6C7386]">
-    //         <span className="mr-1">Quantidade de itens:</span>
-    //         <span className="text-primary">{event.count}</span>
-    //       </div>
-    //       <div className="font-bold text-[#6C7386]">
-    //         <span className="mr-1">Valor Total:</span>
-    //         <span className="text-primary">{event.formattedValue}</span>
-    //       </div>
-    //       <TooltipArrow className="fill-primary" />
-    //     </TooltipContent>
+    //    <TooltipTrigger asChild>
+    //    <div
+    //    style={{
+    //    display: "flex",
+    //    fontSize: 12,
+    //    lineHeight: 1.1,
+    //    }}
+    //    className="sum-card h-[150px] p-0 md:h-auto md:p-2"
+    //    >
+    //    <div className="text-primary flex h-max w-full rotate-90 flex-col text-[14px] transition duration-500 md:h-auto md:translate-y-0 md:rotate-0">
+    //    <div className="h-10 w-full pt-2">{event.name}</div>
+    //    <div className="h-10 w-full font-bold">
+    //    {event.count} - {event.formattedValue}
+    //    </div>{" "}
+    //    </div>
+    //    </div>
+    //    </TooltipTrigger>
+    //    <TooltipContent
+    //    side="top"
+    //    align="start"
+    //    className="border-primary z-[999] border bg-white p-3"
+    //    >
+    //    <div className="font-bold text-[#6C7386]">
+    //    <span className="mr-1">Nome:</span>
+    //    <span className="text-primary">{event.name}</span>
+    //    </div>
+    //    <div className="font-bold text-[#6C7386]">
+    //    <span className="mr-1">Data:</span>
+    //    <span className="text-primary">
+    //    {event.start.toLocaleDateString()}
+    //    </span>
+    //    </div>
+    //    <div className="font-bold text-[#6C7386]">
+    //    <span className="mr-1">Movimento:</span>
+    //    <span className="text-primary">{event.movementType}</span>
+    //    </div>
+    //    <div className="font-bold text-[#6C7386]">
+    //    <span className="mr-1">Quantidade de itens:</span>
+    //    <span className="text-primary">{event.count}</span>
+    //    </div>
+    //    <div className="font-bold text-[#6C7386]">
+    //    <span className="mr-1">Valor Total:</span>
+    //    <span className="text-primary">{event.formattedValue}</span>
+    //    </div>
+    //    <TooltipArrow className="fill-primary" />
+    //    </TooltipContent>
     //   </Tooltip>
     // </TooltipProvider>
   );
 }
 
-// ===== Arquivo principal =====
-const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
+// ==== Arquivo principal ====
+const CalendarApp = ({ accessLevel, filter }: ButtonGroupProps) => {
   const router = useRouter();
   const [calevents, setCalEvents] = useState<EventType2[]>(Events2);
   const [open, setOpen] = useState<boolean>(false);
@@ -285,8 +286,16 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
     if (newValue) setEnd(new Date(newValue.toString()));
   };
 
+  // Filter events based on movementType
+  const filteredEvents = useMemo(() => {
+    if (!filter || filter === "Todos") {
+      return calevents;
+    }
+    return calevents.filter((event) => event.movementType === filter);
+  }, [calevents, filter]);
+
   const monthEvents: RBCEvent[] = useMemo(() => {
-    if (view !== Views.MONTH) return calevents;
+    if (view !== Views.MONTH) return filteredEvents;
 
     const formatCurrency = (value: number): string =>
       new Intl.NumberFormat("pt-BR", {
@@ -316,7 +325,7 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
       }
     > = {};
 
-    calevents.forEach((e) => {
+    filteredEvents.forEach((e) => {
       const key = moment(e.start).startOf("day").format("YYYY-MM-DD");
 
       if (!bucket[key]) {
@@ -379,7 +388,7 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
     );
 
     return list;
-  }, [view, calevents]);
+  }, [view, filteredEvents]);
 
   const onSelectEvent = (event: RBCEvent) => {
     if ("isSummary" in event) {
@@ -388,6 +397,9 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
       return;
     }
     if (event.movementType === "Saida") {
+      if (event.status === "Pago") {
+        return router.push(`/payable/payed/${event.id}`);
+      }
       if (event.status !== "À Pagar") {
         if (accessLevel === "common") {
           if (event.type === "Recorrentes") {

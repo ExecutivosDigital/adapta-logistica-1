@@ -360,6 +360,7 @@ export default function SubsidiaryForm() {
         }
       };
       await wait(thread.id, thread.thread_id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const msgs: any = await client.beta.threads.messages.list(
         thread.thread_id,
       );
@@ -369,6 +370,7 @@ export default function SubsidiaryForm() {
       return JSON.parse(jsonText) as CnpjCardResponse;
     } catch (err) {
       toast.error("Erro ao analisar cartão CNPJ");
+      console.error(err);
       return null;
     }
   }

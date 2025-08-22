@@ -46,7 +46,7 @@ export function SupplierModal({
       >
         <div
           className={cn(
-            "relative z-20 flex h-[85vh] w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
+            "relative z-20 flex h-max w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
           )}
         >
           <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
@@ -176,7 +176,7 @@ export function SupplierModal({
               </div>
             </div>
             {/* Botões de ação */}
-            <div className="flex h-16 justify-between border-t border-zinc-200 px-6 py-4">
+            <div className="flex justify-between border-t border-zinc-200 px-6 py-4">
               <button className="text-primary cursor-pointer rounded-md border border-zinc-200 px-2 py-1 font-bold xl:px-6 xl:py-2">
                 Cancelar
               </button>

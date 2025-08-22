@@ -12,9 +12,14 @@ import { useState } from "react";
 interface ButtonGroupProps {
   accessLevel: string;
   setAccessLevel: React.Dispatch<React.SetStateAction<string>>;
+  setFilter: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function ButtonGroup({ accessLevel, setAccessLevel }: ButtonGroupProps) {
+export function ButtonGroup({
+  accessLevel,
+  setAccessLevel,
+  setFilter,
+}: ButtonGroupProps) {
   const [buttons, setButtons] = useState([
     {
       id: "1",
@@ -24,13 +29,13 @@ export function ButtonGroup({ accessLevel, setAccessLevel }: ButtonGroupProps) {
     },
     {
       id: "2",
-      label: "Mecânica",
+      label: "À Pagar",
       icon: <NotepadText className="h-4 w-max" />,
       selected: false,
     },
     {
       id: "3",
-      label: "Financeiro",
+      label: "À Receber",
       icon: <NotepadText className="h-4 w-max" />,
       selected: false,
     },
@@ -55,6 +60,13 @@ export function ButtonGroup({ accessLevel, setAccessLevel }: ButtonGroupProps) {
               }
             });
             setButtons(newButtons);
+            setFilter(
+              b.label === "À Pagar"
+                ? "Saida"
+                : b.label === "À Receber"
+                  ? "Entrada"
+                  : "",
+            );
           }}
           key={b.id}
           className={cn(

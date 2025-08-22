@@ -284,7 +284,7 @@ export function Step2({ data, setData }: Props) {
                 selected={moment(data.issueDate).toDate()}
                 onSelect={(date) => {
                   if (date) {
-                    setData({ ...data, issueDate: moment(date).format() });
+                    setData({ ...data, issueDate: moment(date).toDate() });
                   }
                 }}
               />

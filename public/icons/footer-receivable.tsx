@@ -16,21 +16,21 @@ export const FooterReceivable = (props: SVGProps<SVGSVGElement>) => (
     <path
       d="M51.5007 32.375V55.9167M51.5007 55.9167L60.9173 44.9307M51.5007 55.9167L42.084 44.9307"
       stroke="currentColor"
-      stroke-width="7.0625"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="7.0625"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M18.541 37.0833C18.541 28.2052 18.541 23.7661 21.2991 21.0081C24.0572 18.25 28.4962 18.25 37.3743 18.25H65.6243C74.5024 18.25 78.9414 18.25 81.6995 21.0081C84.4577 23.7661 84.4577 28.2052 84.4577 37.0833V65.3333C84.4577 74.2114 84.4577 78.6504 81.6995 81.4085C78.9414 84.1667 74.5024 84.1667 65.6243 84.1667H37.3743C28.4962 84.1667 24.0572 84.1667 21.2991 81.4085C18.541 78.6504 18.541 74.2114 18.541 65.3333V37.0833Z"
       stroke="currentColor"
-      stroke-width="7.0625"
+      strokeWidth="7.0625"
     />
     <path
       d="M18.541 70.043H56.2077M84.4577 70.043H75.041"
       stroke="currentColor"
-      stroke-width="7.0625"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="7.0625"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

@@ -45,7 +45,7 @@ export function SupplierTable() {
 
   return (
     <div
-      className={`-mt-10 flex flex-col border border-t-0 border-zinc-500 bg-white pt-8 transition-all duration-300 ${animate ? "opacity-100" : "opacity-0"}`}
+      className={`flex flex-col bg-white pt-8 transition-all duration-300 ${animate ? "opacity-100" : "opacity-0"}`}
     >
       {/* Cabeçalho e busca */}
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-4 px-4">
@@ -83,9 +83,10 @@ export function SupplierTable() {
               key={idx}
               className="hover:bg-primary/10 h-14 cursor-pointer border-b border-zinc-200"
             >
-              <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
-                {row.Fornecedor}
+              <TableCell className="w-[500px] truncate px-4 text-sm font-medium whitespace-nowrap">
+                <div className="w-[500px] truncate">{row.Fornecedor}</div>
               </TableCell>
+
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
                 {row["CNPJ Fornecedor"]
                   .toString()
@@ -105,7 +106,7 @@ export function SupplierTable() {
               <TableCell className="px-4 text-sm font-medium whitespace-nowrap">
                 {row["Regime Tributário"]}
               </TableCell>
-              <TableCell className="px-4 text-end whitespace-nowrap text-zinc-400">
+              <TableCell className="w-20 px-4 text-end whitespace-nowrap text-zinc-400">
                 <EllipsisVertical size={18} />
               </TableCell>
             </TableRow>

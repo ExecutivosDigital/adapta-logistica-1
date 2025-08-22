@@ -4,14 +4,13 @@ import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import launchTypesRaw from "../data.json";
 
-/* --------------------------------------------------------------
- * Types ---------------------------------------------------------*/
 export interface LaunchType {
   tipoLancamento: string;
   descNivel4: string;
   conta: string;
   centroResultado: string;
 }
+
 interface LaunchTypeRaw {
   "Tipo Lançamento": string;
   "Centros de Resultado": string;
@@ -19,6 +18,7 @@ interface LaunchTypeRaw {
   "Nivel 4 Desc": string;
   // Add other properties as needed
 }
+
 export interface LaunchTypeModalProps {
   show: boolean;
   showingTaxes?: boolean;
@@ -29,23 +29,18 @@ export interface LaunchTypeModalProps {
   itemsPerPage?: number;
 }
 
-/* --------------------------------------------------------------
- * Pré-processa o JSON apenas uma vez ---------------------------*/
-
-/* --------------------------------------------------------------
- * Componente ----------------------------------------------------*/
 export default function LaunchTypeModal({
   show,
   onClose,
   onSelect,
-  itemsPerPage = 6,
+  itemsPerPage = 10,
   selectCostCenter,
   showingTaxes,
 }: LaunchTypeModalProps) {
-  /* ---------------------- state -----------------------------*/
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<LaunchType | null>(null);
+
   const parsedLaunchTypes = useMemo(() => {
     return launchTypesRaw
       .filter((item) => {
@@ -64,7 +59,7 @@ export default function LaunchTypeModal({
         centroResultado: item["Centros de Resultado"],
       }));
   }, [showingTaxes]);
-  /* ---------------------- memo ------------------------------*/
+
   const filtered = useMemo(() => {
     if (!filter.trim()) return parsedLaunchTypes;
     const t = filter.toLowerCase();
@@ -75,7 +70,9 @@ export default function LaunchTypeModal({
         l.conta.toLowerCase().includes(t),
     );
   }, [filter, parsedLaunchTypes]);
+
   const pageCount = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+
   const pages = useMemo(() => {
     const maxButtons = 5;
     if (pageCount <= maxButtons)
@@ -92,10 +89,6 @@ export default function LaunchTypeModal({
     return filtered.slice(start, start + itemsPerPage);
   }, [filtered, page, itemsPerPage]);
 
-  /* ---------------------- effects ---------------------------*/
-  useEffect(() => setPage(1), [filter]);
-
-  /* ---------------------- handlers --------------------------*/
   function handleConfirm() {
     if (!selected) return;
     if (selectCostCenter) {
@@ -104,7 +97,8 @@ export default function LaunchTypeModal({
     onSelect(selected);
   }
 
-  /* ---------------------- UI --------------------------------*/
+  useEffect(() => setPage(1), [filter]);
+
   return (
     <div
       className="fixed top-0 right-0 bottom-0 left-0 z-[990] flex w-full cursor-pointer items-center justify-center bg-white/50 p-4 text-center backdrop-blur-[4px] transition-opacity duration-300 ease-in-out"
@@ -117,11 +111,10 @@ export default function LaunchTypeModal({
     >
       <div
         className={cn(
-          "relative z-20 flex h-[85vh] w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
+          "relative z-20 flex h-max w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
         )}
       >
         <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
-          {/* Cabeçalho */}
           <div className="bg-primary flex h-16 items-center justify-between px-6 py-4">
             <h2 className="text-lg font-semibold text-white">
               Tipo de lançamento
@@ -135,7 +128,6 @@ export default function LaunchTypeModal({
           </div>
 
           <div className="scrollbar-hide h-[calc(100%-8rem)] w-full overflow-scroll">
-            {/* Campo de busca */}
             <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
               <label className="mb-2 block text-xl text-[#6C7386]">
                 Selecione o Tipo:
@@ -154,7 +146,6 @@ export default function LaunchTypeModal({
               </div>
             </div>
 
-            {/* Lista */}
             <ul className="space-y-2 px-2 xl:space-y-4 xl:px-6">
               {paginated.length === 0 && (
                 <li className="flex justify-center py-10 text-zinc-500">
@@ -184,7 +175,6 @@ export default function LaunchTypeModal({
               ))}
             </ul>
 
-            {/* Paginação */}
             <div className="my-6 flex items-center justify-center gap-2 text-sm">
               <button
                 disabled={page === 1}
@@ -212,8 +202,7 @@ export default function LaunchTypeModal({
             </div>
           </div>
 
-          {/* Ações */}
-          <div className="flex h-16 justify-between border-t border-zinc-200 px-6 py-4">
+          <div className="flex justify-between border-t border-zinc-200 px-6 py-4">
             <button
               onClick={onClose}
               className="text-primary rounded-md border border-zinc-200 px-2 py-1 font-bold xl:px-6 xl:py-2"

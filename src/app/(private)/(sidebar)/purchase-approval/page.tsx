@@ -81,11 +81,7 @@ export default function PurchaseApproval() {
               Solicitar Compras
             </OrangeButton>
           ) : (
-            <OrangeButton
-              icon={<ArrowRight />}
-              iconPosition="right"
-              onClick={handleOpenModal}
-            >
+            <OrangeButton icon={<ArrowRight />} iconPosition="right">
               Reportar Erro
             </OrangeButton>
           )}

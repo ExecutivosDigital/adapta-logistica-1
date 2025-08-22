@@ -5,6 +5,7 @@ import { ButtonGroup } from "./components/button-group";
 
 export default function Calendar() {
   const [accessLevel, setAccessLevel] = useState("common");
+  const [filter, setFilter] = useState("");
 
   return (
     <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
@@ -16,12 +17,14 @@ export default function Calendar() {
           <ButtonGroup
             accessLevel={accessLevel}
             setAccessLevel={setAccessLevel}
+            setFilter={setFilter}
           />
         </div>
         <div className="col-span-12 flex w-full flex-col gap-4">
           <CalendarApp
             accessLevel={accessLevel}
             setAccessLevel={setAccessLevel}
+            filter={filter}
           />
         </div>
       </div>

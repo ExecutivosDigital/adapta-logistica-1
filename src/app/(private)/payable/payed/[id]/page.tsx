@@ -1,6 +1,11 @@
 "use client";
-import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
 import {
@@ -8,14 +13,15 @@ import {
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  EllipsisVertical,
   Search,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { Step1 } from "./components/step1";
+import { Step2 } from "./components/step2";
 
 export interface DataType {
   totalValue: number;
@@ -53,11 +59,11 @@ export interface DataType {
   mail: string;
 }
 
-export default function PayableAddDocument() {
+export default function PayablePay() {
   const router = useRouter();
 
-  const [filteredSuppliers, setFilteredSuppliers] = useState("");
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
+  const [filteredSuppliers, setFilteredSuppliers] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [steps, setSteps] = useState(1);
   const [selectedClient, setSelectedClient] = useState({
@@ -129,10 +135,6 @@ export default function PayableAddDocument() {
     },
   ];
 
-  const handleData = () => {
-    return;
-  };
-
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
       <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-2 py-2 xl:px-8 xl:py-4">
@@ -144,17 +146,24 @@ export default function PayableAddDocument() {
           className="h-16 w-auto"
           priority
         />
-
-        <button
-          onClick={() => setSteps((s) => s - 1)}
-          className={cn(
-            "absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50",
-            steps === 1 && "hidden",
-          )}
-        >
-          <ChevronLeft size={16} />
-          Voltar
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 p-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 focus:outline-none">
+              <EllipsisVertical size={16} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="start" className="bg-white">
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
+              Reportar Erro
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
+              Negar Lançamento
+            </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
+              Lorem
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <button
           onClick={() => router.back()}
           className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
@@ -164,7 +173,7 @@ export default function PayableAddDocument() {
         </button>
       </header>
 
-      <main className="flex flex-1 flex-col-reverse overflow-y-auto xl:flex-row">
+      <main className="flex flex-1 flex-col justify-between gap-4 overflow-y-auto bg-[#FBEFE9] xl:flex-row">
         <Modal
           show={isOpenSupplierModal}
           onHide={() => setIsOpenSupplierModal(false)}
@@ -298,7 +307,7 @@ export default function PayableAddDocument() {
             </div>
           </div>
         </Modal>
-        <section className="flex flex-1 flex-col px-3 py-2 pb-4 xl:px-12 xl:pt-10">
+        <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
           <div className="flex w-full justify-between">
             <div className="flex gap-2">
               <ChevronLeft
@@ -306,7 +315,7 @@ export default function PayableAddDocument() {
                 className={cn("cursor-pointer", steps === 1 && "hidden")}
               />
               <div className="flex flex-col">
-                <h2 className="text-xl font-semibold">Faturas à Pagar</h2>
+                <span className="text-lg font-semibold">Aprovar Documento</span>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
                   22/03/2025
@@ -327,33 +336,27 @@ export default function PayableAddDocument() {
                 })}
               </h2>
               <span className="flex items-center gap-1 text-sm text-zinc-600">
-                Valor Total do Pagamento
+                Valor da Fatura
               </span>
             </div>
           </div>
           <div className="my-4 h-px bg-zinc-200/60" />
-          <Step1 data={data} setIsOpenSupplierModal={setIsOpenSupplierModal} />
-          <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
-            <OrangeButton
-              className="h-9 w-[132px]"
-              onClick={() => {
-                toast.success("Fatura atualizada com sucesso!");
-                setTimeout(() => {
-                  router.push("/calendar");
-                }, 1000);
-              }}
-              icon={<ChevronDown size={16} className="-rotate-90" />}
-              iconPosition="right"
-            >
-              Salvar
-            </OrangeButton>
-          </footer>
+          <Step1 data={data} setData={setData} />
         </section>
-        <div className="w-px bg-orange-200" />
-        <section className="bg-primary/10 flex flex-1 items-center justify-center p-4">
-          <AiFileReader handleData={handleData} />
+        <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
+          <Step2 />
         </section>
       </main>
+      <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
+        <OrangeButton
+          className="h-9 w-[132px]"
+          onClick={() => router.push("/calendar")}
+          icon={<ChevronDown size={16} className="-rotate-90" />}
+          iconPosition="right"
+        >
+          Voltar
+        </OrangeButton>
+      </footer>
     </div>
   );
 }

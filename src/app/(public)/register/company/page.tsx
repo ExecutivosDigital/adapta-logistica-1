@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -211,6 +210,7 @@ export default function CadastroCompanyForm() {
         }
       };
       await wait(thread.id, thread.thread_id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const msgs: any = await client.beta.threads.messages.list(
         thread.thread_id,
       );

@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import { CreditCard, DollarSign, Plus } from "lucide-react";
+import { CreditCard, DollarSign, Upload } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 
@@ -31,14 +31,11 @@ export function Step2() {
       <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
         <div className="border-primary text-primary col-span-12 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-2 text-center">
           <div className="border-primary flex h-10 w-10 items-center justify-center rounded-full border">
-            <Plus />
+            <Upload />
           </div>
-          <span className="font-semibold">
-            Upload de Comprovante de Pagamento
-          </span>
+          <span className="font-semibold">Comprovante de Pagamento</span>
           <span className="text-sm font-light">
-            Arraste e solte o arquivo aqui ou adicione do seu dispositivo <br />{" "}
-            XML ou PDF
+            Clique para ter acesso ao comprovante de pagamento anexado
           </span>
         </div>
         <label className="col-span-7 flex flex-col gap-1">
