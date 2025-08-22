@@ -88,7 +88,7 @@ const EquipmentOsSheet = ({
   const [isStartTimePopoverOpen, setIsStartTimePopoverOpen] = useState(false);
   const [isEndTimePopoverOpen, setIsEndTimePopoverOpen] = useState(false);
   const [isDeleting] = useState(false);
-  const { control, handleSubmit } = useForm({
+  const { control } = useForm({
     resolver: zodResolver(schema),
     mode: "all",
   });
@@ -201,7 +201,7 @@ const EquipmentOsSheet = ({
             </button>
           </SheetHeader>
           <div className="mt-6 h-full">
-            <form className="h-full" onSubmit={handleSubmit(console.log)}>
+            <form className="h-full">
               <div className="h-[calc(100vh-200px)]">
                 <ScrollArea className="h-full">
                   <div className="space-y-4 px-6 pb-5">

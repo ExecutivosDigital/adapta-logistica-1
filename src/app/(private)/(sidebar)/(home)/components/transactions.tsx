@@ -43,15 +43,12 @@ export function HomeTransactions() {
   const { viewAllValues } = useValueContext();
   const router = useRouter();
 
-  /* ----------------------------- State & Consts ---------------------------- */
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
-
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-
   const [query] = useState("");
-
+  const [accessLevel, setAccessLevel] = useState("common");
   const tableTypes = [
     { id: "1", name: "Todas as Transações" },
     { id: "2", name: "Receber" },
@@ -225,22 +222,80 @@ export function HomeTransactions() {
     return <ChevronUp className="h-4 w-4 text-gray-300" />;
   };
 
-  /* --------------------------------- JSX ---------------------------------- */
+  const handleRedirect = (row: TransactionProps) => {
+    if (row.type === "toPay") {
+      if (row.status === "negado") {
+        return;
+      } else if (row.status === "pago") {
+        return router.push(`/payable/payed/${row.id}`);
+      } else if (row.status !== "a_pagar") {
+        if (accessLevel === "common") {
+          return router.push(`/payable/add-document/${row.id}`);
+        } else if (accessLevel === "admin") {
+          return router.push(`/payable/approve/${row.id}`);
+        }
+      } else if (row.status === "a_pagar") {
+        return router.push(`/payable/pay/${row.id}`);
+      }
+    } else if (row.type === "toReceive") {
+      if (row.status === "recebido") {
+        return;
+      } else if (row.status !== "a_receber") {
+        return router.push(`/receivable/update/${row.id}`);
+      } else if (row.status === "a_receber") {
+        if (accessLevel === "common") {
+          return router.push(`/receivable/receive/${row.id}`);
+        } else if (accessLevel === "admin") {
+          return router.push(`/receivable/approve/${row.id}`);
+        }
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col">
-      {/* --------------------------- Header --------------------------- */}
       <div className="flex w-full items-center justify-between">
-        <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
-          <span className="font-semibold">Fluxo de Pagamentos</span>
-          <button
-            onClick={() => router.push("/transactions/payable/all")}
-            className="text-primary flex items-center gap-2 text-sm font-semibold"
-          >
-            <span>Ver todas</span>
-            <ChevronRight />
-          </button>
+        <div className="flex items-center gap-2">
+          <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
+            <span className="font-semibold">Fluxo de Pagamentos</span>
+            <button
+              onClick={() => router.push("/transactions/payable/all")}
+              className="text-primary flex items-center gap-2 text-sm font-semibold"
+            >
+              <span>Ver todas</span>
+              <ChevronRight />
+            </button>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="rounded-md border border-zinc-200 px-4 py-2 font-semibold text-zinc-400">
+                Acesso {accessLevel === "common" ? "Comum" : "Diretor"}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="border-zinc-200">
+              <DropdownMenuItem
+                onClick={() => setAccessLevel("common")}
+                className={cn(
+                  "hover:bg-primary/20 cursor-pointer transition duration-300",
+                  accessLevel === "common" &&
+                    "bg-primary/20 text-primary font-semibold",
+                )}
+              >
+                Comum
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setAccessLevel("admin")}
+                className={cn(
+                  "hover:bg-primary/20 cursor-pointer transition duration-300",
+                  accessLevel === "admin" &&
+                    "bg-primary/20 text-primary font-semibold",
+                )}
+              >
+                Diretor
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div>
@@ -281,8 +336,6 @@ export function HomeTransactions() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      {/* --------------------------- Tabs ---------------------------- */}
       <div className="relative flex w-full gap-2 border-b border-b-zinc-200 xl:gap-8">
         {tableTypes.map((tab) => {
           const isActive = tab.id === selectedTableType.id;
@@ -291,7 +344,7 @@ export function HomeTransactions() {
               key={tab.id}
               onClick={() => {
                 setSelectedTableType(tab);
-                setCurrentPage(1); // reset page when changing tab
+                setCurrentPage(1);
               }}
               className={cn(
                 "flex h-12 items-center gap-2 border-b px-2 text-sm transition",
@@ -316,7 +369,6 @@ export function HomeTransactions() {
         })}
       </div>
 
-      {/* --------------------------- Table --------------------------- */}
       <Table className="border-collapse">
         <TableHeader>
           <TableRow>
@@ -342,7 +394,10 @@ export function HomeTransactions() {
         <TableBody>
           {paginatedRows.map((row) => (
             <Fragment key={row.id}>
-              <TableRow className="hover:bg-primary/20 h-14 cursor-pointer transition">
+              <TableRow
+                onClick={() => handleRedirect(row)}
+                className="hover:bg-primary/20 h-14 cursor-pointer transition"
+              >
                 {/* Data */}
                 <TableCell className="py-0.5 text-sm whitespace-nowrap">
                   {moment(row.date).format("DD/MM/YYYY")}

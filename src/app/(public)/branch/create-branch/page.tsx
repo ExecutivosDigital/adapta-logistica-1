@@ -289,10 +289,6 @@ export default function SubsidiaryForm() {
       const res2 = await GetAPI("/company", true);
       const res3 = await GetAPI("/legal-nature", true);
       const res4 = await GetAPI("/economic-activity", true);
-      console.log("Resposta 1", res);
-      console.log("Resposta 2", res2);
-      console.log("Resposta 3", res3);
-      console.log("Resposta 4", res4);
 
       if (res?.status === 200 && Array.isArray(res.body?.regimes)) {
         setRegimes(res.body.regimes as Option[]);
@@ -898,7 +894,6 @@ export default function SubsidiaryForm() {
 
   const handleNext = async () => {
     const isValid = await validateStep(activeStep);
-    console.log("isValid", isValid);
     if (!isValid) {
       const firstError = Object.values(form.formState.errors)[0];
       if (firstError && "message" in firstError)
@@ -911,10 +906,8 @@ export default function SubsidiaryForm() {
   const handlePrev = () => setActiveStep((s) => s - 1);
 
   const onSubmit = handleSubmit(async (values) => {
-    console.log("values", values);
     const payload = toSubsidiaryPayload(values);
     const res = await PostAPI("/subsidiary", payload, true);
-    console.log(" resposta do post ", res);
     if (res?.status === 200) {
       toast.success("Filial salva com sucesso!");
       router.push("/branch/branch-details");

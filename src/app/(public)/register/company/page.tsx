@@ -163,7 +163,6 @@ export default function CadastroCompanyForm() {
   useEffect(() => {
     (async () => {
       const res = await GetAPI("/tributary-regime", true);
-      console.log("resposta da api get tributary", res);
 
       if (res?.status === 200 && Array.isArray(res.body?.regimes)) {
         setRegimes(res.body.regimes as Regime[]);
@@ -280,7 +279,6 @@ export default function CadastroCompanyForm() {
   const onSubmit = handleSubmit(async (values) => {
     const payload = toCompanyPayload(values);
     const res = await PostAPI("/company", payload, true);
-    console.log("response", res);
     if (res?.status === 200) {
       toast.success("Empresa salva com sucesso!");
     } else {

@@ -2,6 +2,12 @@
 import { OrangeButton } from "@/components/OrangeButton";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -20,6 +26,7 @@ import {
   Files,
 } from "lucide-react";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { NewReceivableModal } from "./new-receivable-modal";
 
@@ -35,23 +42,20 @@ interface Props {
   filterType?: string;
 }
 export function ReceivableTransactions({ filterType }: Props) {
+  const router = useRouter();
   const { viewAllValues } = useValueContext();
-  /* ----------------------------- State & Consts ---------------------------- */
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
   const [showNewReceivableModal, setShowNewReceivableModal] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-
   const [query] = useState("");
-
   const tableTypes = [{ id: "1", name: "Pagamentos" }] as const;
   const [selectedTableType, setSelectedTableType] = useState<{
     id: "1" | "2" | "3";
     name: string;
   }>(tableTypes[0]);
-
-  /* ------------------------------ Tab & Rows ------------------------------- */
+  const [accessLevel, setAccessLevel] = useState("common");
 
   const rawRows: TransactionProps[] = (() => {
     if (filterType === "overdue") {
@@ -70,7 +74,6 @@ export function ReceivableTransactions({ filterType }: Props) {
     return toReceive;
   })();
 
-  /* ------------------------------ Utilities -------------------------------- */
   const parseDate = (raw: string): Date => {
     if (raw.includes("/")) {
       // dd/mm/yyyy
@@ -96,7 +99,7 @@ export function ReceivableTransactions({ filterType }: Props) {
 
   const parseValue = (value: string): number =>
     Number(value.replace(/[^0-9,-]+/g, "").replace(/,/g, "."));
-  /* -------------------------------- Sorting -------------------------------- */
+
   const handleSort = (column: SortableColumn) => {
     // same column ➜ cycle direction
     if (sortColumn === column) {
@@ -161,7 +164,6 @@ export function ReceivableTransactions({ filterType }: Props) {
     return rowsCopy;
   }, [rawRows, sortColumn, sortDirection]);
 
-  /* ------------------------------ Filtering -------------------------------- */
   const filteredRows = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return sortedRows;
@@ -182,14 +184,12 @@ export function ReceivableTransactions({ filterType }: Props) {
     );
   }, [sortedRows, query]);
 
-  /* ----------------------------- Pagination -------------------------------- */
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filteredRows.length / rowsPerPage)),
     [filteredRows.length, rowsPerPage],
   );
 
   useEffect(() => {
-    // caso filtro/ordenacao reduza o total, garante que currentPage é válido
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
@@ -200,7 +200,6 @@ export function ReceivableTransactions({ filterType }: Props) {
     return filteredRows.slice(start, start + rowsPerPage);
   }, [filteredRows, currentPage, rowsPerPage]);
 
-  /* -------------------------- Column Definitions --------------------------- */
   const columns = [
     { key: "date" as const, label: "Data Pag.", sortable: true },
     { key: "origin" as const, label: "Clientes", sortable: true },
@@ -220,6 +219,20 @@ export function ReceivableTransactions({ filterType }: Props) {
     return <ChevronUp className="h-4 w-4 text-gray-300" />;
   };
 
+  const handleRedirect = (row: TransactionProps) => {
+    if (row.status === "recebido") {
+      return;
+    } else if (row.status !== "a_receber") {
+      return router.push(`/receivable/update/${row.id}`);
+    } else if (row.status === "a_receber") {
+      if (accessLevel === "common") {
+        return router.push(`/receivable/receive/${row.id}`);
+      } else if (accessLevel === "admin") {
+        return router.push(`/receivable/approve/${row.id}`);
+      }
+    }
+  };
+
   /* --------------------------------- JSX ---------------------------------- */
   return (
     <>
@@ -228,6 +241,35 @@ export function ReceivableTransactions({ filterType }: Props) {
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Fluxo de Recebimentos</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="rounded-md border border-zinc-200 px-4 py-2 font-semibold text-zinc-400">
+                  Acesso {accessLevel === "common" ? "Comum" : "Diretor"}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="border-zinc-200">
+                <DropdownMenuItem
+                  onClick={() => setAccessLevel("common")}
+                  className={cn(
+                    "hover:bg-primary/20 cursor-pointer transition duration-300",
+                    accessLevel === "common" &&
+                      "bg-primary/20 text-primary font-semibold",
+                  )}
+                >
+                  Comum
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setAccessLevel("admin")}
+                  className={cn(
+                    "hover:bg-primary/20 cursor-pointer transition duration-300",
+                    accessLevel === "admin" &&
+                      "bg-primary/20 text-primary font-semibold",
+                  )}
+                >
+                  Diretor
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <OrangeButton
@@ -299,7 +341,10 @@ export function ReceivableTransactions({ filterType }: Props) {
           <TableBody>
             {paginatedRows.map((row) => (
               <Fragment key={row.id}>
-                <TableRow className="hover:bg-primary/20 h-14 cursor-pointer transition">
+                <TableRow
+                  onClick={() => handleRedirect(row)}
+                  className="hover:bg-primary/20 h-14 cursor-pointer transition"
+                >
                   {/* Data */}
                   <TableCell className="py-0.5 text-sm whitespace-nowrap">
                     {moment(row.date).format("DD/MM/YYYY")}

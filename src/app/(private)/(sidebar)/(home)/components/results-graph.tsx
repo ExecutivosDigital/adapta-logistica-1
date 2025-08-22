@@ -1,12 +1,18 @@
 "use client";
-import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useValueContext } from "@/context/ValueContext";
-import { getLocalTimeZone } from "@internationalized/date";
+import { cn } from "@/utils/cn";
 import { ApexOptions } from "apexcharts";
 import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
+import moment from "moment";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { DateValue } from "react-aria-components";
+import { DateRange, SelectRangeEventHandler } from "react-day-picker";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
@@ -113,18 +119,20 @@ export function HomeResultsGraph() {
       ],
     },
   });
-  const [date, setDate] = useState<Date | null>(new Date());
-  const handleDateChange = (value: DateValue | null) => {
-    if (!value) {
-      setDate(null);
-      return;
-    }
 
-    // CalendarDate, ZonedDateTime e afins expõem .toDate()
-    if ("toDate" in value) {
-      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  const [dateRange, setDateRange] = useState({
+    from: moment().subtract(1, "month").toDate(),
+    to: moment().toDate(),
+  });
+
+  const handleSelect: SelectRangeEventHandler = (
+    range: DateRange | undefined,
+  ) => {
+    if (range && range.from && range.to) {
+      setDateRange({ from: range.from, to: range.to });
+    } else {
+      setDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+    }
   };
 
   return (
@@ -137,14 +145,26 @@ export function HomeResultsGraph() {
           <span className="text-sm font-semibold">Resultado Consolidado</span>
         </div>
 
-        <div className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
-          <SimpleDatePicker
-            value={date}
-            label="Filtro"
-            onChange={handleDateChange}
-            view="day"
-          />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="cursor-pointer rounded-md border border-zinc-200 px-2 py-1 text-zinc-400">
+              {moment(dateRange.from).format("DD/MM/YYYY")} -{" "}
+              {moment(dateRange.to).format("DD/MM/YYYY")}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="left" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={dateRange?.from}
+              selected={dateRange}
+              classNames={{
+                day_range_middle: cn("bg-zinc-400", "hover:bg-zinc-500"),
+              }}
+              onSelect={handleSelect}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <span className="text-2xl font-semibold">
         {viewAllValues ? "R$180.789,00" : "********"}

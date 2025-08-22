@@ -40,7 +40,6 @@ export default function Login() {
   const onSubmit = handleSubmit(
     async ({ email, password }) => {
       const res = await PostAPI("/user/signin", { email, password }, false);
-      console.log("response", res);
       if (res?.status === 200) {
         toast.success("Login realizado com sucesso!");
         cookies.set(

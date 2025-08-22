@@ -1,11 +1,17 @@
 "use client";
+import { Calendar } from "@/components/ui/calendar";
 import { CustomPagination } from "@/components/ui/custom-pagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
-import { getLocalTimeZone } from "@internationalized/date";
+import { cn } from "@/utils/cn";
 import { ChevronRight, File } from "lucide-react";
+import moment from "moment";
 import { useState } from "react";
-import { DateValue } from "react-aria-components";
+import { DateRange, SelectRangeEventHandler } from "react-day-picker";
 import EquipmentAttachmentModal from "./EquipmentAttachmentModal";
 
 export function Attachments() {
@@ -13,19 +19,21 @@ export function Attachments() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [openEquipmentAttachmentModal, setOpenEquipmentAttachmentModal] =
     useState<boolean>(false);
-  const [date, setDate] = useState<Date | null>(new Date());
-  const handleDateChange = (value: DateValue | null) => {
-    if (!value) {
-      setDate(null);
-      return;
-    }
+  const [dateRange, setDateRange] = useState({
+    from: moment().subtract(1, "month").toDate(),
+    to: moment().toDate(),
+  });
 
-    // CalendarDate, ZonedDateTime e afins expõem .toDate()
-    if ("toDate" in value) {
-      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  const handleSelect: SelectRangeEventHandler = (
+    range: DateRange | undefined,
+  ) => {
+    if (range && range.from && range.to) {
+      setDateRange({ from: range.from, to: range.to });
+    } else {
+      setDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+    }
   };
+
   return (
     <>
       <div className="border-primary w-full overflow-hidden rounded-2xl border">
@@ -33,16 +41,26 @@ export function Attachments() {
           <span className="text-sm font-semibold xl:text-xl">
             Documentos Financeiros
           </span>
-          <div className="self-star flex items-center gap-2 rounded-lg border border-zinc-400 p-2 text-black">
-            <div className="">
-              <SimpleDatePicker
-                value={date}
-                label="Ano Atual"
-                view="day"
-                onChange={handleDateChange}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="cursor-pointer rounded-md border border-zinc-200 px-2 py-1 text-zinc-400">
+                {moment(dateRange.from).format("DD/MM/YYYY")} -{" "}
+                {moment(dateRange.to).format("DD/MM/YYYY")}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="left" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                classNames={{
+                  day_range_middle: cn("bg-zinc-400", "hover:bg-zinc-500"),
+                }}
+                onSelect={handleSelect}
               />
-            </div>
-          </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="flex h-96 w-full flex-col">
           <ScrollArea className="h-80 w-full">

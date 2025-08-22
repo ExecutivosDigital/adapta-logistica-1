@@ -1,4 +1,5 @@
 "use client";
+import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,12 +7,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { useValueContext } from "@/context/ValueContext";
-import { getLocalTimeZone } from "@internationalized/date";
+import { cn } from "@/utils/cn";
 import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
+import moment from "moment";
 import { useState } from "react";
-import { DateValue } from "react-aria-components";
+import { DateRange, SelectRangeEventHandler } from "react-day-picker";
 export function PayableFinancialLists() {
   const { viewAllValues } = useValueContext();
   const incomeList = [
@@ -119,31 +120,45 @@ export function PayableFinancialLists() {
       value: 0,
     },
   ];
-  const [date, setDate] = useState<Date | null>(new Date());
-  const handleDateChange = (value: DateValue | null) => {
-    if (!value) {
-      setDate(null);
-      return;
-    }
+  const [dateRange, setDateRange] = useState({
+    from: moment().subtract(1, "month").toDate(),
+    to: moment().toDate(),
+  });
 
-    // CalendarDate, ZonedDateTime e afins expõem .toDate()
-    if ("toDate" in value) {
-      setDate(value.toDate(getLocalTimeZone())); // <-- ✅ sem salto!
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } else if (value !== null && (value as any) instanceof Date) setDate(value);
+  const handleSelect: SelectRangeEventHandler = (
+    range: DateRange | undefined,
+  ) => {
+    if (range && range.from && range.to) {
+      setDateRange({ from: range.from, to: range.to });
+    } else {
+      setDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+    }
   };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between">
         <span className="font-semibold">Fluxo Consolidado</span>
-        <div className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 text-zinc-400 focus:outline-none">
-          <SimpleDatePicker
-            value={date}
-            label="Filtro"
-            onChange={handleDateChange}
-            view="day"
-          />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="cursor-pointer rounded-md border border-zinc-200 px-2 py-1 text-zinc-400">
+              {moment(dateRange.from).format("DD/MM/YYYY")} -{" "}
+              {moment(dateRange.to).format("DD/MM/YYYY")}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="left" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={dateRange?.from}
+              selected={dateRange}
+              classNames={{
+                day_range_middle: cn("bg-zinc-400", "hover:bg-zinc-500"),
+              }}
+              onSelect={handleSelect}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="flex w-full flex-col items-center justify-between gap-2 xl:flex-row xl:gap-8">
         <div className="flex w-full flex-col rounded-xl border border-zinc-200 shadow-sm xl:w-1/2">

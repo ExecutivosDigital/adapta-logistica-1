@@ -3,7 +3,39 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 export const config = {
-  matcher: ["/test"],
+  matcher: [
+    "/",
+    "/bank-accounts",
+    "/bank-accounts/create",
+    "/calendar",
+    "/home2",
+    "/profile",
+    "/purchase-approval",
+    "/purchase-approval/:id",
+    "/suppliers-and-customers",
+    "/suppliers-and-customers/:id",
+    "/transactions/payable",
+    "/transactions/payable/all",
+    "/transactions/payable/consolidated",
+    "/transactions/payable/overdue",
+    "/transactions/payable/this-month",
+    "/transactions/receivable",
+    "/transactions/receivable/consolidated",
+    "/transactions/receivable/overdue",
+    "/transactions/receivable/this-month",
+    "/payable/new",
+    "/payable/add-document/:id",
+    "/payable/approve/:id",
+    "/payable/pay/:id",
+    "/payable/payed/:id",
+    "/payable/recurring/new",
+    "/payable/recurring/add-document/:id",
+    "/receivable/new",
+    "/receivable/update/:id",
+    "/receivable/update-2/:id",
+    "/receivable/approve/:id",
+    "/receivable/receive/:id",
+  ],
 };
 
 export async function middleware(req: NextRequest) {
@@ -46,7 +78,6 @@ export async function middleware(req: NextRequest) {
   const Token = process.env.NEXT_PUBLIC_USER_TOKEN;
   if (!Token) return NextResponse.redirect(new URL("/login", req.url));
   const token = cookieStore.get(Token);
-  console.log("tkn", token);
 
   if (!token) return NextResponse.redirect(new URL("/login", req.url));
 

@@ -186,10 +186,7 @@ export function Section() {
   //     fileUrl?: string;
   //   },
   // ) {
-  //   console.log("chatIdToPost", chatIdToPost);
-  //   console.log("message text", message.text);
-  //   console.log("message entity", message.entity);
-  //   console.log("message mimeType", message.mimeType);
+
   //   try {
   //     const response = await AuthPostAPI(
   //       `/message/${chatIdToPost}`,
@@ -200,7 +197,6 @@ export function Section() {
   //       },
   //       userToken,
   //     );
-  //     console.log(response, response);
   //   } catch (error) {
   //     console.error("Erro ao postar mensagem:", error);
   //   }
@@ -449,16 +445,12 @@ export function Section() {
         const form = new FormData();
         form.append("file", fileToSend);
         // try {
-        //   console.log("vai tentar enviar o arquivo");
         //   const resp = await AuthPostAPI(
         //     `message/${currentChatId}/file`,
         //     form,
         //     userToken,
         //   );
-        //   console.log("enviou e continuou");
-        //   console.log("resp", resp);
         //   if (resp.status === 200 && resp.body.fileUrl)
-        //     console.log("arquivo enviado com sucesso");
         // } catch (e) {
         //   console.error("Falha upload backend:", e);
         // }

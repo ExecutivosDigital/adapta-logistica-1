@@ -1,9 +1,7 @@
 "use client";
-import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical, Filter, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { DateValue } from "react-aria-components";
 
 import {
   Category,
@@ -12,15 +10,17 @@ import {
   useRandomisedCategories,
 } from "./launch-type-modal";
 
+import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
+import moment from "moment";
+import { DateRange, SelectRangeEventHandler } from "react-day-picker";
 
 export default function HomeCategoryList() {
   const randomisedCategories = useRandomisedCategories();
@@ -44,13 +44,23 @@ export default function HomeCategoryList() {
     setSelected((prev) => prev.filter((c) => c.conta !== conta));
 
   /* -------------------- data filter --------------------------*/
-  const [date, setDate] = useState<Date | null>(new Date());
-  const handleDateChange = (value: DateValue | null) => {
-    if (!value) return setDate(null);
-    if ("toDate" in value) setDate(value.toDate(getLocalTimeZone()));
-    if (value !== null && value instanceof Date) setDate(value);
+  const [dateRange, setDateRange] = useState({
+    from: moment().subtract(1, "month").toDate(),
+    to: moment().toDate(),
+  });
+
+  const handleSelect: SelectRangeEventHandler = (
+    range: DateRange | undefined,
+  ) => {
+    if (range && range.from && range.to) {
+      setDateRange({ from: range.from, to: range.to });
+    } else {
+      setDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+    }
   };
+
   const listToDisplay = selected.length > 0 ? selected : allCategories;
+
   return (
     <>
       <LaunchTypeModal
@@ -87,14 +97,26 @@ export default function HomeCategoryList() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <div className="rounded-md border border-zinc-200 px-2 py-1 text-zinc-400">
-              <SimpleDatePicker
-                value={date}
-                label="Filtro"
-                onChange={handleDateChange}
-                view="day"
-              />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="cursor-pointer rounded-md border border-zinc-200 px-2 py-1 text-zinc-400">
+                  {moment(dateRange.from).format("DD/MM/YYYY")} -{" "}
+                  {moment(dateRange.to).format("DD/MM/YYYY")}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="left" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange?.from}
+                  selected={dateRange}
+                  classNames={{
+                    day_range_middle: cn("bg-zinc-400", "hover:bg-zinc-500"),
+                  }}
+                  onSelect={handleSelect}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
