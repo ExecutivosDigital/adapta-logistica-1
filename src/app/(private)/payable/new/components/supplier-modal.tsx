@@ -1,16 +1,19 @@
 "use client";
+import { SupplierProps } from "@/@types/financial-data";
 import { cn } from "@/utils/cn";
 import { Plus, Search } from "lucide-react";
 import DollarIcon from "../../../../../../public/icons/dollar";
-import { ClientProps, DataType, SupplierProps } from "../page";
+import { DataType } from "../page";
 
 interface SupplierModalProps {
   setOpenCreateClientSheet: React.Dispatch<React.SetStateAction<boolean>>;
   filteredSuppliers: string;
   setFilteredSuppliers: React.Dispatch<React.SetStateAction<string>>;
   suppliers: SupplierProps[];
-  selectedClient: ClientProps;
-  setSelectedClient: React.Dispatch<React.SetStateAction<ClientProps>>;
+  selectedSupplier: SupplierProps | null;
+  setSelectedSupplier: React.Dispatch<
+    React.SetStateAction<SupplierProps | null>
+  >;
   currentPage: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   isOpenSupplierModal: boolean;
@@ -24,8 +27,8 @@ export function SupplierModal({
   filteredSuppliers,
   setFilteredSuppliers,
   suppliers,
-  selectedClient,
-  setSelectedClient,
+  selectedSupplier,
+  setSelectedSupplier,
   currentPage,
   setCurrentPage,
   isOpenSupplierModal,
@@ -110,10 +113,10 @@ export function SupplierModal({
                   )
                   .map((fornecedor, index) => (
                     <li
-                      onClick={() => setSelectedClient(fornecedor)}
+                      onClick={() => setSelectedSupplier(fornecedor)}
                       key={index}
                       className={`hover:bg-primary/20 flex cursor-pointer flex-col items-start justify-between rounded-lg border-b border-zinc-200 p-1 transition duration-200 xl:flex-row xl:items-center xl:p-2 ${
-                        selectedClient.cnpj === fornecedor.cnpj
+                        selectedSupplier?.cnpj === fornecedor.cnpj
                           ? "bg-primary/20"
                           : ""
                       }`}
@@ -141,17 +144,17 @@ export function SupplierModal({
                               className="fill-primary text-primary"
                             />
                           </span>
-                          <span>{fornecedor.expirationDate}</span>
+                          <span>fornecedor.expirationDate</span>
                         </div>
                         <span
                           className={cn(
                             "w-32 rounded-md border px-3 py-1 font-semibold",
-                            fornecedor.status === "ATIVO"
-                              ? "border-emerald-600 bg-emerald-600/20 text-emerald-600"
-                              : "border-rose-600 bg-rose-600/20 text-rose-600",
+                            // fornecedor.status === "ATIVO"
+                            //   ? "border-emerald-600 bg-emerald-600/20 text-emerald-600"
+                            //   : "border-rose-600 bg-rose-600/20 text-rose-600",
                           )}
                         >
-                          {fornecedor.status}
+                          fornecedor.status
                         </span>
                       </div>
                     </li>
@@ -182,7 +185,10 @@ export function SupplierModal({
               </button>
               <button
                 onClick={() => {
-                  setData({ ...data, supplier: selectedClient });
+                  setData({
+                    ...data,
+                    supplierId: selectedSupplier?.id as string,
+                  });
                   setIsOpenSupplierModal(false);
                 }}
                 className="text-primary hover:bg-primary hover:border-primary flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 font-bold transition duration-200 hover:text-white xl:px-6 xl:py-2"

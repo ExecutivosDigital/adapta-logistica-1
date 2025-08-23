@@ -121,7 +121,13 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
     const totalAssigned = data.costCenters.reduce((sum, center) => {
       return sum + (parseFloat(center.value) || 0);
     }, 0);
-    return data.totalValue - totalAssigned;
+
+    // Use cents-based calculation to avoid floating point precision issues
+    const totalCents = Math.round(data.totalValue * 100);
+    const assignedCents = Math.round(totalAssigned * 100);
+    const remainingCents = totalCents - assignedCents;
+
+    return remainingCents / 100;
   };
 
   return (

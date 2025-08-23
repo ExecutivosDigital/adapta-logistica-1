@@ -1,22 +1,29 @@
 /* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
+import { SupplierProps } from "@/@types/financial-data";
 import { OrangeButton } from "@/components/OrangeButton";
+import { AiFileReader } from "@/components/ai-file-reader";
 import {
-  AiFileReader,
-  PaymentDocumentProps,
-} from "@/components/ai-file-reader";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useApiContext } from "@/context/ApiContext";
+import { useBranch } from "@/context/BranchContext";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  MapPin,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import { AccontsType, Accounts } from "./components/acconts";
 import { AccountingModal } from "./components/accounting-modal";
 import CreateClientSheet from "./components/create-client-sheet";
@@ -26,46 +33,31 @@ import { Step3 } from "./components/step3";
 import { SupplierModal } from "./components/supplier-modal";
 
 export interface DataType {
-  totalValue: number;
-  entryType: "DESPESAS" | "IMPOSTOS" | "C. VENDAS";
-  supplier: {
-    name: string;
-    cnpj: string;
-  };
-  documentType: string;
-  amount: number;
-  currency: string;
-  costType: string;
-  category: string;
-  costCenters: {
-    name: string;
+  businessUnitId: string;
+  dueDate: string;
+  installmentCount: string;
+  ledgerAccountId: string;
+  paymentMode: "FULL" | "INSTALLMENT";
+  resultCenters: {
+    resultCenterId: string;
     value: string;
     locked?: boolean;
   }[];
-  accountingAccount: {
-    code: string;
-    description: string;
-  };
-  paymentMethod: {
-    bank: string;
-    account: string;
-  };
-  paymentForm: string;
-  documentNumber: string;
-  issueDate: Date | null;
-  dueDate: string;
-  paymentTerms: string;
-  paymentDetails: string;
-  description: string;
-  approval: string;
-  mail: string;
-}
-
-export interface SupplierProps {
-  name: string;
-  cnpj: string;
-  expirationDate: string;
-  status: string;
+  status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED";
+  subsidiaryId: string;
+  supplierId: string;
+  transactions: {
+    dueDate: string;
+    position: string;
+    status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED";
+    value: number;
+    paymentType: string;
+    locked?: boolean;
+  }[];
+  type: "EXPENSES" | "FEE" | "COST" | "RECURRING";
+  mainDocumentUrl?: string;
+  referenceMonth: number | null;
+  value: number;
 }
 
 export interface ClientProps {
@@ -82,6 +74,17 @@ interface LaunchType {
 
 export default function NewPayable() {
   const router = useRouter();
+  const { PostAPI } = useApiContext();
+  const {
+    branches,
+    selectedBranch,
+    setSelectedBranch,
+    businessUnits,
+    selectedBusinessUnit,
+    setSelectedBusinessUnit,
+  } = useBranch();
+  const { suppliers, ledgerAccounts, resultCenters } =
+    useFinancialDataContext();
 
   const ITEMS_PER_PAGE = 6;
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
@@ -96,10 +99,8 @@ export default function NewPayable() {
   const [selectedCostCenters, setSelectedCostCenters] = useState<
     { name: string; value: string; locked?: boolean }[]
   >([]);
-  const [selectedClient, setSelectedClient] = useState<ClientProps>({
-    name: "",
-    cnpj: "",
-  });
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<SupplierProps | null>(null);
   const [selectedAccount, setSelectedAccount] = useState<AccontsType>({
     contaContabil: "",
     descricao: "",
@@ -108,69 +109,21 @@ export default function NewPayable() {
     tipoConta: "",
   });
   const [data, setData] = useState<DataType>({
-    totalValue: 0,
-    entryType: "DESPESAS",
-    supplier: {
-      name: "",
-      cnpj: "",
-    },
-    documentType: "",
-    amount: 0,
-    currency: "",
-    costType: "",
-    category: "",
-    costCenters: [],
-    accountingAccount: {
-      code: "",
-      description: "",
-    },
-    paymentMethod: {
-      bank: "",
-      account: "",
-    },
-    paymentForm: "",
-    documentNumber: "",
-    issueDate: null,
+    businessUnitId: selectedBusinessUnit?.id || "",
     dueDate: "",
-    paymentTerms: "",
-    paymentDetails: "",
-    description: "",
-    approval: "",
-    mail: "",
+    installmentCount: "1",
+    ledgerAccountId: "",
+    paymentMode: "FULL",
+    referenceMonth: null,
+    resultCenters: [],
+    status: "PENDING",
+    subsidiaryId: selectedBranch?.id || "",
+    supplierId: "",
+    transactions: [],
+    type: "EXPENSES",
+    value: 0,
+    mainDocumentUrl: "",
   });
-
-  const suppliers: SupplierProps[] = [
-    {
-      name: "Fornecedor 1",
-      cnpj: "11.111.111/0001-11",
-      expirationDate: "01/01/2025",
-      status: "ATIVO",
-    },
-    {
-      name: "Fornecedor 2",
-      cnpj: "22.222.222/0002-22",
-      expirationDate: "02/02/2025",
-      status: "INATIVO",
-    },
-    {
-      name: "Fornecedor 3",
-      cnpj: "33.333.333/0003-33",
-      expirationDate: "03/03/2025",
-      status: "ATIVO",
-    },
-    {
-      name: "Fornecedor 4",
-      cnpj: "44.444.444/0004-44",
-      expirationDate: "04/04/2025",
-      status: "INATIVO",
-    },
-    {
-      name: "Fornecedor 5",
-      cnpj: "55.555.555/0005-55",
-      expirationDate: "05/05/2025",
-      status: "ATIVO",
-    },
-  ];
 
   const filteredAccounts = useMemo(() => {
     if (!filteredContabilAccounts.trim()) return Accounts;
@@ -211,104 +164,81 @@ export default function NewPayable() {
     return Array.from({ length: to - from + 1 }, (_, i) => from + i);
   }, [pageCount, currentPage]);
 
-  const handleData = (payment: PaymentDocumentProps) => {
-    const supplier = suppliers.find(
-      (supplier) => supplier.cnpj === payment.cpfCnpj,
-    );
-
-    setData({
-      ...data,
-      supplier: supplier || { name: "", cnpj: "" },
-      amount: payment.value,
-      dueDate: payment.dueDate,
-      documentNumber: payment.documentNumber,
-    });
-  };
-
   const handleCostCenterToggle = (costCenterName: string) => {
-    const isSelected = selectedCostCenters.some(
-      (cc) => cc.name === costCenterName,
-    );
-
-    let updatedSelectedCenters;
-    let updatedCostCenters;
-
-    if (isSelected) {
-      // Remove the cost center
-      updatedSelectedCenters = selectedCostCenters.filter(
-        (cc) => cc.name !== costCenterName,
-      );
-      updatedCostCenters = data.costCenters.filter(
-        (cc) => cc.name !== costCenterName,
-      );
-    } else {
-      // Add the cost center
-      const newCostCenter = {
-        name: costCenterName,
-        value: "0.00",
-        locked: false,
-      };
-      updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
-      updatedCostCenters = [...data.costCenters, newCostCenter];
-    }
-
-    setSelectedCostCenters(updatedSelectedCenters);
-
-    // Apply the same distribution logic as distributeValueEvenly
-    if (updatedCostCenters.length > 0) {
-      const lockedCenters = updatedCostCenters.filter(
-        (center) => center.locked,
-      );
-      const unlockedCenters = updatedCostCenters.filter(
-        (center) => !center.locked,
-      );
-
-      const lockedTotal = lockedCenters.reduce(
-        (sum, center) => sum + (parseFloat(center.value) || 0),
-        0,
-      );
-
-      const remainingValue = data.totalValue - lockedTotal;
-
-      if (unlockedCenters.length > 0 && remainingValue >= 0) {
-        // Convert to cents to avoid floating point issues
-        const remainingCents = Math.round(remainingValue * 100);
-        const baseValueCents = Math.floor(
-          remainingCents / unlockedCenters.length,
-        );
-        const remainder = remainingCents % unlockedCenters.length;
-
-        const finalUpdatedCostCenters = updatedCostCenters.map(
-          (center, index) => {
-            if (center.locked) {
-              return center;
-            }
-
-            // Find the position of this center in the unlocked centers array
-            const unlockedIndex = unlockedCenters.findIndex(
-              (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
-            );
-
-            // Distribute remainder to first N centers (where N = remainder)
-            const extraCent = unlockedIndex < remainder ? 1 : 0;
-            const finalValueCents = baseValueCents + extraCent;
-            const finalValue = (finalValueCents / 100).toFixed(2);
-
-            return {
-              ...center,
-              value: finalValue,
-            };
-          },
-        );
-
-        setData({ ...data, costCenters: finalUpdatedCostCenters });
-      } else {
-        setData({ ...data, costCenters: updatedCostCenters });
-      }
-    } else {
-      setData({ ...data, costCenters: [] });
-    }
+    // const isSelected = selectedCostCenters.some(
+    //   (cc) => cc.name === costCenterName,
+    // );
+    // let updatedSelectedCenters;
+    // let updatedCostCenters;
+    // if (isSelected) {
+    //   updatedSelectedCenters = selectedCostCenters.filter(
+    //     (cc) => cc.name !== costCenterName,
+    //   );
+    //   updatedCostCenters = data.costCenters.filter(
+    //     (cc) => cc.name !== costCenterName,
+    //   );
+    // } else {
+    //   const newCostCenter = {
+    //     name: costCenterName,
+    //     value: "0.00",
+    //     locked: false,
+    //   };
+    //   updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
+    //   updatedCostCenters = [...data.costCenters, newCostCenter];
+    // }
+    // setSelectedCostCenters(updatedSelectedCenters);
+    // if (updatedCostCenters.length > 0) {
+    //   const lockedCenters = updatedCostCenters.filter(
+    //     (center) => center.locked,
+    //   );
+    //   const unlockedCenters = updatedCostCenters.filter(
+    //     (center) => !center.locked,
+    //   );
+    //   const lockedTotal = lockedCenters.reduce(
+    //     (sum, center) => sum + (parseFloat(center.value) || 0),
+    //     0,
+    //   );
+    //   const remainingValue = data.totalValue - lockedTotal;
+    //   if (unlockedCenters.length > 0 && remainingValue >= 0) {
+    //     const remainingCents = Math.round(remainingValue * 100);
+    //     const baseValueCents = Math.floor(
+    //       remainingCents / unlockedCenters.length,
+    //     );
+    //     const remainder = remainingCents % unlockedCenters.length;
+    //     const finalUpdatedCostCenters = updatedCostCenters.map(
+    //       (center, index) => {
+    //         if (center.locked) {
+    //           return center;
+    //         }
+    //         const unlockedIndex = unlockedCenters.findIndex(
+    //           (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
+    //         );
+    //         const extraCent = unlockedIndex < remainder ? 1 : 0;
+    //         const finalValueCents = baseValueCents + extraCent;
+    //         const finalValue = (finalValueCents / 100).toFixed(2);
+    //         return {
+    //           ...center,
+    //           value: finalValue,
+    //         };
+    //       },
+    //     );
+    //     setData({ ...data, costCenters: finalUpdatedCostCenters });
+    //   } else {
+    //     setData({ ...data, costCenters: updatedCostCenters });
+    //   }
+    // } else {
+    //   setData({ ...data, costCenters: [] });
+    // }
   };
+
+  const handleData = () => {
+    return;
+  };
+
+  async function CreatePayable() {
+    const create = await PostAPI("/payable", data, true);
+    console.log("create", create);
+  }
 
   useEffect(() => {
     setCurrentPage(1);
@@ -371,7 +301,7 @@ export default function NewPayable() {
                     </div>
                     R$
                   </span>
-                  {data.totalValue.toLocaleString("pt-BR", {
+                  {data.value.toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -380,6 +310,86 @@ export default function NewPayable() {
                   Preço da Fatura
                 </span>
               </div>
+            </div>
+            <div className="my-4 h-px bg-zinc-200/60" />
+            <div className="flex items-center justify-between gap-4">
+              <label className="flex w-1/2 flex-col gap-1">
+                <span className="text-zinc-600">Filial</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                      <MapPin
+                        size={16}
+                        className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                      />
+                      <div className="flex flex-1 flex-col">
+                        <span className="flex-1 2xl:text-lg">
+                          {selectedBranch?.name}
+                        </span>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[var(--radix-dropdown-menu-trigger-width)]"
+                    side="top"
+                  >
+                    {branches.map((branch) => (
+                      <DropdownMenuItem
+                        className={cn(
+                          selectedBranch?.id === branch.id && "bg-primary/20",
+                        )}
+                        key={branch.id}
+                        onClick={() => setSelectedBranch(branch)}
+                      >
+                        {branch.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </label>
+              <label className="flex w-1/2 flex-col gap-1">
+                <span className="text-zinc-600">Unidade de Negócio</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                      <MapPin
+                        size={16}
+                        className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                      />
+                      <div className="flex flex-1 flex-col">
+                        <span className="flex-1 2xl:text-lg">
+                          {selectedBusinessUnit?.name}
+                        </span>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[var(--radix-dropdown-menu-trigger-width)]"
+                    side="top"
+                  >
+                    {businessUnits.map((businessUnit) => (
+                      <DropdownMenuItem
+                        className={cn(
+                          selectedBusinessUnit?.id === businessUnit.id &&
+                            "bg-primary/20",
+                        )}
+                        key={businessUnit.id}
+                        onClick={() => setSelectedBusinessUnit(businessUnit)}
+                      >
+                        {businessUnit.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </label>
             </div>
             <div className="my-4 h-px bg-zinc-200/60" />
             {steps === 1 ? (
@@ -400,21 +410,23 @@ export default function NewPayable() {
             )}
             {steps === 1 ? (
               <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
-                <button
-                  onClick={() => router.back()}
-                  className="h-9 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
-                >
-                  Salvar rascunho
-                </button>
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={() => router.back()}
+                    className="h-9 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                  >
+                    Salvar rascunho
+                  </button>
 
-                <OrangeButton
-                  className="h-9 w-[132px]"
-                  onClick={() => setSteps(steps + 1)}
-                  icon={<ChevronDown size={16} className="-rotate-90" />}
-                  iconPosition="right"
-                >
-                  Continuar
-                </OrangeButton>
+                  <OrangeButton
+                    className="h-9 w-[132px]"
+                    onClick={() => setSteps(steps + 1)}
+                    icon={<ChevronDown size={16} className="-rotate-90" />}
+                    iconPosition="right"
+                  >
+                    Continuar
+                  </OrangeButton>
+                </div>
               </footer>
             ) : steps === 2 ? (
               <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
@@ -428,10 +440,11 @@ export default function NewPayable() {
                 <OrangeButton
                   className="h-9 w-[132px]"
                   onClick={() => {
-                    toast.success("À Pagar criado com sucesso!");
-                    setTimeout(() => {
-                      router.push("/calendar");
-                    }, 1000);
+                    CreatePayable();
+                    // toast.success("À Pagar criado com sucesso!");
+                    // setTimeout(() => {
+                    //   router.push("/calendar");
+                    // }, 1000);
                   }}
                   icon={<ChevronDown size={16} className="-rotate-90" />}
                   iconPosition="right"
@@ -467,8 +480,8 @@ export default function NewPayable() {
           filteredSuppliers={filteredSuppliers}
           setFilteredSuppliers={setFilteredSuppliers}
           suppliers={suppliers}
-          selectedClient={selectedClient}
-          setSelectedClient={setSelectedClient}
+          selectedSupplier={selectedSupplier}
+          setSelectedSupplier={setSelectedSupplier}
           isOpenSupplierModal={isOpenSupplierModal}
           setIsOpenSupplierModal={setIsOpenSupplierModal}
           data={data}
@@ -479,22 +492,8 @@ export default function NewPayable() {
         <LaunchTypeModal
           show={isOpenLaunchTypeModal}
           onClose={() => setIsOpenLaunchTypeModal(false)}
-          showingTaxes={data.entryType === "IMPOSTOS"}
-          selectCostCenter={(launch: LaunchType) =>
-            handleCostCenterToggle(launch.centroResultado)
-          }
-          onSelect={(launch: LaunchType) => {
-            setData((prev) => ({
-              ...prev,
-              accountingAccount: {
-                code: launch.conta,
-                description: launch.tipoLancamento,
-              },
-              documentType: launch.descNivel4,
-            }));
-
-            setIsOpenLaunchTypeModal(false);
-          }}
+          data={data}
+          setData={setData}
         />
       )}
       {isOpenContabilAccountModal && (

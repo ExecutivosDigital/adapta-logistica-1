@@ -3,7 +3,6 @@
 import { useBranch } from "@/context/BranchContext";
 import { useSidebar } from "@/context/SidebarContext";
 import { useValueContext } from "@/context/ValueContext";
-import { branches } from "@/mock/branches";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { Bell, ChevronDown, Eye, EyeOff, Menu } from "lucide-react";
 import {
@@ -15,7 +14,7 @@ import {
 
 export default function Header() {
   const { openMobile } = useSidebar();
-  const { selectedBranch, setSelectedBranch } = useBranch();
+  const { branches, selectedBranch, setSelectedBranch } = useBranch();
   const { viewAllValues, setViewAllValues } = useValueContext();
 
   return (
@@ -66,7 +65,7 @@ export default function Header() {
                   onClick={() => setSelectedBranch(branch)}
                 >
                   <span>{branch.name}</span>
-                  <span>CNPJ:{branch.CNPJ}</span>
+                  <span>CNPJ:{branch.cnpj}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

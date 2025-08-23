@@ -1,5 +1,4 @@
 "use client";
-import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,18 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useScreenWidth } from "@/lib/useScreenWidth";
-import { cn } from "@/utils/cn";
-import {
-  ChevronDown,
-  DollarSign,
-  Edit,
-  GripVertical,
-  Plus,
-  Search,
-} from "lucide-react";
-import moment from "moment";
+import { DollarSign, Edit, Search } from "lucide-react";
 import { useState } from "react";
 import { DataType } from "../page";
+import { TransactionsList } from "./installments-list";
 interface TechField {
   id: string;
   number: number;
@@ -165,7 +156,9 @@ export function Step3({ data, setData }: Props) {
       <div>
         <h3 className="mb-4 text-base font-semibold">Detalhes do Pagamento</h3>
 
-        {invoices.map((field, idx) => (
+        <TransactionsList data={data} setData={setData} />
+
+        {/* {invoices.map((field, idx) => (
           <div
             key={field.id}
             className="mb-4 grid grid-cols-12 items-center gap-2 xl:gap-4"
@@ -266,17 +259,7 @@ export function Step3({ data, setData }: Props) {
               </DropdownMenu>
             </div>
           </div>
-        ))}
-
-        <button
-          type="button"
-          onClick={addTechField}
-          className="flex h-5 items-center gap-1 rounded-lg border border-zinc-300 p-4 px-3 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-50"
-        >
-          <Plus size={14} /> Adicionar novo Pagamento
-        </button>
-
-        <div className="mt-6 h-px bg-zinc-200/60" />
+        ))} */}
       </div>
     </div>
   );

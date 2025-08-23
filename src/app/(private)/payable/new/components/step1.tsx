@@ -22,6 +22,7 @@ import { CategoryModal } from "./category-modal";
 import { CostCentersList } from "./cost-centers-list";
 
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { useScreenWidth } from "@/lib/useScreenWidth";
 import { getLocalTimeZone } from "@internationalized/date";
 import "moment/locale/pt-br";
@@ -290,32 +291,36 @@ export function Step1({
   ];
 
   const installments = [
-    "2 Pagamentos",
-    "3 Pagamentos",
-    "4 Pagamentos",
-    "5 Pagamentos",
-    "6 Pagamentos",
-    "7 Pagamentos",
-    "8 Pagamentos",
-    "9 Pagamentos",
-    "10 Pagamentos",
-    "11 Pagamentos",
-    "12 Pagamentos",
-    "Outra - Digite aqui",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
   ];
 
-  const paymentTerms = ["Total no Ato", "Parcelado"];
+  const paymentMode = ["FULL", "INSTALLMENT"];
+  const { width } = useScreenWidth();
+  const { suppliers, ledgerAccounts, resultCenters } =
+    useFinancialDataContext();
 
   const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredCostCenters, setFilteredCostCenters] = useState("");
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
-  const { width } = useScreenWidth();
+  const [isCustomInputActive, setIsCustomInputActive] = useState(false);
+  const [customValue, setCustomValue] = useState("");
 
   const categoryOptions =
-    data.costType && categoriesByCostType[data.costType as CostType]
-      ? categoriesByCostType[data.costType as CostType].filter(({ type }) =>
+    data.type && categoriesByCostType[data.type as CostType]
+      ? categoriesByCostType[data.type as CostType].filter(({ type }) =>
           type.toLowerCase().includes(filteredCategories.toLowerCase()),
         )
       : [];
@@ -328,20 +333,20 @@ export function Step1({
     // => divide por 100 para posicionar a vírgula
     const amountNumber = Number(onlyDigits) / 100;
 
-    setData({ ...data, amount: amountNumber });
+    setData({ ...data, value: amountNumber });
   };
 
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
-      setData({ ...data, issueDate: null });
+      setData({ ...data, referenceMonth: null });
       return;
     }
 
-    if ("toDate" in value) {
-      setData({ ...data, issueDate: value.toDate(getLocalTimeZone()) });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } else if (value !== null && (value as any) instanceof Date)
-      setData({ ...data, issueDate: value });
+    const date =
+      "toDate" in value ? value.toDate(getLocalTimeZone()) : (value as Date);
+
+    const monthNumber = moment(date).month();
+    setData({ ...data, referenceMonth: monthNumber });
   };
 
   return (
@@ -351,25 +356,25 @@ export function Step1({
           <div className="mt-2 flex gap-2">
             <div className="bg-primary/40 relative flex w-96 flex-row overflow-hidden rounded-lg p-2">
               <div
-                className={`absolute top-0 bottom-0 left-0 flex w-1/3 transform items-center justify-center transition-transform duration-300 ${data.entryType === "DESPESAS" ? "translate-x-0 pl-2" : data.entryType === "IMPOSTOS" ? "translate-x-full" : "translate-x-[200%] pr-2"}`}
+                className={`absolute top-0 bottom-0 left-0 flex w-1/3 transform items-center justify-center transition-transform duration-300 ${data.type === "EXPENSES" ? "translate-x-0 pl-2" : data.type === "FEE" ? "translate-x-full" : "translate-x-[200%] pr-2"}`}
               >
                 <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
               </div>
               <button
-                onClick={() => setData({ ...data, entryType: "DESPESAS" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "DESPESAS" ? "font-semibold text-white" : "text-white/80"}`}
+                onClick={() => setData({ ...data, type: "EXPENSES" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.type === "EXPENSES" ? "font-semibold text-white" : "text-white/80"}`}
               >
                 DESPESAS
               </button>
               <button
-                onClick={() => setData({ ...data, entryType: "IMPOSTOS" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "IMPOSTOS" ? "font-semibold text-white" : "text-white/80"}`}
+                onClick={() => setData({ ...data, type: "FEE" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.type === "FEE" ? "font-semibold text-white" : "text-white/80"}`}
               >
                 IMPOSTOS
               </button>
               <button
-                onClick={() => setData({ ...data, entryType: "C. VENDAS" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.entryType === "C. VENDAS" ? "font-semibold text-white" : "text-white/80"}`}
+                onClick={() => setData({ ...data, type: "COST" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.type === "COST" ? "font-semibold text-white" : "text-white/80"}`}
               >
                 <span className="w-max">C. VENDAS</span>
               </button>
@@ -380,9 +385,9 @@ export function Step1({
         <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
           <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">
-              {data.entryType === "DESPESAS"
+              {data.type === "EXPENSES"
                 ? "Fornecedor"
-                : data.entryType === "IMPOSTOS"
+                : data.type === "FEE"
                   ? "Impostos"
                   : "Parceiro"}
             </span>
@@ -396,10 +401,11 @@ export function Step1({
               />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1 2xl:text-lg">
-                  {data.supplier.name || "Selecione"}
+                  {suppliers.find((s) => s.id === data.supplierId)?.name ||
+                    "Selecione"}
                 </span>
                 <span className="text-zinc-400">
-                  {data.supplier.cnpj || ""}
+                  {suppliers.find((s) => s.id === data.supplierId)?.cnpj || ""}
                 </span>
               </div>
               <Edit
@@ -411,9 +417,9 @@ export function Step1({
 
           <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">
-              {data.entryType === "DESPESAS"
+              {data.type === "EXPENSES"
                 ? "Tipo de Lançamento"
-                : data.entryType === "IMPOSTOS"
+                : data.type === "FEE"
                   ? "Imposto - Código"
                   : "Tipo de Lançamento"}
             </span>
@@ -427,7 +433,8 @@ export function Step1({
               />
               <div className="flex h-full flex-1 items-center">
                 <span className="flex-1 2xl:text-lg">
-                  {data.documentType || "Selecione"}
+                  {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
+                    ?.name || "Selecione"}
                 </span>
               </div>
               <Edit
@@ -447,7 +454,7 @@ export function Step1({
                 />
                 <div className="flex h-full w-full flex-1 items-center justify-center text-center">
                   <input
-                    value={data.amount.toLocaleString("pt-br", {
+                    value={data.value.toLocaleString("pt-br", {
                       style: "currency",
                       currency: "BRL",
                     })}
@@ -469,8 +476,8 @@ export function Step1({
                       className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                     />
                     <div className="flex-1 text-zinc-700 2xl:text-lg">
-                      {data.issueDate
-                        ? moment(data.issueDate).format("MMM")
+                      {data.referenceMonth !== null
+                        ? moment().month(data.referenceMonth).format("MMM")
                         : moment().format("MMMM")}
                     </div>
                     <Edit
@@ -478,7 +485,11 @@ export function Step1({
                       className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
                     />
                     <SimpleDatePicker
-                      value={data.issueDate}
+                      value={
+                        data.referenceMonth !== null
+                          ? moment().month(data.referenceMonth).toDate()
+                          : null
+                      }
                       view="month"
                       invisible
                       onChange={handleDateChange}
@@ -542,7 +553,10 @@ export function Step1({
                     className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                   />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
-                    {data.paymentTerms || "Selecione"}
+                    {(data.paymentMode === "FULL"
+                      ? "Total no Ato"
+                      : data.paymentMode === "INSTALLMENT" && "Parcelado") ||
+                      "Selecione"}
                   </span>
                   <Edit
                     size={16}
@@ -556,15 +570,30 @@ export function Step1({
                 align={width > 768 ? "end" : "start"}
                 className="z-[999] w-72 border-zinc-200"
               >
-                {paymentTerms.map((term) => (
+                {paymentMode.map((term) => (
                   <DropdownMenuItem
                     key={term}
-                    onClick={() => setData({ ...data, paymentTerms: term })}
+                    onClick={() => {
+                      term === "INSTALLMENT"
+                        ? setData({
+                            ...data,
+                            paymentMode: term,
+                            installmentCount: "",
+                          })
+                        : term === "FULL" &&
+                          setData({
+                            ...data,
+                            paymentMode: term,
+                            installmentCount: "1",
+                          });
+                    }}
                     className="hover:bg-primary/20 cursor-pointer transition duration-300"
                   >
                     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      {term}
-                      {data.paymentTerms === term && (
+                      {term === "FULL"
+                        ? "Total no Ato"
+                        : term === "INSTALLMENT" && "Parcelado"}
+                      {data.paymentMode === term && (
                         <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
                       )}
                     </div>
@@ -584,7 +613,10 @@ export function Step1({
                     className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                   />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
-                    {data.paymentDetails || "Selecione"}
+                    {data.installmentCount !== ""
+                      ? data.installmentCount
+                      : "Selecione"}
+                    {data.installmentCount !== "" && " Pagamento(s)"}
                   </span>
                   <Edit
                     size={16}
@@ -607,33 +639,131 @@ export function Step1({
                   />
                   <Search size={14} />
                 </div>
-                {installments
-                  .filter((ins) =>
-                    ins
-                      .toLowerCase()
-                      .includes(filterInstallments.toLowerCase()),
-                  )
-                  .map((ins) => (
-                    <DropdownMenuItem
-                      key={ins}
-                      onClick={() => setData({ ...data, paymentDetails: ins })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {ins}
-                        {data.paymentDetails === ins && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
+
+                {data.paymentMode === "INSTALLMENT" ? (
+                  <>
+                    {installments
+                      .filter((ins) =>
+                        ins
+                          .toLowerCase()
+                          .includes(filterInstallments.toLowerCase()),
+                      )
+                      .map((ins) => (
+                        <DropdownMenuItem
+                          key={ins}
+                          onClick={() => {
+                            setData({ ...data, installmentCount: ins });
+                            setIsCustomInputActive(false);
+                          }}
+                          className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                        >
+                          <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                            {ins}
+                            {data.installmentCount === ins && (
+                              <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                            )}
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+
+                    {/* Custom input option */}
+                    {!isCustomInputActive ? (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          setIsCustomInputActive(true);
+                          setCustomValue("");
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
+                        className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                      >
+                        <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                          Outra - Digite aqui
+                        </div>
+                      </DropdownMenuItem>
+                    ) : (
+                      <div className="px-2 py-1">
+                        <div className="flex w-full flex-row items-center gap-2 border-b border-b-zinc-400 p-1 py-2">
+                          <input
+                            type="number"
+                            value={customValue}
+                            onChange={(e) => setCustomValue(e.target.value)}
+                            placeholder="Digite o número de parcelas"
+                            className="flex-1 bg-transparent focus:outline-none"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              e.stopPropagation(); // Prevent dropdown from handling this
+                              if (e.key === "Enter" && customValue.trim()) {
+                                setData({
+                                  ...data,
+                                  installmentCount: `${customValue}`,
+                                });
+                                setIsCustomInputActive(false);
+                                setCustomValue("");
+                              } else if (e.key === "Escape") {
+                                setIsCustomInputActive(false);
+                                setCustomValue("");
+                              }
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              if (customValue.trim()) {
+                                setData({
+                                  ...data,
+                                  installmentCount: `${customValue}`,
+                                });
+                              }
+                              setIsCustomInputActive(false);
+                              setCustomValue("");
+                            }}
+                            className="text-primary hover:text-primary/80 text-sm"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setIsCustomInputActive(false);
+                              setCustomValue("");
+                            }}
+                            className="text-sm text-zinc-500 hover:text-zinc-700"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
-                    </DropdownMenuItem>
-                  ))}
+                    )}
+                  </>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setData({ ...data, installmentCount: "Pagamento Único" })
+                    }
+                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                  >
+                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                      Pagamento Único
+                      <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                    </div>
+                  </DropdownMenuItem>
+                )}
+
                 {installments.filter((ins) =>
                   ins.toLowerCase().includes(filterInstallments.toLowerCase()),
-                ).length === 0 && (
-                  <div className="p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
+                ).length === 0 &&
+                  !isCustomInputActive && (
+                    <div className="p-2 text-center text-sm text-zinc-600">
+                      Nenhum item encontrado
+                    </div>
+                  )}
               </DropdownMenuContent>
             </DropdownMenu>
           </label>
@@ -696,7 +826,7 @@ export function Step1({
                     <button
                       onClick={() => {
                         setSelectedCostCenters([]);
-                        setData({ ...data, costCenters: [] });
+                        setData({ ...data, resultCenters: [] });
                       }}
                       className="text-sm text-red-500 hover:text-red-700"
                     >
@@ -706,26 +836,26 @@ export function Step1({
                 )}
 
                 <div className="flex flex-col">
-                  {costCenters
+                  {resultCenters
                     .filter((item) =>
-                      item
+                      item.name
                         .toLowerCase()
                         .includes(filteredCostCenters.toLowerCase()),
                     )
                     .map((item) => (
                       <DropdownMenuItem
-                        key={item}
+                        key={item.id}
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          handleCostCenterToggle(item);
+                          handleCostCenterToggle(item.id);
                         }}
                         className="hover:bg-primary/20 cursor-pointer transition duration-300"
                       >
                         <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                          {item}
+                          {item.name}
                           {selectedCostCenters.some(
-                            (cc) => cc.name === item,
+                            (cc) => cc.name === item.name,
                           ) && (
                             <div className="border-primary bg-primary flex h-4 w-4 items-center justify-center rounded-md border">
                               <Check size={12} className="text-white" />
@@ -751,10 +881,12 @@ export function Step1({
               />
               <div className="ml-4 flex flex-1 flex-col overflow-hidden text-left">
                 <span className="flex-1">
-                  {data.accountingAccount.code || "-"}
+                  {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
+                    ?.code || "-"}
                 </span>
                 <span className="truncate text-zinc-400">
-                  {data.accountingAccount.description || "Selecione"}
+                  {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
+                    ?.name || "Selecione"}
                 </span>
               </div>
               <Edit
@@ -764,7 +896,7 @@ export function Step1({
             </div>
           </label>
         </div>
-        {data.costCenters.length > 0 && (
+        {data.resultCenters.length > 0 && (
           <CostCentersList data={data} setData={setData} />
         )}
       </div>

@@ -1,0 +1,304 @@
+"use client";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar } from "lucide-react";
+import { DataType } from "../page";
+
+interface TransactionsListProps {
+  data: DataType;
+  setData: (value: DataType) => void;
+}
+
+export function TransactionsList({ data, setData }: TransactionsListProps) {
+  // Generate transactions array based on paymentDetails
+  const getTransactions = () => {
+    const numTransactions = parseInt(
+      data.paymentDetails?.replace("x", "") || "1",
+    );
+
+    // If transactions don't exist or count doesn't match, create/update them
+    if (!data.transactions || data.transactions.length !== numTransactions) {
+      // Use cents-based calculation for initial distribution
+      const totalCents = Math.round(data.totalValue * 100);
+      const baseValueCents = Math.floor(totalCents / numTransactions);
+      const remainder = totalCents % numTransactions;
+
+      const newTransactions = Array.from(
+        { length: numTransactions },
+        (_, index) => {
+          // Distribute remainder to first N transactions
+          const extraCent = index < remainder ? 1 : 0;
+          const finalValueCents = baseValueCents + extraCent;
+          const finalValue = finalValueCents / 100;
+
+          return {
+            dueDate: "",
+            position: `${index + 1}/${numTransactions}`,
+            status: "DRAFT" as const,
+            value: parseFloat(finalValue.toFixed(2)),
+            paymentType: data.paymentForm || "",
+            locked: false,
+          };
+        },
+      );
+
+      setData({ ...data, transactions: newTransactions });
+      return newTransactions;
+    }
+
+    return data.transactions.map((t) => ({ ...t, locked: t.locked || false }));
+  };
+
+  const transactions = getTransactions();
+
+  const distributeValueEvenly = () => {
+    if (transactions.length === 0) return;
+
+    const lockedTransactions = transactions.filter(
+      (transaction) => transaction.locked,
+    );
+    const unlockedTransactions = transactions.filter(
+      (transaction) => !transaction.locked,
+    );
+
+    const lockedTotal = lockedTransactions.reduce(
+      (sum, transaction) => sum + (transaction.value || 0),
+      0,
+    );
+
+    const remainingValue = data.totalValue - lockedTotal;
+
+    if (unlockedTransactions.length > 0 && remainingValue >= 0) {
+      // Convert to cents to avoid floating point issues
+      const remainingCents = Math.round(remainingValue * 100);
+      const baseValueCents = Math.floor(
+        remainingCents / unlockedTransactions.length,
+      );
+      const remainder = remainingCents % unlockedTransactions.length;
+
+      const updatedTransactions = transactions.map((transaction, index) => {
+        if (transaction.locked) {
+          return transaction;
+        }
+
+        // Find the position of this transaction in the unlocked transactions array
+        const unlockedIndex = unlockedTransactions.findIndex(
+          (ut) => transactions.findIndex((dt) => dt === ut) === index,
+        );
+
+        // Distribute remainder to first N transactions (where N = remainder)
+        const extraCent = unlockedIndex < remainder ? 1 : 0;
+        const finalValueCents = baseValueCents + extraCent;
+        const finalValue = finalValueCents / 100;
+
+        return {
+          ...transaction,
+          value: parseFloat(finalValue.toFixed(2)),
+        };
+      });
+
+      setData({ ...data, transactions: updatedTransactions });
+    }
+  };
+
+  const handleTransactionValueChange = (
+    index: number,
+    newValue: string,
+  ): void => {
+    const updatedTransactions = [...transactions];
+
+    updatedTransactions[index] = {
+      ...updatedTransactions[index],
+      value: parseFloat(newValue) || 0,
+    };
+
+    const unlockedTransactions = updatedTransactions.filter(
+      (transaction, i) => i !== index && !transaction.locked,
+    );
+
+    const lockedTotal = updatedTransactions.reduce((sum, transaction, i) => {
+      if (transaction.locked || i === index) {
+        return sum + (transaction.value || 0);
+      }
+      return sum;
+    }, 0);
+
+    const remainingValue = data.totalValue - lockedTotal;
+
+    if (unlockedTransactions.length > 0 && remainingValue >= 0) {
+      // Convert to cents to avoid floating point issues
+      const remainingCents = Math.round(remainingValue * 100);
+      const baseValueCents = Math.floor(
+        remainingCents / unlockedTransactions.length,
+      );
+      const remainder = remainingCents % unlockedTransactions.length;
+
+      let distributedCount = 0;
+      updatedTransactions.forEach((transaction, i) => {
+        if (i !== index && !transaction.locked) {
+          // Distribute remainder to first N transactions
+          const extraCent = distributedCount < remainder ? 1 : 0;
+          const finalValueCents = baseValueCents + extraCent;
+          const finalValue = finalValueCents / 100; // Convert back to currency
+
+          updatedTransactions[i] = {
+            ...transaction,
+            value: parseFloat(finalValue.toFixed(2)), // Ensure proper decimal precision
+          };
+          distributedCount++;
+        }
+      });
+    }
+
+    setData({ ...data, transactions: updatedTransactions });
+  };
+
+  const toggleTransactionLock = (index: number): void => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[index] = {
+      ...updatedTransactions[index],
+      locked: !updatedTransactions[index].locked,
+    };
+
+    setData({ ...data, transactions: updatedTransactions });
+  };
+
+  const calculateRemainingValue = () => {
+    const totalAssigned = transactions.reduce((sum, transaction) => {
+      return sum + (transaction.value || 0);
+    }, 0);
+    // Use cents-based calculation to avoid floating point precision issues
+    const totalCents = Math.round(data.totalValue * 100);
+    const assignedCents = Math.round(totalAssigned * 100);
+    const remainingCents = totalCents - assignedCents;
+
+    return remainingCents / 100;
+  };
+
+  // Don't render if payment is not in installments
+  if (data.paymentTerms !== "Parcelado" || transactions.length <= 1) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="my-4 h-px w-full bg-zinc-200" />
+      <div className="flex items-center justify-between">
+        <span className="text-zinc-600">Transações</span>
+        <div className="flex items-center gap-4">
+          {transactions.some((transaction) => transaction.locked) && (
+            <span className="text-primary text-xs">
+              {transactions.filter((transaction) => transaction.locked).length}{" "}
+              bloqueada(s)
+            </span>
+          )}
+          <button
+            onClick={distributeValueEvenly}
+            className="text-primary hover:text-primary text-sm"
+          >
+            Distribuir igualmente
+          </button>
+        </div>
+      </div>
+
+      <div className="mb-2 flex justify-between text-sm text-zinc-500">
+        <span>
+          Total: R${" "}
+          {data.totalValue.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}
+        </span>
+        <span
+          className={`${calculateRemainingValue() !== 0 ? "text-red-500" : "text-green-500"}`}
+        >
+          Restante: R${" "}
+          {calculateRemainingValue().toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+
+      <ScrollArea className="h-40 w-full">
+        <div className="grid w-full grid-cols-2 gap-2 xl:gap-4">
+          {transactions.map((transaction, index) => (
+            <div
+              key={index}
+              className={`col-span-1 flex w-full flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-1 xl:px-3 xl:py-2 ${
+                transaction.locked
+                  ? "border-primary bg-primary/20 text-primary"
+                  : "border-zinc-200"
+              }`}
+            >
+              <div className="flex flex-1 gap-2">
+                <Calendar size={16} className="text-primary mt-2" />
+                <span className="my-auto w-full text-sm">
+                  {transaction.position}
+                </span>
+                {transaction.locked && (
+                  <span className="text-primary my-auto text-xs font-medium">
+                    (Bloqueada)
+                  </span>
+                )}
+              </div>
+              <div className="flex w-full items-center gap-2">
+                <button
+                  onClick={() => toggleTransactionLock(index)}
+                  className={`rounded p-1 transition-colors ${
+                    transaction.locked
+                      ? "text-primary hover:text-primary"
+                      : "text-zinc-400 hover:text-zinc-600"
+                  }`}
+                  title={transaction.locked ? "Desbloquear" : "Bloquear"}
+                >
+                  {transaction.locked ? (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M6 10h2V8c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6-6c-1.1 0-2 .9-2 2v2h4V6c0-1.1-.9-2-2-2z" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M18 10h-1.26A2 2 0 0 0 15 9H9c-.53 0-1.04.21-1.41.59-.38.37-.59.88-.59 1.41v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zM10 6c0-1.1.9-2 2-2s2 .9 2 2v3h2V6c0-2.21-1.79-4-4-4S8 3.79 8 6v3h2V6z" />
+                    </svg>
+                  )}
+                </button>
+
+                <span className="text-sm text-zinc-500">R$</span>
+                <input
+                  type="number"
+                  value={transaction.value}
+                  onChange={(e) =>
+                    handleTransactionValueChange(index, e.target.value)
+                  }
+                  disabled={transaction.locked}
+                  className={`w-full rounded border px-2 py-1 text-right focus:outline-none ${
+                    transaction.locked
+                      ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                      : "focus:border-primary border-zinc-300"
+                  }`}
+                  placeholder="0,00"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+
+      {calculateRemainingValue() !== 0 && (
+        <div className="mt-2 rounded border border-yellow-200 bg-yellow-50 p-2 text-sm text-yellow-700">
+          ⚠️ A soma dos valores das transações não corresponde ao valor total.
+        </div>
+      )}
+    </>
+  );
+}
