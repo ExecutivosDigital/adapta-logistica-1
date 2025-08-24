@@ -1,26 +1,31 @@
 "use client";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { Building2 } from "lucide-react";
 import { DataType } from "../page";
 
-interface CostCentersListProps {
+interface ResultCentersListProps {
   data: DataType;
   setData: (value: DataType) => void;
 }
-export function CostCentersList({ data, setData }: CostCentersListProps) {
-  const distributeValueEvenly = () => {
-    if (data.costCenters.length === 0) return;
+export function ResultCentersList({ data, setData }: ResultCentersListProps) {
+  const { resultCenters } = useFinancialDataContext();
 
-    const lockedCenters = data.costCenters.filter((center) => center.locked);
-    const unlockedCenters = data.costCenters.filter((center) => !center.locked);
+  const distributeValueEvenly = () => {
+    if (data.resultCenters.length === 0) return;
+
+    const lockedCenters = data.resultCenters.filter((center) => center.locked);
+    const unlockedCenters = data.resultCenters.filter(
+      (center) => !center.locked,
+    );
 
     const lockedTotal = lockedCenters.reduce(
-      (sum, center) => sum + (parseFloat(center.value) || 0),
+      (sum, center) => sum + (Number(center.value) || 0), // Ensure number conversion
       0,
     );
 
-    const remainingValue = data.totalValue - lockedTotal;
+    const remainingValue = data.value - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
       // Convert to cents to avoid floating point issues
@@ -30,54 +35,54 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
       );
       const remainder = remainingCents % unlockedCenters.length;
 
-      const updatedCostCenters = data.costCenters.map((center, index) => {
+      const updatedResultCenters = data.resultCenters.map((center, index) => {
         if (center.locked) {
           return center;
         }
 
         // Find the position of this center in the unlocked centers array
         const unlockedIndex = unlockedCenters.findIndex(
-          (uc) => data.costCenters.findIndex((dc) => dc === uc) === index,
+          (uc) => data.resultCenters.findIndex((dc) => dc === uc) === index,
         );
 
         // Distribute remainder to first N centers (where N = remainder)
         const extraCent = unlockedIndex < remainder ? 1 : 0;
         const finalValueCents = baseValueCents + extraCent;
-        const finalValue = (finalValueCents / 100).toFixed(2);
+        const finalValue = finalValueCents / 100;
 
         return {
           ...center,
-          value: finalValue,
+          value: parseFloat(finalValue.toFixed(2)), // Ensure it's stored as a number
         };
       });
 
-      setData({ ...data, costCenters: updatedCostCenters });
+      setData({ ...data, resultCenters: updatedResultCenters });
     }
   };
 
-  const handleCostCenterValueChange = (
+  const handleResultCenterValueChange = (
     index: number,
     newValue: string,
   ): void => {
-    const updatedCostCenters = [...data.costCenters];
+    const updatedResultCenters = [...data.resultCenters];
 
-    updatedCostCenters[index] = {
-      ...updatedCostCenters[index],
-      value: newValue,
+    updatedResultCenters[index] = {
+      ...updatedResultCenters[index],
+      value: parseFloat(newValue) || 0, // This ensures it's stored as a number
     };
 
-    const unlockedCenters = updatedCostCenters.filter(
+    const unlockedCenters = updatedResultCenters.filter(
       (center, i) => i !== index && !center.locked,
     );
 
-    const lockedTotal = updatedCostCenters.reduce((sum, center, i) => {
+    const lockedTotal = updatedResultCenters.reduce((sum, center, i) => {
       if (center.locked || i === index) {
-        return sum + (parseFloat(center.value) || 0);
+        return sum + (Number(center.value) || 0); // Add Number() conversion here too
       }
       return sum;
     }, 0);
 
-    const remainingValue = data.totalValue - lockedTotal;
+    const remainingValue = data.value - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
       // Convert to cents to avoid floating point issues
@@ -88,42 +93,42 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
       const remainder = remainingCents % unlockedCenters.length;
 
       let distributedCount = 0;
-      updatedCostCenters.forEach((center, i) => {
+      updatedResultCenters.forEach((center, i) => {
         if (i !== index && !center.locked) {
           // Distribute remainder to first N centers
           const extraCent = distributedCount < remainder ? 1 : 0;
           const finalValueCents = baseValueCents + extraCent;
-          const finalValue = (finalValueCents / 100).toFixed(2);
+          const finalValue = finalValueCents / 100;
 
-          updatedCostCenters[i] = {
+          updatedResultCenters[i] = {
             ...center,
-            value: finalValue,
+            value: parseFloat(finalValue.toFixed(2)), // Ensure proper decimal precision
           };
           distributedCount++;
         }
       });
     }
 
-    setData({ ...data, costCenters: updatedCostCenters });
+    setData({ ...data, resultCenters: updatedResultCenters });
   };
 
-  const toggleCostCenterLock = (index: number): void => {
-    const updatedCostCenters = [...data.costCenters];
-    updatedCostCenters[index] = {
-      ...updatedCostCenters[index],
-      locked: !updatedCostCenters[index].locked,
+  const toggleResultCenterLock = (index: number): void => {
+    const updatedResultCenters = [...data.resultCenters];
+    updatedResultCenters[index] = {
+      ...updatedResultCenters[index],
+      locked: !updatedResultCenters[index].locked,
     };
 
-    setData({ ...data, costCenters: updatedCostCenters });
+    setData({ ...data, resultCenters: updatedResultCenters });
   };
 
   const calculateRemainingValue = () => {
-    const totalAssigned = data.costCenters.reduce((sum, center) => {
-      return sum + (parseFloat(center.value) || 0);
+    const totalAssigned = data.resultCenters.reduce((sum, center) => {
+      return sum + (Number(center.value) || 0); // Convert to number explicitly
     }, 0);
 
     // Use cents-based calculation to avoid floating point precision issues
-    const totalCents = Math.round(data.totalValue * 100);
+    const totalCents = Math.round(data.value * 100);
     const assignedCents = Math.round(totalAssigned * 100);
     const remainingCents = totalCents - assignedCents;
 
@@ -136,9 +141,9 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
       <div className="flex items-center justify-between">
         <span className="text-zinc-600">Centro de Custos</span>
         <div className="flex items-center gap-4">
-          {data.costCenters.some((center) => center.locked) && (
+          {data.resultCenters.some((center) => center.locked) && (
             <span className="text-primary text-xs">
-              {data.costCenters.filter((center) => center.locked).length}{" "}
+              {data.resultCenters.filter((center) => center.locked).length}{" "}
               bloqueado(s)
             </span>
           )}
@@ -154,7 +159,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
       <div className="mb-2 flex justify-between text-sm text-zinc-500">
         <span>
           Total: R${" "}
-          {data.totalValue.toLocaleString("pt-BR", {
+          {data.value.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
           })}
         </span>
@@ -170,7 +175,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
 
       <ScrollArea className="h-40 w-full">
         <div className="grid w-full grid-cols-2 gap-2 xl:gap-4">
-          {data.costCenters.map((item, index) => (
+          {data.resultCenters.map((item, index) => (
             <div
               key={index}
               className={`col-span-1 flex w-full flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-1 xl:px-3 xl:py-2 ${
@@ -190,7 +195,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
               </div>
               <div className="flex w-full items-center gap-2">
                 <button
-                  onClick={() => toggleCostCenterLock(index)}
+                  onClick={() => toggleResultCenterLock(index)}
                   className={`rounded p-1 transition-colors ${
                     item.locked
                       ? "text-primary hover:text-primary"
@@ -224,7 +229,7 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
                   type="number"
                   value={item.value}
                   onChange={(e) =>
-                    handleCostCenterValueChange(index, e.target.value)
+                    handleResultCenterValueChange(index, e.target.value)
                   }
                   disabled={item.locked}
                   className={`w-full rounded border px-2 py-1 text-right focus:outline-none ${

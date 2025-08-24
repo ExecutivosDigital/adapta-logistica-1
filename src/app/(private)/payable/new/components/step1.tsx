@@ -19,8 +19,9 @@ import moment from "moment";
 import { useState } from "react";
 import { DataType } from "../page";
 import { CategoryModal } from "./category-modal";
-import { CostCentersList } from "./cost-centers-list";
+import { ResultCentersList } from "./result-centers-list";
 
+import { ResultCenterProps } from "@/@types/financial-data";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { useScreenWidth } from "@/lib/useScreenWidth";
@@ -34,15 +35,11 @@ interface Props {
   setIsOpenLaunchTypeModal: (value: boolean) => void;
   data: DataType;
   setData: (value: DataType) => void;
-  selectedCostCenters: {
-    name: string;
-    value: string;
-    locked?: boolean | undefined;
-  }[];
-  setSelectedCostCenters: (
-    value: { name: string; value: string; locked: boolean | undefined }[],
-  ) => void;
-  handleCostCenterToggle: (costCenterName: string) => void;
+  selectedResultCenters: ResultCenterProps[];
+  setSelectedResultCenters: React.Dispatch<
+    React.SetStateAction<ResultCenterProps[]>
+  >;
+  handleResultCenterToggle: (resultCenterName: string) => void;
 }
 type CostType =
   | "Custo Fixo"
@@ -63,9 +60,9 @@ export function Step1({
   setData,
   setIsOpenLaunchTypeModal,
   setIsOpenContabilidadeModal,
-  selectedCostCenters,
-  setSelectedCostCenters,
-  handleCostCenterToggle,
+  selectedResultCenters,
+  setSelectedResultCenters,
+  handleResultCenterToggle,
 }: Props) {
   const categoriesByCostType: Record<CostType, Category[]> = {
     "Custo Fixo": [
@@ -221,75 +218,6 @@ export function Step1({
     ],
   };
 
-  const costCenters = [
-    "Centro de Custo",
-    "Abastecimento Interno",
-    "Administrativo",
-    "Armazém / CD",
-    "Atendimento ao Cliente / SAC",
-    "Auditoria / Conformidade",
-    "Backoffice / Suporte",
-    "Caixa Interno / Fundo Fixo",
-    "Capex / Investimentos",
-    "Comercial",
-    "Compras / Suprimentos",
-    "Consultivo Empresarial",
-    "Consultoria Estratégica",
-    "Contabilidade",
-    "Contencioso Trabalhista",
-    "Controle de Estoque / Inventário",
-    "Departamento Pessoal",
-    "Desenvolvimento de Produto",
-    "Desenvolvimento de Sistemas",
-    "Engenharia de Processos",
-    "Equipamentos Logísticos",
-    "Filiais / Regionais",
-    "Financeiro",
-    "Fiscal / Tributário",
-    "Frota",
-    "Funcionários em Viagem",
-    "Gerenciamento de Crises",
-    "Gestão Ambiental",
-    "Infraestrutura",
-    "Infraestrutura / Manutenção",
-    "Infraestrutura de TI",
-    "Inovação e P&D",
-    "Investimentos",
-    "Jurídico",
-    "Licenças e Softwares",
-    "Manutenção Predial",
-    "Marketing Digital",
-    "Motoristas",
-    "Novas Filiais",
-    "Obras e Projetos",
-    "Obras e Reformas",
-    "Oficina Interna",
-    "Operacional",
-    "Parcerias Estratégicas / Franquias",
-    "Planejamento Operacional",
-    "Produção",
-    "Projetos Estratégicos",
-    "Projetos e Expansão",
-    "Provisões Jurídicas",
-    "Qualidade / Compliance Operacional",
-    "RH",
-    "Recrutamento e Seleção",
-    "Reembolsos e Adiantamentos",
-    "Relacionamento com Cliente",
-    "Saúde e Segurança do Trabalho",
-    "Sede / Escritório Central",
-    "Segurança Logística",
-    "Suporte Técnico",
-    "TI",
-    "Tecnologia",
-    "Tesouraria",
-    "Transferência / Roteirização",
-    "Transportadoras Parceiras",
-    "Treinamento e Desenvolvimento",
-    "Vendas Diretas",
-    "Viagens Corporativas",
-  ];
-
   const installments = [
     "1",
     "2",
@@ -311,7 +239,7 @@ export function Step1({
     useFinancialDataContext();
 
   const [filteredCategories, setFilteredCategories] = useState("");
-  const [filteredCostCenters, setFilteredCostCenters] = useState("");
+  const [filteredResultCenters, setFilteredResultCenters] = useState("");
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
@@ -356,13 +284,13 @@ export function Step1({
           <div className="mt-2 flex gap-2">
             <div className="bg-primary/40 relative flex w-96 flex-row overflow-hidden rounded-lg p-2">
               <div
-                className={`absolute top-0 bottom-0 left-0 flex w-1/3 transform items-center justify-center transition-transform duration-300 ${data.type === "EXPENSES" ? "translate-x-0 pl-2" : data.type === "FEE" ? "translate-x-full" : "translate-x-[200%] pr-2"}`}
+                className={`absolute top-0 bottom-0 left-0 flex w-1/3 transform items-center justify-center transition-transform duration-300 ${data.type === "EXPENSE" ? "translate-x-0 pl-2" : data.type === "FEE" ? "translate-x-full" : "translate-x-[200%] pr-2"}`}
               >
                 <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
               </div>
               <button
-                onClick={() => setData({ ...data, type: "EXPENSES" })}
-                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.type === "EXPENSES" ? "font-semibold text-white" : "text-white/80"}`}
+                onClick={() => setData({ ...data, type: "EXPENSE" })}
+                className={`relative z-10 w-1/3 px-4 py-1 text-sm transition-all duration-300 ${data.type === "EXPENSE" ? "font-semibold text-white" : "text-white/80"}`}
               >
                 DESPESAS
               </button>
@@ -385,7 +313,7 @@ export function Step1({
         <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
           <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">
-              {data.type === "EXPENSES"
+              {data.type === "EXPENSE"
                 ? "Fornecedor"
                 : data.type === "FEE"
                   ? "Impostos"
@@ -417,7 +345,7 @@ export function Step1({
 
           <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">
-              {data.type === "EXPENSES"
+              {data.type === "EXPENSE"
                 ? "Tipo de Lançamento"
                 : data.type === "FEE"
                   ? "Imposto - Código"
@@ -578,13 +506,13 @@ export function Step1({
                         ? setData({
                             ...data,
                             paymentMode: term,
-                            installmentCount: "",
+                            installmentCount: 0,
                           })
                         : term === "FULL" &&
                           setData({
                             ...data,
                             paymentMode: term,
-                            installmentCount: "1",
+                            installmentCount: 1,
                           });
                     }}
                     className="hover:bg-primary/20 cursor-pointer transition duration-300"
@@ -613,10 +541,10 @@ export function Step1({
                     className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                   />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
-                    {data.installmentCount !== ""
+                    {data.installmentCount !== 0
                       ? data.installmentCount
                       : "Selecione"}
-                    {data.installmentCount !== "" && " Pagamento(s)"}
+                    {data.installmentCount !== 0 && " Pagamento(s)"}
                   </span>
                   <Edit
                     size={16}
@@ -652,14 +580,14 @@ export function Step1({
                         <DropdownMenuItem
                           key={ins}
                           onClick={() => {
-                            setData({ ...data, installmentCount: ins });
+                            setData({ ...data, installmentCount: Number(ins) });
                             setIsCustomInputActive(false);
                           }}
                           className="hover:bg-primary/20 cursor-pointer transition duration-300"
                         >
                           <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
                             {ins}
-                            {data.installmentCount === ins && (
+                            {data.installmentCount === Number(ins) && (
                               <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
                             )}
                           </div>
@@ -696,7 +624,7 @@ export function Step1({
                               if (e.key === "Enter" && customValue.trim()) {
                                 setData({
                                   ...data,
-                                  installmentCount: `${customValue}`,
+                                  installmentCount: Number(customValue),
                                 });
                                 setIsCustomInputActive(false);
                                 setCustomValue("");
@@ -717,7 +645,7 @@ export function Step1({
                               if (customValue.trim()) {
                                 setData({
                                   ...data,
-                                  installmentCount: `${customValue}`,
+                                  installmentCount: Number(customValue),
                                 });
                               }
                               setIsCustomInputActive(false);
@@ -744,9 +672,7 @@ export function Step1({
                   </>
                 ) : (
                   <DropdownMenuItem
-                    onClick={() =>
-                      setData({ ...data, installmentCount: "Pagamento Único" })
-                    }
+                    onClick={() => setData({ ...data, installmentCount: 1 })}
                     className="hover:bg-primary/20 cursor-pointer transition duration-300"
                   >
                     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
@@ -779,22 +705,22 @@ export function Step1({
                   />
                   <div className="flex h-full flex-1 items-center">
                     <span className="ml-4 flex flex-1 flex-col text-left">
-                      {selectedCostCenters.length > 0
-                        ? `${selectedCostCenters.length} selecionado${selectedCostCenters.length > 1 ? "s" : ""}`
+                      {selectedResultCenters.length > 0
+                        ? `${selectedResultCenters.length} selecionado${selectedResultCenters.length > 1 ? "s" : ""}`
                         : "Selecione"}
-                      {selectedCostCenters.length === 0 && (
+                      {selectedResultCenters.length === 0 && (
                         <span className="text-sm text-zinc-500">
                           Selecionar
                         </span>
                       )}
-                      {selectedCostCenters.length > 0 && (
+                      {selectedResultCenters.length > 0 && (
                         <span className="truncate text-sm text-zinc-500">
-                          {selectedCostCenters
+                          {selectedResultCenters
                             .slice(0, 2)
                             .map((cc) => cc.name)
                             .join(", ")}
-                          {selectedCostCenters.length > 2 &&
-                            ` +${selectedCostCenters.length - 2}`}
+                          {selectedResultCenters.length > 2 &&
+                            ` +${selectedResultCenters.length - 2}`}
                         </span>
                       )}
                     </span>
@@ -812,8 +738,8 @@ export function Step1({
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
-                    value={filteredCostCenters}
-                    onChange={(e) => setFilteredCostCenters(e.target.value)}
+                    value={filteredResultCenters}
+                    onChange={(e) => setFilteredResultCenters(e.target.value)}
                     placeholder="Pesquisar Centro de Custos"
                     className="flex-1 focus:outline-none"
                   />
@@ -821,11 +747,11 @@ export function Step1({
                 </div>
 
                 {/* Add clear all button */}
-                {selectedCostCenters.length > 0 && (
+                {selectedResultCenters.length > 0 && (
                   <div className="px-8 pb-2">
                     <button
                       onClick={() => {
-                        setSelectedCostCenters([]);
+                        setSelectedResultCenters([]);
                         setData({ ...data, resultCenters: [] });
                       }}
                       className="text-sm text-red-500 hover:text-red-700"
@@ -840,7 +766,7 @@ export function Step1({
                     .filter((item) =>
                       item.name
                         .toLowerCase()
-                        .includes(filteredCostCenters.toLowerCase()),
+                        .includes(filteredResultCenters.toLowerCase()),
                     )
                     .map((item) => (
                       <DropdownMenuItem
@@ -848,13 +774,13 @@ export function Step1({
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          handleCostCenterToggle(item.id);
+                          handleResultCenterToggle(item.id);
                         }}
                         className="hover:bg-primary/20 cursor-pointer transition duration-300"
                       >
                         <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
                           {item.name}
-                          {selectedCostCenters.some(
+                          {selectedResultCenters.some(
                             (cc) => cc.name === item.name,
                           ) && (
                             <div className="border-primary bg-primary flex h-4 w-4 items-center justify-center rounded-md border">
@@ -897,7 +823,7 @@ export function Step1({
           </label>
         </div>
         {data.resultCenters.length > 0 && (
-          <CostCentersList data={data} setData={setData} />
+          <ResultCentersList data={data} setData={setData} />
         )}
       </div>
       {isCategoryModalOpen && (

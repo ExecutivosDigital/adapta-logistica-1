@@ -1,6 +1,6 @@
 /* app/(dashboard)/create-business-unit/page.tsx */
 "use client";
-import { SupplierProps } from "@/@types/financial-data";
+import { ResultCenterProps } from "@/@types/financial-data";
 import { OrangeButton } from "@/components/OrangeButton";
 import { AiFileReader } from "@/components/ai-file-reader";
 import {
@@ -23,8 +23,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { AccontsType, Accounts } from "./components/acconts";
+import { useEffect, useState } from "react";
 import { AccountingModal } from "./components/accounting-modal";
 import CreateClientSheet from "./components/create-client-sheet";
 import LaunchTypeModal from "./components/launch-type-modal";
@@ -35,26 +34,28 @@ import { SupplierModal } from "./components/supplier-modal";
 export interface DataType {
   businessUnitId: string;
   dueDate: string;
-  installmentCount: string;
+  installmentCount: number;
   ledgerAccountId: string;
   paymentMode: "FULL" | "INSTALLMENT";
+  paymentType?: string;
   resultCenters: {
     resultCenterId: string;
-    value: string;
+    value: number;
     locked?: boolean;
+    name?: string;
   }[];
   status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED";
   subsidiaryId: string;
   supplierId: string;
   transactions: {
     dueDate: string;
-    position: string;
+    position: number;
     status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED";
     value: number;
     paymentType: string;
     locked?: boolean;
   }[];
-  type: "EXPENSES" | "FEE" | "COST" | "RECURRING";
+  type: "EXPENSE" | "FEE" | "COST" | "RECURRING";
   mainDocumentUrl?: string;
   referenceMonth: number | null;
   value: number;
@@ -63,13 +64,6 @@ export interface DataType {
 export interface ClientProps {
   name: string;
   cnpj: string;
-}
-
-interface LaunchType {
-  tipoLancamento: string;
-  descNivel4: string;
-  conta: string;
-  centroResultado: string;
 }
 
 export default function NewPayable() {
@@ -86,32 +80,20 @@ export default function NewPayable() {
   const { suppliers, ledgerAccounts, resultCenters } =
     useFinancialDataContext();
 
-  const ITEMS_PER_PAGE = 6;
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
   const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
-  const [filteredSuppliers, setFilteredSuppliers] = useState("");
-  const [filteredContabilAccounts, setFilteredContabilAccounts] = useState("");
   const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [steps, setSteps] = useState(1);
   const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
     useState(false);
-  const [selectedCostCenters, setSelectedCostCenters] = useState<
-    { name: string; value: string; locked?: boolean }[]
+  const [selectedResultCenters, setSelectedResultCenters] = useState<
+    ResultCenterProps[]
   >([]);
-  const [selectedSupplier, setSelectedSupplier] =
-    useState<SupplierProps | null>(null);
-  const [selectedAccount, setSelectedAccount] = useState<AccontsType>({
-    contaContabil: "",
-    descricao: "",
-    tipoCusto: "",
-    grupo: "",
-    tipoConta: "",
-  });
+
   const [data, setData] = useState<DataType>({
     businessUnitId: selectedBusinessUnit?.id || "",
     dueDate: "",
-    installmentCount: "1",
+    installmentCount: 1,
     ledgerAccountId: "",
     paymentMode: "FULL",
     referenceMonth: null,
@@ -120,115 +102,80 @@ export default function NewPayable() {
     subsidiaryId: selectedBranch?.id || "",
     supplierId: "",
     transactions: [],
-    type: "EXPENSES",
+    type: "EXPENSE",
     value: 0,
     mainDocumentUrl: "",
   });
 
-  const filteredAccounts = useMemo(() => {
-    if (!filteredContabilAccounts.trim()) return Accounts;
-
-    const term = filteredContabilAccounts.toLowerCase();
-    return Accounts.filter(
-      (acc) =>
-        acc.contaContabil.includes(filteredContabilAccounts) ||
-        acc.descricao.toLowerCase().includes(term),
+  const handleResultCenterToggle = (ResultCenterId: string) => {
+    const isSelected = selectedResultCenters.some(
+      (cc) => cc.id === ResultCenterId,
     );
-  }, [Accounts, filteredContabilAccounts]);
-
-  const pageCount = Math.max(
-    1,
-    Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE),
-  );
-
-  const paginatedAccounts = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredAccounts.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredAccounts, currentPage]);
-
-  const pages = useMemo(() => {
-    const maxButtons = 5;
-
-    if (pageCount <= maxButtons)
-      return [...Array(pageCount)].map((_, i) => i + 1);
-
-    const half = Math.floor(maxButtons / 2);
-    let from = Math.max(1, currentPage - half);
-    const to = Math.min(pageCount, from + maxButtons - 1);
-
-    // se não alcançou o máximo de botões, ajusta início
-    if (to - from < maxButtons - 1) {
-      from = Math.max(1, to - maxButtons + 1);
+    let updatedSelectedCenters;
+    let updatedResultCenters;
+    if (isSelected) {
+      updatedSelectedCenters = selectedResultCenters.filter(
+        (cc) => cc.id !== ResultCenterId,
+      );
+      updatedResultCenters = data.resultCenters.filter(
+        (cc) => cc.resultCenterId !== ResultCenterId,
+      );
+    } else {
+      const newResultCenter = {
+        name:
+          resultCenters.find((center) => center.id === ResultCenterId)?.name ||
+          "",
+        resultCenterId: ResultCenterId,
+        value: 0,
+        locked: false,
+      };
+      updatedSelectedCenters = [...selectedResultCenters, newResultCenter];
+      updatedResultCenters = [...data.resultCenters, newResultCenter];
     }
-
-    return Array.from({ length: to - from + 1 }, (_, i) => from + i);
-  }, [pageCount, currentPage]);
-
-  const handleCostCenterToggle = (costCenterName: string) => {
-    // const isSelected = selectedCostCenters.some(
-    //   (cc) => cc.name === costCenterName,
-    // );
-    // let updatedSelectedCenters;
-    // let updatedCostCenters;
-    // if (isSelected) {
-    //   updatedSelectedCenters = selectedCostCenters.filter(
-    //     (cc) => cc.name !== costCenterName,
-    //   );
-    //   updatedCostCenters = data.costCenters.filter(
-    //     (cc) => cc.name !== costCenterName,
-    //   );
-    // } else {
-    //   const newCostCenter = {
-    //     name: costCenterName,
-    //     value: "0.00",
-    //     locked: false,
-    //   };
-    //   updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
-    //   updatedCostCenters = [...data.costCenters, newCostCenter];
-    // }
-    // setSelectedCostCenters(updatedSelectedCenters);
-    // if (updatedCostCenters.length > 0) {
-    //   const lockedCenters = updatedCostCenters.filter(
-    //     (center) => center.locked,
-    //   );
-    //   const unlockedCenters = updatedCostCenters.filter(
-    //     (center) => !center.locked,
-    //   );
-    //   const lockedTotal = lockedCenters.reduce(
-    //     (sum, center) => sum + (parseFloat(center.value) || 0),
-    //     0,
-    //   );
-    //   const remainingValue = data.totalValue - lockedTotal;
-    //   if (unlockedCenters.length > 0 && remainingValue >= 0) {
-    //     const remainingCents = Math.round(remainingValue * 100);
-    //     const baseValueCents = Math.floor(
-    //       remainingCents / unlockedCenters.length,
-    //     );
-    //     const remainder = remainingCents % unlockedCenters.length;
-    //     const finalUpdatedCostCenters = updatedCostCenters.map(
-    //       (center, index) => {
-    //         if (center.locked) {
-    //           return center;
-    //         }
-    //         const unlockedIndex = unlockedCenters.findIndex(
-    //           (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
-    //         );
-    //         const extraCent = unlockedIndex < remainder ? 1 : 0;
-    //         const finalValueCents = baseValueCents + extraCent;
-    //         const finalValue = (finalValueCents / 100).toFixed(2);
-    //         return {
-    //           ...center,
-    //           value: finalValue,
-    //         };
-    //       },
-    //     );
-    //     setData({ ...data, costCenters: finalUpdatedCostCenters });
-    //   } else {
-    //     setData({ ...data, costCenters: updatedCostCenters });
-    //   }
-    // } else {
-    //   setData({ ...data, costCenters: [] });
-    // }
+    setSelectedResultCenters(updatedSelectedCenters as ResultCenterProps[]);
+    if (updatedResultCenters.length > 0) {
+      const lockedCenters = updatedResultCenters.filter(
+        (center) => center.locked,
+      );
+      const unlockedCenters = updatedResultCenters.filter(
+        (center) => !center.locked,
+      );
+      const lockedTotal = lockedCenters.reduce(
+        (sum, center) => sum + (center.value || 0),
+        0,
+      );
+      const remainingValue = data.value - lockedTotal;
+      if (unlockedCenters.length > 0 && remainingValue >= 0) {
+        const remainingCents = Math.round(remainingValue * 100);
+        const baseValueCents = Math.floor(
+          remainingCents / unlockedCenters.length,
+        );
+        const remainder = remainingCents % unlockedCenters.length;
+        const finalUpdatedResultCenters = updatedResultCenters.map(
+          (center, index) => {
+            if (center.locked) {
+              return center;
+            }
+            const unlockedIndex = unlockedCenters.findIndex(
+              (uc) =>
+                updatedResultCenters.findIndex((dc) => dc === uc) === index,
+            );
+            const extraCent = unlockedIndex < remainder ? 1 : 0;
+            const finalValueCents = baseValueCents + extraCent;
+            const finalValue = (finalValueCents / 100).toFixed(2);
+            return {
+              ...center,
+              value: finalValue,
+            };
+          },
+        );
+        setData({ ...data, resultCenters: finalUpdatedResultCenters as any });
+      } else {
+        setData({ ...data, resultCenters: updatedResultCenters as any });
+      }
+    } else {
+      setData({ ...data, resultCenters: [] });
+    }
   };
 
   const handleData = () => {
@@ -236,13 +183,36 @@ export default function NewPayable() {
   };
 
   async function CreatePayable() {
-    const create = await PostAPI("/payable", data, true);
-    console.log("create", create);
+    const create = await PostAPI(
+      "/payable",
+      {
+        ...data,
+        resultCenters: data.resultCenters.map((center) => ({
+          ...center,
+          value: Number(center.value),
+        })),
+      },
+      true,
+    );
   }
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredContabilAccounts]);
+    if (selectedBranch) {
+      setData({
+        ...data,
+        subsidiaryId: selectedBranch.id,
+      });
+    }
+  }, [selectedBranch]);
+
+  useEffect(() => {
+    if (selectedBusinessUnit) {
+      setData({
+        ...data,
+        businessUnitId: selectedBusinessUnit.id,
+      });
+    }
+  }, [selectedBusinessUnit]);
 
   return (
     <>
@@ -396,9 +366,9 @@ export default function NewPayable() {
               <Step1
                 data={data}
                 setData={setData}
-                selectedCostCenters={selectedCostCenters}
-                setSelectedCostCenters={setSelectedCostCenters}
-                handleCostCenterToggle={handleCostCenterToggle}
+                selectedResultCenters={selectedResultCenters}
+                setSelectedResultCenters={setSelectedResultCenters}
+                handleResultCenterToggle={handleResultCenterToggle}
                 setIsOpenSupplierModal={setIsOpenSupplierModal}
                 setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
                 setIsOpenLaunchTypeModal={setIsOpenLaunchTypeModal}
@@ -474,14 +444,7 @@ export default function NewPayable() {
       )}
       {isOpenSupplierModal && (
         <SupplierModal
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
           setOpenCreateClientSheet={setOpenCreateClientSheet}
-          filteredSuppliers={filteredSuppliers}
-          setFilteredSuppliers={setFilteredSuppliers}
-          suppliers={suppliers}
-          selectedSupplier={selectedSupplier}
-          setSelectedSupplier={setSelectedSupplier}
           isOpenSupplierModal={isOpenSupplierModal}
           setIsOpenSupplierModal={setIsOpenSupplierModal}
           data={data}
@@ -498,18 +461,8 @@ export default function NewPayable() {
       )}
       {isOpenContabilAccountModal && (
         <AccountingModal
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+          isOpenContabilAccountModal={isOpenContabilAccountModal}
           setIsOpenContabilAccountModal={setIsOpenContabilAccountModal}
-          filteredContabilAccounts={filteredContabilAccounts}
-          setFilteredContabilAccounts={setFilteredContabilAccounts}
-          paginatedAccounts={paginatedAccounts}
-          selectedAccount={selectedAccount}
-          pages={pages}
-          pageCount={pageCount}
-          setSelectedAccount={setSelectedAccount}
-          isOpenAccountingModal={isOpenContabilAccountModal}
-          setIsOpenAccountingModal={setIsOpenContabilAccountModal}
           data={data}
           setData={setData}
         />

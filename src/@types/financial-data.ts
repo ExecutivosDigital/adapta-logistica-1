@@ -30,4 +30,5 @@ export interface ResultCenterProps {
   companyId: string;
   id: string;
   name: string;
+  locked?: boolean;
 }

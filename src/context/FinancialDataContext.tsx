@@ -57,7 +57,9 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
       `/result-center/fetch/${selectedBranch?.companyId}`,
       true,
     );
-    console.log("resultCenters", resultCenters);
+    if (resultCenters.status === 200) {
+      setResultCenters(resultCenters.body.resultCenters);
+    }
   }
 
   useEffect(() => {

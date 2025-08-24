@@ -1,21 +1,14 @@
 "use client";
 import { SupplierProps } from "@/@types/financial-data";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import { Plus, Search } from "lucide-react";
+import { useState } from "react";
 import DollarIcon from "../../../../../../public/icons/dollar";
 import { DataType } from "../page";
 
 interface SupplierModalProps {
   setOpenCreateClientSheet: React.Dispatch<React.SetStateAction<boolean>>;
-  filteredSuppliers: string;
-  setFilteredSuppliers: React.Dispatch<React.SetStateAction<string>>;
-  suppliers: SupplierProps[];
-  selectedSupplier: SupplierProps | null;
-  setSelectedSupplier: React.Dispatch<
-    React.SetStateAction<SupplierProps | null>
-  >;
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   isOpenSupplierModal: boolean;
   setIsOpenSupplierModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: DataType;
@@ -24,18 +17,16 @@ interface SupplierModalProps {
 
 export function SupplierModal({
   setOpenCreateClientSheet,
-  filteredSuppliers,
-  setFilteredSuppliers,
-  suppliers,
-  selectedSupplier,
-  setSelectedSupplier,
-  currentPage,
-  setCurrentPage,
   isOpenSupplierModal,
   setIsOpenSupplierModal,
   data,
   setData,
 }: SupplierModalProps) {
+  const { suppliers } = useFinancialDataContext();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredSuppliers, setFilteredSuppliers] = useState("");
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<SupplierProps | null>(null);
   return (
     <>
       <div

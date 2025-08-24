@@ -1,7 +1,16 @@
 "use client";
 
+import { Calendar } from "@/components/ui/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "lucide-react";
+import { cn } from "@/utils/cn";
+import { CalendarIcon, ChevronDown } from "lucide-react";
+import moment from "moment";
 import { DataType } from "../page";
 
 interface TransactionsListProps {
@@ -10,16 +19,24 @@ interface TransactionsListProps {
 }
 
 export function TransactionsList({ data, setData }: TransactionsListProps) {
+  const paymentType = [
+    "PIX",
+    "Boleto",
+    "Cartão de Crédito",
+    "Depósito",
+    "Transferência Bancária",
+    "Dinheiro em Mãos",
+    "Fatura",
+  ];
+
   // Generate transactions array based on paymentDetails
   const getTransactions = () => {
-    const numTransactions = parseInt(
-      data.paymentDetails?.replace("x", "") || "1",
-    );
+    const numTransactions = data.installmentCount || 1;
 
     // If transactions don't exist or count doesn't match, create/update them
     if (!data.transactions || data.transactions.length !== numTransactions) {
       // Use cents-based calculation for initial distribution
-      const totalCents = Math.round(data.totalValue * 100);
+      const totalCents = Math.round(data.value * 100);
       const baseValueCents = Math.floor(totalCents / numTransactions);
       const remainder = totalCents % numTransactions;
 
@@ -32,11 +49,13 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
           const finalValue = finalValueCents / 100;
 
           return {
-            dueDate: "",
-            position: `${index + 1}/${numTransactions}`,
-            status: "DRAFT" as const,
+            dueDate: moment()
+              .add(index * 30, "days")
+              .format("YYYY-MM-DD"),
+            position: index + 1,
+            status: "PENDING" as const,
             value: parseFloat(finalValue.toFixed(2)),
-            paymentType: data.paymentForm || "",
+            paymentType: "",
             locked: false,
           };
         },
@@ -66,7 +85,7 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       0,
     );
 
-    const remainingValue = data.totalValue - lockedTotal;
+    const remainingValue = data.value - lockedTotal;
 
     if (unlockedTransactions.length > 0 && remainingValue >= 0) {
       // Convert to cents to avoid floating point issues
@@ -123,7 +142,7 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       return sum;
     }, 0);
 
-    const remainingValue = data.totalValue - lockedTotal;
+    const remainingValue = data.value - lockedTotal;
 
     if (unlockedTransactions.length > 0 && remainingValue >= 0) {
       // Convert to cents to avoid floating point issues
@@ -163,12 +182,39 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
     setData({ ...data, transactions: updatedTransactions });
   };
 
+  const handleTransactionPaymentTypeChange = (
+    index: number,
+    paymentType: string,
+  ): void => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[index] = {
+      ...updatedTransactions[index],
+      paymentType,
+    };
+
+    setData({ ...data, transactions: updatedTransactions });
+  };
+
+  const handleTransactionDueDateChange = (
+    index: number,
+    date: Date | undefined,
+  ): void => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[index] = {
+      ...updatedTransactions[index],
+      dueDate: date ? moment(date).format("YYYY-MM-DD") : "",
+    };
+
+    setData({ ...data, transactions: updatedTransactions });
+  };
+
   const calculateRemainingValue = () => {
     const totalAssigned = transactions.reduce((sum, transaction) => {
       return sum + (transaction.value || 0);
     }, 0);
+
     // Use cents-based calculation to avoid floating point precision issues
-    const totalCents = Math.round(data.totalValue * 100);
+    const totalCents = Math.round(data.value * 100);
     const assignedCents = Math.round(totalAssigned * 100);
     const remainingCents = totalCents - assignedCents;
 
@@ -176,7 +222,7 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
   };
 
   // Don't render if payment is not in installments
-  if (data.paymentTerms !== "Parcelado" || transactions.length <= 1) {
+  if (data.paymentMode !== "INSTALLMENT" || transactions.length <= 1) {
     return null;
   }
 
@@ -204,7 +250,7 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       <div className="mb-2 flex justify-between text-sm text-zinc-500">
         <span>
           Total: R${" "}
-          {data.totalValue.toLocaleString("pt-BR", {
+          {data.value.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
           })}
         </span>
@@ -219,76 +265,142 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       </div>
 
       <ScrollArea className="h-40 w-full">
-        <div className="grid w-full grid-cols-2 gap-2 xl:gap-4">
+        <div className="flex w-full flex-col gap-2 xl:gap-4">
           {transactions.map((transaction, index) => (
             <div
               key={index}
-              className={`col-span-1 flex w-full flex-col items-center justify-center gap-2 rounded-2xl border px-2 py-1 xl:px-3 xl:py-2 ${
+              className={`flex w-full items-end justify-center gap-2 rounded-2xl border px-2 py-1 xl:px-3 xl:py-2 ${
                 transaction.locked
                   ? "border-primary bg-primary/20 text-primary"
                   : "border-zinc-200"
               }`}
             >
-              <div className="flex flex-1 gap-2">
-                <Calendar size={16} className="text-primary mt-2" />
-                <span className="my-auto w-full text-sm">
-                  {transaction.position}
-                </span>
-                {transaction.locked && (
-                  <span className="text-primary my-auto text-xs font-medium">
-                    (Bloqueada)
+              <div className="flex w-full flex-col">
+                <div className="flex flex-1 gap-2">
+                  <CalendarIcon size={16} className="text-primary mt-2" />
+                  <span className="my-auto w-full text-sm">
+                    {transaction.position} / {data.installmentCount}
                   </span>
-                )}
-              </div>
-              <div className="flex w-full items-center gap-2">
-                <button
-                  onClick={() => toggleTransactionLock(index)}
-                  className={`rounded p-1 transition-colors ${
-                    transaction.locked
-                      ? "text-primary hover:text-primary"
-                      : "text-zinc-400 hover:text-zinc-600"
-                  }`}
-                  title={transaction.locked ? "Desbloquear" : "Bloquear"}
-                >
-                  {transaction.locked ? (
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M6 10h2V8c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6-6c-1.1 0-2 .9-2 2v2h4V6c0-1.1-.9-2-2-2z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M18 10h-1.26A2 2 0 0 0 15 9H9c-.53 0-1.04.21-1.41.59-.38.37-.59.88-.59 1.41v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zM10 6c0-1.1.9-2 2-2s2 .9 2 2v3h2V6c0-2.21-1.79-4-4-4S8 3.79 8 6v3h2V6z" />
-                    </svg>
-                  )}
-                </button>
+                </div>
+                <div className="flex w-full items-center gap-2">
+                  <button
+                    onClick={() => toggleTransactionLock(index)}
+                    className={`rounded p-1 transition-colors ${
+                      transaction.locked
+                        ? "text-primary hover:text-primary"
+                        : "text-zinc-400 hover:text-zinc-600"
+                    }`}
+                    title={transaction.locked ? "Desbloquear" : "Bloquear"}
+                  >
+                    {transaction.locked ? (
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M6 10h2V8c0-2.21 1.79-4 4-4s4 1.79 4 4v2h2c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6-6c-1.1 0-2 .9-2 2v2h4V6c0-1.1-.9-2-2-2z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M18 10h-1.26A2 2 0 0 0 15 9H9c-.53 0-1.04.21-1.41.59-.38.37-.59.88-.59 1.41v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zM10 6c0-1.1.9-2 2-2s2 .9 2 2v3h2V6c0-2.21-1.79-4-4-4S8 3.79 8 6v3h2V6z" />
+                      </svg>
+                    )}
+                  </button>
 
-                <span className="text-sm text-zinc-500">R$</span>
-                <input
-                  type="number"
-                  value={transaction.value}
-                  onChange={(e) =>
-                    handleTransactionValueChange(index, e.target.value)
-                  }
-                  disabled={transaction.locked}
-                  className={`w-full rounded border px-2 py-1 text-right focus:outline-none ${
-                    transaction.locked
-                      ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
-                      : "focus:border-primary border-zinc-300"
-                  }`}
-                  placeholder="0,00"
-                  step="0.01"
-                  min="0"
-                />
+                  <span className="text-sm text-zinc-500">R$</span>
+                  <input
+                    type="number"
+                    value={transaction.value}
+                    onChange={(e) =>
+                      handleTransactionValueChange(index, e.target.value)
+                    }
+                    disabled={transaction.locked}
+                    className={cn(
+                      "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition focus:outline-none",
+
+                      transaction.locked
+                        ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                        : "focus:border-primary border-zinc-300",
+                    )}
+                    placeholder="0,00"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
               </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild disabled={transaction.locked}>
+                  <button
+                    type="button"
+                    className={cn(
+                      "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition",
+                      transaction.paymentType !== ""
+                        ? "border-primary text-zinc-700"
+                        : "border-zinc-200 text-zinc-500",
+                      transaction.locked
+                        ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                        : "focus:border-primary border-zinc-300",
+                    )}
+                  >
+                    {transaction.paymentType || "Tipo"}
+                    <ChevronDown size={16} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="bottom"
+                  sideOffset={0}
+                  className="z-[999] w-[var(--radix-dropdown-menu-trigger-width)] border-zinc-200"
+                >
+                  {paymentType.map((item) => (
+                    <DropdownMenuItem
+                      key={item}
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        handleTransactionPaymentTypeChange(index, item);
+                      }}
+                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                        {item}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild disabled={transaction.locked}>
+                  <div
+                    className={cn(
+                      "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition",
+                      transaction.dueDate !== ""
+                        ? "border-primary text-zinc-700"
+                        : "border-zinc-200 text-zinc-500",
+                      transaction.locked
+                        ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                        : "focus:border-primary border-zinc-300",
+                    )}
+                  >
+                    <span>
+                      {moment(transaction.dueDate).format("DD/MM/YYYY")}
+                    </span>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <Calendar
+                    mode="single"
+                    selected={moment(transaction.dueDate).toDate()}
+                    onSelect={(date) =>
+                      handleTransactionDueDateChange(index, date)
+                    }
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           ))}
         </div>
