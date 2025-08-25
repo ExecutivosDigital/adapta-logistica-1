@@ -10,16 +10,12 @@ import { DollarSign, Edit, Search } from "lucide-react";
 import { useState } from "react";
 import { DataType } from "../page";
 import { TransactionsList } from "./installments-list";
-interface TechField {
-  id: string;
-  number: number;
-  type: string;
-  date: string;
-}
+
 interface Props {
   data: DataType;
   setData: (value: DataType) => void;
 }
+
 export function Step3({ data, setData }: Props) {
   const paymentTypes = [
     "PIX",
@@ -35,21 +31,15 @@ export function Step3({ data, setData }: Props) {
   const { width } = useScreenWidth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // mantém só 0‑9
     const onlyDigits = e.target.value.replace(/\D/g, "");
-
-    // se o usuário digitou “1234”, queremos 12,34
-    // => divide por 100 para posicionar a vírgula
     const amountNumber = Number(onlyDigits) / 100;
 
     setData({ ...data, value: amountNumber });
   };
 
   const handleGlobalPaymentTypeChange = (selectedPaymentType: string) => {
-    // Update the global paymentType
     setData({ ...data, paymentType: selectedPaymentType });
 
-    // Update all transactions with the selected paymentType
     if (data.transactions && data.transactions.length > 0) {
       const updatedTransactions = data.transactions.map((transaction) => ({
         ...transaction,

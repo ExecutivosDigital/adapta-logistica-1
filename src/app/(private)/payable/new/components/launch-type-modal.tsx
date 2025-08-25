@@ -12,14 +12,6 @@ export interface LaunchType {
   centroResultado: string;
 }
 
-interface LaunchTypeRaw {
-  "Tipo Lançamento": string;
-  "Centros de Resultado": string;
-  Conta: string;
-  "Nivel 4 Desc": string;
-  // Add other properties as needed
-}
-
 export interface LaunchTypeModalProps {
   show: boolean;
   onClose: () => void;
@@ -34,67 +26,6 @@ export default function LaunchTypeModal({
   setData,
 }: LaunchTypeModalProps) {
   const { ledgerAccounts } = useFinancialDataContext();
-  // const [filter, setFilter] = useState("");
-  // const [page, setPage] = useState(1);
-  // const [selected, setSelected] = useState<LaunchType | null>(null);
-
-  // const parsedLaunchTypes = useMemo(() => {
-  //   return ledgerAccounts
-  //     .filter((item) => {
-  //       const tipo = item["Tipo Lançamento"]?.toLowerCase() || "";
-  //       if (showingTaxes) {
-  //         return tipo.includes("imposto");
-  //       } else {
-  //         return !tipo.includes("imposto");
-  //       }
-  //     })
-  //     .map((item: LaunchTypeRaw) => ({
-  //       tipoLancamento: item["Tipo Lançamento"],
-  //       descNivel4:
-  //         item["Nivel 4 Desc"]?.split(" - ").slice(1).join(" - ").trim() || "",
-  //       conta: item["Conta"],
-  //       centroResultado: item["Centros de Resultado"],
-  //     }));
-  // }, [showingTaxes]);
-
-  // const filtered = useMemo(() => {
-  //   if (!filter.trim()) return parsedLaunchTypes;
-  //   const t = filter.toLowerCase();
-  //   return parsedLaunchTypes.filter(
-  //     (l) =>
-  //       l.tipoLancamento.toLowerCase().includes(t) ||
-  //       l.descNivel4.toLowerCase().includes(t) ||
-  //       l.conta.toLowerCase().includes(t),
-  //   );
-  // }, [filter, parsedLaunchTypes]);
-
-  // const pageCount = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
-
-  // const pages = useMemo(() => {
-  //   const maxButtons = 5;
-  //   if (pageCount <= maxButtons)
-  //     return [...Array(pageCount)].map((_, i) => i + 1);
-  //   const half = Math.floor(maxButtons / 2);
-  //   let from = Math.max(1, page - half);
-  //   const to = Math.min(pageCount, from + maxButtons - 1);
-  //   if (to - from < maxButtons - 1) from = Math.max(1, to - maxButtons + 1);
-  //   return Array.from({ length: to - from + 1 }, (_, i) => from + i);
-  // }, [pageCount, page]);
-
-  // const paginated = useMemo(() => {
-  //   const start = (page - 1) * itemsPerPage;
-  //   return filtered.slice(start, start + itemsPerPage);
-  // }, [filtered, page, itemsPerPage]);
-
-  // function handleConfirm() {
-  //   if (!selected) return;
-  //   if (selectCostCenter) {
-  //     selectCostCenter(selected);
-  //   }
-  //   onSelect(selected);
-  // }
-
-  // useEffect(() => setPage(1), [filter]);
 
   return (
     <div
@@ -132,8 +63,6 @@ export default function LaunchTypeModal({
               <div className="bg-primary/20 border-primary relative flex w-2/3 flex-1 items-center rounded-md border px-4 py-2">
                 <input
                   type="text"
-                  // value={filter}
-                  // onChange={(e) => setFilter(e.target.value)}
                   placeholder="Digite o código ou descrição"
                   className="w-full flex-1 px-2 text-sm outline-none"
                 />

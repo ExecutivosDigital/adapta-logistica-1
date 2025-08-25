@@ -7,7 +7,13 @@ export interface EventType2 {
   id: string;
   type: "Recorrentes" | "Avulso" | "Colaborador";
   movementType: "Entrada" | "Saida";
-  status: "À Pagar" | "Pendente" | "Atrasado" | "Pago";
+  status:
+    | "À Pagar"
+    | "À Receber"
+    | "Pendente"
+    | "Atrasado"
+    | "Pago"
+    | "Recebido";
   value: string;
   name: string;
   installments?: string;
@@ -19,7 +25,7 @@ export const Events2: EventType2[] = [
   {
     id: "1",
     type: "Recorrentes",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 1.500,20",
     name: "Salário",
@@ -88,7 +94,7 @@ export const Events2: EventType2[] = [
   {
     id: "7",
     type: "Recorrentes",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 3.500,00",
     name: "Pagamento cliente X",
@@ -111,7 +117,7 @@ export const Events2: EventType2[] = [
   {
     id: "9",
     type: "Recorrentes",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 700,00",
     name: "Investimento mensal",
@@ -157,7 +163,7 @@ export const Events2: EventType2[] = [
   {
     id: "13",
     type: "Recorrentes",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 1.300,00",
     name: "Reembolso fornecedor",
@@ -179,7 +185,7 @@ export const Events2: EventType2[] = [
   {
     id: "15",
     type: "Recorrentes",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 1.750,00",
     name: "Receita de consultoria",
@@ -223,7 +229,7 @@ export const Events2: EventType2[] = [
   {
     id: "19",
     type: "Recorrentes",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 2.200,00",
     name: "Venda de serviço",
@@ -278,7 +284,7 @@ export const Events2: EventType2[] = [
   {
     id: "24",
     type: "Avulso",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 410,00",
     name: "Peças de reposição",
@@ -344,7 +350,7 @@ export const Events2: EventType2[] = [
   {
     id: "30",
     type: "Avulso",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 500,00",
     name: "Hospedagem evento",
@@ -388,7 +394,7 @@ export const Events2: EventType2[] = [
   {
     id: "34",
     type: "Avulso",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 200,00",
     name: "Material temporário",
@@ -432,7 +438,7 @@ export const Events2: EventType2[] = [
   {
     id: "38",
     type: "Avulso",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 420,00",
     name: "Custos de urgência",
@@ -476,7 +482,7 @@ export const Events2: EventType2[] = [
   {
     id: "42",
     type: "Colaborador",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 2.000,00",
     name: "Adiantamento salário",
@@ -498,7 +504,7 @@ export const Events2: EventType2[] = [
   {
     id: "44",
     type: "Colaborador",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 800,00",
     name: "Meta batida",
@@ -520,7 +526,7 @@ export const Events2: EventType2[] = [
   {
     id: "46",
     type: "Colaborador",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 300,00",
     name: "Campanha interna",
@@ -564,7 +570,7 @@ export const Events2: EventType2[] = [
   {
     id: "50",
     type: "Colaborador",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 500,00",
     name: "Premiação interna",
@@ -575,7 +581,7 @@ export const Events2: EventType2[] = [
   {
     id: "51",
     type: "Colaborador",
-    status: "Pago",
+    status: "Recebido",
     movementType: "Entrada",
     value: "R$ 650,00",
     name: "Bônus produtividade",
@@ -674,7 +680,7 @@ export const Events2: EventType2[] = [
   {
     id: "60",
     type: "Colaborador",
-    status: "À Pagar",
+    status: "À Receber",
     movementType: "Entrada",
     value: "R$ 300,00",
     name: "Uniformes",

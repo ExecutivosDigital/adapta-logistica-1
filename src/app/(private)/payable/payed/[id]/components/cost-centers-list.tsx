@@ -23,7 +23,6 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
     const remainingValue = data.totalValue - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
-      // Convert to cents to avoid floating point issues
       const remainingCents = Math.round(remainingValue * 100);
       const baseValueCents = Math.floor(
         remainingCents / unlockedCenters.length,
@@ -35,12 +34,10 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
           return center;
         }
 
-        // Find the position of this center in the unlocked centers array
         const unlockedIndex = unlockedCenters.findIndex(
           (uc) => data.costCenters.findIndex((dc) => dc === uc) === index,
         );
 
-        // Distribute remainder to first N centers (where N = remainder)
         const extraCent = unlockedIndex < remainder ? 1 : 0;
         const finalValueCents = baseValueCents + extraCent;
         const finalValue = (finalValueCents / 100).toFixed(2);
@@ -80,7 +77,6 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
     const remainingValue = data.totalValue - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
-      // Convert to cents to avoid floating point issues
       const remainingCents = Math.round(remainingValue * 100);
       const baseValueCents = Math.floor(
         remainingCents / unlockedCenters.length,
@@ -90,7 +86,6 @@ export function CostCentersList({ data, setData }: CostCentersListProps) {
       let distributedCount = 0;
       updatedCostCenters.forEach((center, i) => {
         if (i !== index && !center.locked) {
-          // Distribute remainder to first N centers
           const extraCent = distributedCount < remainder ? 1 : 0;
           const finalValueCents = baseValueCents + extraCent;
           const finalValue = (finalValueCents / 100).toFixed(2);

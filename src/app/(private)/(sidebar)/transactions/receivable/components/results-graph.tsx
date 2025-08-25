@@ -119,7 +119,7 @@ export function ReceivableResultsGraph() {
           breakpoint: 4000,
           options: {
             chart: {
-              height: 200,
+              height: 250,
             },
           },
         },

@@ -89,7 +89,7 @@ export function CustomEvent({ event, onView }: any) {
           <div
             className={cn(
               "w-full text-center",
-              event.status === "Pago"
+              event.status === "Pago" || event.status === "Recebido"
                 ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
                 : event.status === "Atrasado"
                   ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"

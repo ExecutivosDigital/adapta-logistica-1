@@ -78,7 +78,6 @@ export function AccountingModal({
           )}
         >
           <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
-            {/* Cabeçalho */}
             <div className="bg-primary flex h-16 items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
                 Lista de Contas

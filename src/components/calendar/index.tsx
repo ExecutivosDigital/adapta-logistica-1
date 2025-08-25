@@ -43,7 +43,13 @@ export interface EventType2 {
   id: string;
   type: "Recorrentes" | "Avulso" | "Colaborador";
   movementType: "Entrada" | "Saida";
-  status: "À Pagar" | "Pendente" | "Atrasado" | "Pago";
+  status:
+    | "À Pagar"
+    | "À Receber"
+    | "Pendente"
+    | "Atrasado"
+    | "Pago"
+    | "Recebido";
   value: string | number; // mantive string, mas recomendo number
   name: string;
   installments?: string;
@@ -414,14 +420,16 @@ const CalendarApp = ({ accessLevel, filter }: ButtonGroupProps) => {
         return router.push(`/payable/pay/${event.id}`);
       }
     } else if (event.movementType === "Entrada") {
-      if (event.status !== "À Pagar") {
-        return router.push(`/receivable/update/${event.id}`);
-      } else if (event.status === "À Pagar") {
+      if (event.status === "Recebido") {
+        return router.push(`/receivable/received/${event.id}`);
+      } else if (event.status !== "À Receber") {
         if (accessLevel === "common") {
-          return router.push(`/receivable/receive/${event.id}`);
+          return router.push(`/transactions/receivable/update/${event.id}`);
         } else if (accessLevel === "admin") {
-          return router.push(`/receivable/approve/${event.id}`);
+          return router.push(`/transactions/receivable/approve/${event.id}`);
         }
+      } else if (event.status === "À Receber") {
+        return router.push(`/receivable/receive/${event.id}`);
       }
     }
   };

@@ -44,7 +44,7 @@ export default function RegisterLayout({
   //     setIsLoading(false);
   //   }, 700);
   // }, [pathname]);
-  const { selectedBranch, setSelectedBranch } = useBranch();
+  const { selectedBranch } = useBranch();
   return (
     <>
       {/* <div
@@ -108,7 +108,7 @@ export default function RegisterLayout({
                     <DropdownMenuTrigger asChild>
                       <div className="hover:border-primary-dark flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 p-1 transition duration-300">
                         <span className="font-semibold">
-                          {selectedBranch?.CNPJ}
+                          {selectedBranch?.cnpj}
                         </span>
                         <ChevronsUpDown className="text-zinc-400" />
                       </div>
@@ -119,7 +119,7 @@ export default function RegisterLayout({
                         <DropdownMenuItem
                           key={branch.id}
                           className="hover:bg-primary/20 mt-2 mb-2 flex cursor-pointer flex-row items-start gap-2 text-start transition duration-300"
-                          onClick={() => setSelectedBranch(branch)}
+                          // onClick={() => setSelectedBranch(branch)}
                         >
                           <span>{branch.name}</span>
                           <span>CNPJ:{branch.CNPJ}</span>

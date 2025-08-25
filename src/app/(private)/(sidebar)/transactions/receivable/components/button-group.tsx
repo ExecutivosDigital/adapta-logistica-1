@@ -3,9 +3,11 @@ import { OrangeButton } from "@/components/OrangeButton";
 import { cn } from "@/utils/cn";
 import { ChevronRight, NotepadText } from "lucide-react";
 import { useState } from "react";
+import CreateClientSheet from "./create-client-sheet";
 import { NewReceivableModal } from "./new-receivable-modal";
 
 export function ReceivableButtonGroup() {
+  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
   const [showNewReceivableModal, setShowNewReceivableModal] = useState(false);
   const [buttons, setButtons] = useState([
     {
@@ -69,6 +71,13 @@ export function ReceivableButtonGroup() {
         <NewReceivableModal
           show={showNewReceivableModal}
           onHide={() => setShowNewReceivableModal(false)}
+          setOpenCreateClientSheet={setOpenCreateClientSheet}
+        />
+      )}
+      {openCreateClientSheet && (
+        <CreateClientSheet
+          open={openCreateClientSheet}
+          onOpenChange={setOpenCreateClientSheet}
         />
       )}
     </>

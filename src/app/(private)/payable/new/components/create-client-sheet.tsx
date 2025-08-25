@@ -1,6 +1,3 @@
-/* --------------------------------------------------------------------------
-   CreateClientSheet.tsx – versão clean (React-Hook-Form + Zod)
-   -------------------------------------------------------------------------- */
 "use client";
 
 import {
@@ -35,12 +32,8 @@ import {
 import { toast } from "react-hot-toast";
 import Select, { SingleValue } from "react-select";
 import * as z from "zod";
-
 import { FieldConfig, fieldsConfig, Option } from "./fieldsConfig";
 
-/* ------------------------------------------------------------------ */
-/* Tipos extra                                                        */
-/* ------------------------------------------------------------------ */
 export interface CnpjCardResponse {
   fullName: string;
   fantasyName: string;
@@ -63,9 +56,6 @@ export interface CnpjCardResponse {
   };
 }
 
-/* ------------------------------------------------------------------ */
-/* Gera schema + defaults a partir de fieldsConfig                     */
-/* ------------------------------------------------------------------ */
 const buildSchemaAndDefaults = () => {
   const shape: Record<string, z.ZodTypeAny> = {};
   const defaults: Record<string, unknown> = {};
@@ -105,18 +95,12 @@ const buildSchemaAndDefaults = () => {
 const { schema: FormSchema, defaults } = buildSchemaAndDefaults();
 type FormData = z.infer<typeof FormSchema>;
 
-/* ------------------------------------------------------------------ */
-/* Hook de validação por passo                                         */
-/* ------------------------------------------------------------------ */
 const useSteps = (form: UseFormReturn<FormData>) => {
   const stepFields = { 0: fieldsConfig.map((f) => f.id) } as const;
   const validateStep = () => form.trigger(stepFields[0] as (keyof FormData)[]);
   return { validateStep };
 };
 
-/* ------------------------------------------------------------------ */
-/* FieldRenderer                                                       */
-/* ------------------------------------------------------------------ */
 const FieldRenderer: React.FC<{ field: FieldConfig }> = ({ field }) => {
   const { control, register } = useFormContext<FormData>();
 
@@ -219,16 +203,12 @@ const FieldRenderer: React.FC<{ field: FieldConfig }> = ({ field }) => {
   }
 };
 
-/* ------------------------------------------------------------------ */
-/* Componente principal                                               */
-/* ------------------------------------------------------------------ */
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export default function CreateClientSheet({ open, onOpenChange }: Props) {
-  /* form */
   const methods = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     mode: "onChange",
@@ -237,7 +217,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
   const { handleSubmit, setValue, reset } = methods;
   const { validateStep } = useSteps(methods);
 
-  /* estado ui */
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState<"client" | "supplier">(
     "client",
@@ -245,14 +224,12 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
 
-  /* OpenAI helpers */
   const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
   const summaryAssistant = "asst_Q6Xw1vrYYzYrF9c4m3rsnvDx";
 
-  /* Preencher campos via cartão CNPJ */
   useEffect(() => {
     if (!summary) return;
     const map: Record<string, keyof FormData> = {
@@ -278,7 +255,9 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
   /* Análise PDF */
   async function analyzePdf(buffer: Buffer) {
     try {
-      const file = new File([buffer], "cnpj.pdf", { type: "application/pdf" });
+      const file = new File([new Uint8Array(buffer)], "cnpj.pdf", {
+        type: "application/pdf",
+      });
       const sendFile = await openai.files.create({
         file,
         purpose: "assistants",
@@ -298,7 +277,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
         },
       });
 
-      // aguarda conclusão
       while (true) {
         const status = await openai.beta.threads.runs.retrieve(
           thread.thread_id,
@@ -326,7 +304,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
     }
   }
 
-  /* submit */
   const onSubmit = async () => {
     if (!(await validateStep())) {
       toast.error("Corrija os erros antes de salvar.");
@@ -340,7 +317,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
     reset();
   };
 
-  /* derivações p/ render */
   const highPriority = useMemo(
     () => fieldsConfig.filter((f) => f.importance === 1),
     [],
@@ -352,16 +328,11 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
     }, {});
   }, []);
 
-  /* ----------------------------------------------------------------
-     JSX
-     ---------------------------------------------------------------- */
   return (
     <FormProvider {...methods}>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="z-[999999] w-[90vw] space-y-6 overflow-y-auto xl:w-[650px]">
           <SheetTitle>Novo Cadastro</SheetTitle>
-
-          {/* tipo cliente/fornecedor */}
           <div className="flex items-center justify-center">
             <div className="bg-primary/40 relative flex w-60 overflow-hidden rounded-lg p-2">
               <div
@@ -390,7 +361,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
             </div>
           </div>
 
-          {/* upload CNPJ */}
           <button className="group border-primary bg-primary/20 text-primary hover:border-primary-dark hover:text-primary-dark relative flex w-full flex-col items-center rounded-xl border border-dashed px-2 py-4 font-medium transition duration-300">
             {loading ? (
               <>
@@ -417,16 +387,13 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
             />
           </button>
 
-          {/* formulário */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* campos importantes */}
             <div className="space-y-4">
               {highPriority.map((f) => (
                 <FieldRenderer key={f.id} field={f} />
               ))}
             </div>
 
-            {/* demais campos */}
             <Accordion type="multiple" className="flex flex-col gap-4">
               {Object.entries(grouped).map(([groupName, fields]) => (
                 <AccordionItem
@@ -448,7 +415,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
               ))}
             </Accordion>
 
-            {/* footer */}
             <SheetFooter className="mt-auto flex gap-2">
               <SheetClose asChild>
                 <Button variant="outline">Cancelar</Button>

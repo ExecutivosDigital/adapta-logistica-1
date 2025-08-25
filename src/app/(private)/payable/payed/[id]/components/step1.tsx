@@ -18,7 +18,6 @@ import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { DataType } from "../page";
 import { CostCentersList } from "./cost-centers-list";
-
 moment.locale("pt-br");
 
 interface Props {

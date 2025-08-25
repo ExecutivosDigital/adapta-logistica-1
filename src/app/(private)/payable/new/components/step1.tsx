@@ -1,3 +1,4 @@
+import { ResultCenterProps } from "@/@types/financial-data";
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
@@ -5,6 +6,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
+import { useScreenWidth } from "@/lib/useScreenWidth";
+import { getLocalTimeZone } from "@internationalized/date";
 import {
   Building2,
   CalendarIcon,
@@ -16,19 +21,13 @@ import {
   Search,
 } from "lucide-react";
 import moment from "moment";
-import { useState } from "react";
-import { DataType } from "../page";
-import { CategoryModal } from "./category-modal";
-import { ResultCentersList } from "./result-centers-list";
-
-import { ResultCenterProps } from "@/@types/financial-data";
-import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
-import { useFinancialDataContext } from "@/context/FinancialDataContext";
-import { useScreenWidth } from "@/lib/useScreenWidth";
-import { getLocalTimeZone } from "@internationalized/date";
 import "moment/locale/pt-br";
+import { useState } from "react";
 import { DateValue } from "react-aria-components";
+import { DataType } from "../page";
+import { ResultCentersList } from "./result-centers-list";
 moment.locale("pt-br");
+
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;
@@ -41,18 +40,6 @@ interface Props {
   >;
   handleResultCenterToggle: (resultCenterName: string) => void;
 }
-type CostType =
-  | "Custo Fixo"
-  | "Custo Variável"
-  | "Custo de Vendas / Operação Logística"
-  | "Impostos e Tributos"
-  | "Capex (Investimentos)"
-  | "Reembolsos / Adiantamentos";
-
-type Category = {
-  type: string;
-  category: CostType;
-};
 
 export function Step1({
   setIsOpenSupplierModal,
@@ -64,160 +51,6 @@ export function Step1({
   setSelectedResultCenters,
   handleResultCenterToggle,
 }: Props) {
-  const categoriesByCostType: Record<CostType, Category[]> = {
-    "Custo Fixo": [
-      { type: "Aluguel / Condomínio / IPTU", category: "Custo Fixo" },
-      { type: "Água e Esgoto", category: "Custo Fixo" },
-      { type: "Internet", category: "Custo Fixo" },
-      { type: "Telefonia e Similares", category: "Custo Fixo" },
-      { type: "Energia", category: "Custo Fixo" },
-      { type: "Seguros Patrimoniais", category: "Custo Fixo" },
-      { type: "Licenças e Software", category: "Custo Fixo" },
-      { type: "Seguros Empresariais Gerais", category: "Custo Fixo" },
-      { type: "Seguros de Carga", category: "Custo Fixo" },
-      { type: "Folha Administrativa", category: "Custo Fixo" },
-      { type: "Custos - Contabilidade", category: "Custo Fixo" },
-      { type: "Taxas Bancárias", category: "Custo Fixo" },
-      { type: "Serviços Terceirizados", category: "Custo Fixo" },
-      { type: "Material de Escritório", category: "Custo Fixo" },
-      { type: "Manutenção Preventiva", category: "Custo Fixo" },
-      { type: "Material Limpeza", category: "Custo Fixo" },
-      { type: "Outros - Descreva", category: "Custo Fixo" },
-    ],
-    "Custo Variável": [
-      { type: "Custos Bancários", category: "Custo Variável" },
-      { type: "Combustível", category: "Custo Variável" },
-      { type: "Pedágios", category: "Custo Variável" },
-      { type: "Frete Subcontratado", category: "Custo Variável" },
-      { type: "Adiantamento", category: "Custo Variável" },
-      { type: "Horas Extras Operacionais", category: "Custo Variável" },
-      { type: "Deslocamento entre Filiais", category: "Custo Variável" },
-      { type: "Manutenção Corretiva", category: "Custo Variável" },
-      { type: "Multas e Penalidades", category: "Custo Variável" },
-      { type: "Armazenagem", category: "Custo Variável" },
-      { type: "Transbordo / Redespacho", category: "Custo Variável" },
-      { type: "Carga e Descarga Terceirizada", category: "Custo Variável" },
-      { type: "Material de Expedição", category: "Custo Variável" },
-      { type: "Locação de Equipamentos", category: "Custo Variável" },
-      { type: "Serviços Avulsos", category: "Custo Variável" },
-      { type: "Ger. de Risco por Operação", category: "Custo Variável" },
-      { type: "Falhas de Entrega", category: "Custo Variável" },
-      { type: "Despesas Administrativas", category: "Custo Variável" },
-      { type: "Falhas Operacionais", category: "Custo Variável" },
-      { type: "Falhas Jurídicas", category: "Custo Variável" },
-      { type: "Outros", category: "Custo Variável" },
-    ],
-    "Impostos e Tributos": [
-      { type: "IRPJ", category: "Impostos e Tributos" },
-      { type: "CSLL", category: "Impostos e Tributos" },
-      { type: "PIS", category: "Impostos e Tributos" },
-      { type: "COFINS", category: "Impostos e Tributos" },
-      { type: "ISS", category: "Impostos e Tributos" },
-      { type: "ICMS ST", category: "Impostos e Tributos" },
-      { type: "ICMS DIFAL", category: "Impostos e Tributos" },
-      { type: "INSS Patronal", category: "Impostos e Tributos" },
-      { type: "FGTS", category: "Impostos e Tributos" },
-      { type: "IRRF", category: "Impostos e Tributos" },
-      { type: "DPVAT", category: "Impostos e Tributos" },
-      { type: "ANTT / RNTRC / Fiscalização", category: "Impostos e Tributos" },
-      { type: "Taxas Municipais", category: "Impostos e Tributos" },
-      { type: "Taxas Estaduais", category: "Impostos e Tributos" },
-      { type: "Parc. Tributos Federais", category: "Impostos e Tributos" },
-      {
-        type: "Parc. Tributos Estado / Munic.",
-        category: "Impostos e Tributos",
-      },
-      {
-        type: "Multas e Juros por Atraso Fiscal",
-        category: "Impostos e Tributos",
-      },
-      { type: "Outros Tributos - Descreva", category: "Impostos e Tributos" },
-    ],
-    "Custo de Vendas / Operação Logística": [
-      {
-        type: "Frete Subcontratado",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      { type: "Combustível", category: "Custo de Vendas / Operação Logística" },
-      { type: "Pedágios", category: "Custo de Vendas / Operação Logística" },
-      {
-        type: "Seguro de Carga",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Gerenciamento de Risco",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      { type: "Armazenagem", category: "Custo de Vendas / Operação Logística" },
-      {
-        type: "Ajudas de Custo",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Motoristas Agregados",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Escolta / Especial",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Locação de Equipamentos",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Transbordo / Redespacho",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Carga e Descarga Terceirizada",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Devolução de Mercadoria",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      {
-        type: "Projetos Pontuais",
-        category: "Custo de Vendas / Operação Logística",
-      },
-      { type: "Outros", category: "Custo de Vendas / Operação Logística" },
-    ],
-    "Capex (Investimentos)": [
-      { type: "Compra de Veículos", category: "Capex (Investimentos)" },
-      {
-        type: "Aquisição - Máquinass e Equip.",
-        category: "Capex (Investimentos)",
-      },
-      { type: "Galpão / CD", category: "Capex (Investimentos)" },
-      { type: "Reformas e Infraestrutura", category: "Capex (Investimentos)" },
-      { type: "Sistemas e Softwares", category: "Capex (Investimentos)" },
-      { type: "Mobiliários", category: "Capex (Investimentos)" },
-      { type: "Obras", category: "Capex (Investimentos)" },
-      { type: "Projetos de Expansão", category: "Capex (Investimentos)" },
-      { type: "Investimentos Financeiro", category: "Capex (Investimentos)" },
-    ],
-    "Reembolsos / Adiantamentos": [
-      {
-        type: "Adiantamento de Viagem",
-        category: "Reembolsos / Adiantamentos",
-      },
-      {
-        type: "Despesas com Alimentação",
-        category: "Reembolsos / Adiantamentos",
-      },
-      {
-        type: "Combustível (Reembolso)",
-        category: "Reembolsos / Adiantamentos",
-      },
-      { type: "Despesas com Pedágio", category: "Reembolsos / Adiantamentos" },
-      {
-        type: "Caixa Interno / Fundo Fixo",
-        category: "Reembolsos / Adiantamentos",
-      },
-    ],
-  };
-
   const installments = [
     "1",
     "2",
@@ -238,27 +71,14 @@ export function Step1({
   const { suppliers, ledgerAccounts, resultCenters } =
     useFinancialDataContext();
 
-  const [filteredCategories, setFilteredCategories] = useState("");
   const [filteredResultCenters, setFilteredResultCenters] = useState("");
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInstallments, setFilterInstallments] = useState("");
   const [isCustomInputActive, setIsCustomInputActive] = useState(false);
   const [customValue, setCustomValue] = useState("");
 
-  const categoryOptions =
-    data.type && categoriesByCostType[data.type as CostType]
-      ? categoriesByCostType[data.type as CostType].filter(({ type }) =>
-          type.toLowerCase().includes(filteredCategories.toLowerCase()),
-        )
-      : [];
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // mantém só 0‑9
     const onlyDigits = e.target.value.replace(/\D/g, "");
-
-    // se o usuário digitou “1234”, queremos 12,34
-    // => divide por 100 para posicionar a vírgula
     const amountNumber = Number(onlyDigits) / 100;
 
     setData({ ...data, value: amountNumber });
@@ -502,18 +322,19 @@ export function Step1({
                   <DropdownMenuItem
                     key={term}
                     onClick={() => {
-                      term === "INSTALLMENT"
-                        ? setData({
-                            ...data,
-                            paymentMode: term,
-                            installmentCount: 0,
-                          })
-                        : term === "FULL" &&
-                          setData({
-                            ...data,
-                            paymentMode: term,
-                            installmentCount: 1,
-                          });
+                      if (term === "INSTALLMENT") {
+                        setData({
+                          ...data,
+                          paymentMode: term,
+                          installmentCount: 0,
+                        });
+                      } else if (term === "FULL") {
+                        setData({
+                          ...data,
+                          paymentMode: term,
+                          installmentCount: 1,
+                        });
+                      }
                     }}
                     className="hover:bg-primary/20 cursor-pointer transition duration-300"
                   >
@@ -826,17 +647,6 @@ export function Step1({
           <ResultCentersList data={data} setData={setData} />
         )}
       </div>
-      {isCategoryModalOpen && (
-        <CategoryModal
-          show={isCategoryModalOpen}
-          onHide={() => setIsCategoryModalOpen(false)}
-          filteredCategories={filteredCategories}
-          setFilteredCategories={setFilteredCategories}
-          categoryOptions={categoryOptions}
-          data={data}
-          setData={setData}
-        />
-      )}
     </>
   );
 }

@@ -1,12 +1,20 @@
 "use client";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
+import { DateRange, SelectRangeEventHandler } from "react-day-picker";
 interface selectedTableType {
   selectedTableType?: string;
 }
@@ -14,6 +22,15 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
   const { viewAllValues } = useValueContext();
   const router = useRouter();
   const [date, setDate] = useState<Date | null>(new Date());
+  const [openDateRange, setOpenDateRange] = useState({
+    from: moment().subtract(1, "month").toDate(),
+    to: moment().toDate(),
+  });
+  const [overdueDateRange, setOverdueDateRange] = useState({
+    from: moment().subtract(1, "month").toDate(),
+    to: moment().toDate(),
+  });
+
   const handleDateChange = (value: DateValue | null) => {
     if (!value) {
       setDate(null);
@@ -26,6 +43,27 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } else if (value !== null && (value as any) instanceof Date) setDate(value);
   };
+
+  const handleSelectOpen: SelectRangeEventHandler = (
+    range: DateRange | undefined,
+  ) => {
+    if (range && range.from && range.to) {
+      setOpenDateRange({ from: range.from, to: range.to });
+    } else {
+      setOpenDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+    }
+  };
+
+  const handleSelectOverdue: SelectRangeEventHandler = (
+    range: DateRange | undefined,
+  ) => {
+    if (range && range.from && range.to) {
+      setOverdueDateRange({ from: range.from, to: range.to });
+    } else {
+      setOverdueDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+    }
+  };
+
   return (
     <div className="grid grid-cols-12 gap-8">
       <div
@@ -89,15 +127,27 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
       >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Receber neste Mês</span>
-          <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
-            <EllipsisVertical />
-            <SimpleDatePicker
-              value={date}
-              view="month"
-              invisible
-              onChange={handleDateChange}
-            />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-2">
+                <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="left" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={openDateRange?.from}
+                selected={openDateRange}
+                classNames={{
+                  day_range_middle: cn("bg-zinc-400", "hover:bg-zinc-500"),
+                }}
+                onSelect={handleSelectOpen}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="relative flex flex-col gap-2 p-2 px-4">
@@ -138,15 +188,27 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
       >
         <div className="bg-primary flex w-full items-center justify-between border-b border-b-zinc-200 p-2">
           <span className="font-semibold text-white">Atrasados</span>
-          <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
-            <EllipsisVertical />
-            <SimpleDatePicker
-              value={date}
-              view="month"
-              invisible
-              onChange={handleDateChange}
-            />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-2">
+                <div className="relative flex cursor-pointer items-center justify-center rounded-md border border-zinc-200 bg-white p-1 text-zinc-400">
+                  <EllipsisVertical />
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="left" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={overdueDateRange?.from}
+                selected={overdueDateRange}
+                classNames={{
+                  day_range_middle: cn("bg-zinc-400", "hover:bg-zinc-500"),
+                }}
+                onSelect={handleSelectOverdue}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="relative flex flex-col gap-2 p-2 px-4">

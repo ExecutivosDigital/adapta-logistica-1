@@ -33,7 +33,7 @@ export const config = {
     "/receivable/new",
     "/receivable/update/:id",
     "/receivable/update-2/:id",
-    "/receivable/approve/:id",
+    "/receivable/approve-2/:id",
     "/receivable/receive/:id",
   ],
 };

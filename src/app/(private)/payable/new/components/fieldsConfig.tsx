@@ -16,7 +16,6 @@ export interface FieldConfig {
 }
 
 export const fieldsConfig: FieldConfig[] = [
-  /* PRIORITÁRIOS -------------------------------------------------- */
   {
     id: "cnpj",
     label: "CNPJ",
@@ -48,7 +47,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Contato",
   },
 
-  /* ENDEREÇO ------------------------------------------------------- */
   {
     id: "endereco",
     label: "Endereço",
@@ -91,7 +89,7 @@ export const fieldsConfig: FieldConfig[] = [
     importance: 2,
     group: "Endereço",
   },
-  /* SEGMENTAÇÃO --------------------------------------------------- */
+
   {
     id: "tipogrupo",
     label: "Tipo de Grupo",
@@ -107,7 +105,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Segmentação",
   },
 
-  /* IDENTIFICAÇÃO -------------------------------------------------- */
   {
     id: "clientecodigo",
     label: "Código do Cliente",
@@ -130,7 +127,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Identificação",
   },
 
-  /* DOCUMENTOS FISCAIS -------------------------------------------- */
   {
     id: "rginscest",
     label: "Inscrição Estadual",
@@ -146,7 +142,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Documentos Fiscais",
   },
 
-  /* CONTATO EXTRA -------------------------------------------------- */
   {
     id: "nrtelefone",
     label: "Telefone 2",
@@ -169,7 +164,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Contato",
   },
 
-  /* CONFIGURAÇÕES -------------------------------------------------- */
   {
     id: "fgsubstituircli",
     label: "Substituir Cliente?",
@@ -195,7 +189,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Configurações",
   },
 
-  /* FINANCEIRO ----------------------------------------------------- */
   {
     id: "creditlimit",
     label: "Limite de Crédito (%)",
@@ -204,7 +197,6 @@ export const fieldsConfig: FieldConfig[] = [
     group: "Financeiro",
   },
 
-  /* AVANÇADO ------------------------------------------------------- */
   {
     id: "fginformatomador",
     label: "FGINFORMATOMADOR",

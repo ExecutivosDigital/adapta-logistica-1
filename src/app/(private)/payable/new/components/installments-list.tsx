@@ -1,5 +1,4 @@
 "use client";
-
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
@@ -29,13 +28,10 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
     "Fatura",
   ];
 
-  // Generate transactions array based on paymentDetails
   const getTransactions = () => {
     const numTransactions = data.installmentCount || 1;
 
-    // If transactions don't exist or count doesn't match, create/update them
     if (!data.transactions || data.transactions.length !== numTransactions) {
-      // Use cents-based calculation for initial distribution
       const totalCents = Math.round(data.value * 100);
       const baseValueCents = Math.floor(totalCents / numTransactions);
       const remainder = totalCents % numTransactions;
@@ -43,7 +39,6 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       const newTransactions = Array.from(
         { length: numTransactions },
         (_, index) => {
-          // Distribute remainder to first N transactions
           const extraCent = index < remainder ? 1 : 0;
           const finalValueCents = baseValueCents + extraCent;
           const finalValue = finalValueCents / 100;
@@ -88,7 +83,6 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
     const remainingValue = data.value - lockedTotal;
 
     if (unlockedTransactions.length > 0 && remainingValue >= 0) {
-      // Convert to cents to avoid floating point issues
       const remainingCents = Math.round(remainingValue * 100);
       const baseValueCents = Math.floor(
         remainingCents / unlockedTransactions.length,
@@ -100,12 +94,10 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
           return transaction;
         }
 
-        // Find the position of this transaction in the unlocked transactions array
         const unlockedIndex = unlockedTransactions.findIndex(
           (ut) => transactions.findIndex((dt) => dt === ut) === index,
         );
 
-        // Distribute remainder to first N transactions (where N = remainder)
         const extraCent = unlockedIndex < remainder ? 1 : 0;
         const finalValueCents = baseValueCents + extraCent;
         const finalValue = finalValueCents / 100;
@@ -145,7 +137,6 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
     const remainingValue = data.value - lockedTotal;
 
     if (unlockedTransactions.length > 0 && remainingValue >= 0) {
-      // Convert to cents to avoid floating point issues
       const remainingCents = Math.round(remainingValue * 100);
       const baseValueCents = Math.floor(
         remainingCents / unlockedTransactions.length,
@@ -155,14 +146,13 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       let distributedCount = 0;
       updatedTransactions.forEach((transaction, i) => {
         if (i !== index && !transaction.locked) {
-          // Distribute remainder to first N transactions
           const extraCent = distributedCount < remainder ? 1 : 0;
           const finalValueCents = baseValueCents + extraCent;
-          const finalValue = finalValueCents / 100; // Convert back to currency
+          const finalValue = finalValueCents / 100;
 
           updatedTransactions[i] = {
             ...transaction,
-            value: parseFloat(finalValue.toFixed(2)), // Ensure proper decimal precision
+            value: parseFloat(finalValue.toFixed(2)),
           };
           distributedCount++;
         }
@@ -213,7 +203,6 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       return sum + (transaction.value || 0);
     }, 0);
 
-    // Use cents-based calculation to avoid floating point precision issues
     const totalCents = Math.round(data.value * 100);
     const assignedCents = Math.round(totalAssigned * 100);
     const remainingCents = totalCents - assignedCents;
@@ -221,7 +210,6 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
     return remainingCents / 100;
   };
 
-  // Don't render if payment is not in installments
   if (data.paymentMode !== "INSTALLMENT" || transactions.length <= 1) {
     return null;
   }

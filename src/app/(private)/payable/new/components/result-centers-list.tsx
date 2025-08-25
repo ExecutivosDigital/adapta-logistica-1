@@ -1,7 +1,6 @@
 "use client";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { Building2 } from "lucide-react";
 import { DataType } from "../page";
 
@@ -10,8 +9,6 @@ interface ResultCentersListProps {
   setData: (value: DataType) => void;
 }
 export function ResultCentersList({ data, setData }: ResultCentersListProps) {
-  const { resultCenters } = useFinancialDataContext();
-
   const distributeValueEvenly = () => {
     if (data.resultCenters.length === 0) return;
 
@@ -21,14 +18,13 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
     );
 
     const lockedTotal = lockedCenters.reduce(
-      (sum, center) => sum + (Number(center.value) || 0), // Ensure number conversion
+      (sum, center) => sum + (Number(center.value) || 0),
       0,
     );
 
     const remainingValue = data.value - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
-      // Convert to cents to avoid floating point issues
       const remainingCents = Math.round(remainingValue * 100);
       const baseValueCents = Math.floor(
         remainingCents / unlockedCenters.length,
@@ -40,19 +36,16 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
           return center;
         }
 
-        // Find the position of this center in the unlocked centers array
         const unlockedIndex = unlockedCenters.findIndex(
           (uc) => data.resultCenters.findIndex((dc) => dc === uc) === index,
         );
-
-        // Distribute remainder to first N centers (where N = remainder)
         const extraCent = unlockedIndex < remainder ? 1 : 0;
         const finalValueCents = baseValueCents + extraCent;
         const finalValue = finalValueCents / 100;
 
         return {
           ...center,
-          value: parseFloat(finalValue.toFixed(2)), // Ensure it's stored as a number
+          value: parseFloat(finalValue.toFixed(2)),
         };
       });
 
@@ -68,7 +61,7 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
 
     updatedResultCenters[index] = {
       ...updatedResultCenters[index],
-      value: parseFloat(newValue) || 0, // This ensures it's stored as a number
+      value: parseFloat(newValue) || 0,
     };
 
     const unlockedCenters = updatedResultCenters.filter(
@@ -77,7 +70,7 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
 
     const lockedTotal = updatedResultCenters.reduce((sum, center, i) => {
       if (center.locked || i === index) {
-        return sum + (Number(center.value) || 0); // Add Number() conversion here too
+        return sum + (Number(center.value) || 0);
       }
       return sum;
     }, 0);
@@ -85,7 +78,6 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
     const remainingValue = data.value - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
-      // Convert to cents to avoid floating point issues
       const remainingCents = Math.round(remainingValue * 100);
       const baseValueCents = Math.floor(
         remainingCents / unlockedCenters.length,
@@ -95,14 +87,13 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
       let distributedCount = 0;
       updatedResultCenters.forEach((center, i) => {
         if (i !== index && !center.locked) {
-          // Distribute remainder to first N centers
           const extraCent = distributedCount < remainder ? 1 : 0;
           const finalValueCents = baseValueCents + extraCent;
           const finalValue = finalValueCents / 100;
 
           updatedResultCenters[i] = {
             ...center,
-            value: parseFloat(finalValue.toFixed(2)), // Ensure proper decimal precision
+            value: parseFloat(finalValue.toFixed(2)),
           };
           distributedCount++;
         }
@@ -124,10 +115,9 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
 
   const calculateRemainingValue = () => {
     const totalAssigned = data.resultCenters.reduce((sum, center) => {
-      return sum + (Number(center.value) || 0); // Convert to number explicitly
+      return sum + (Number(center.value) || 0);
     }, 0);
 
-    // Use cents-based calculation to avoid floating point precision issues
     const totalCents = Math.round(data.value * 100);
     const assignedCents = Math.round(totalAssigned * 100);
     const remainingCents = totalCents - assignedCents;

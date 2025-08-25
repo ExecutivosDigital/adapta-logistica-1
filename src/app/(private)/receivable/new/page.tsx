@@ -3,7 +3,13 @@
 import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
 import { cn } from "@/utils/cn";
-import { ChevronDown, ChevronLeft, X } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronLeft,
+  DollarSign,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,7 +27,10 @@ export interface ClientsProps {
 }
 
 export interface DataType {
-  totalValue: number;
+  value: number;
+  fees: number;
+  bankAccountId: string;
+  serviceType: string;
   entryType: "TOTAL" | "PARTIAL";
   client: {
     name: string;
@@ -33,10 +42,11 @@ export interface DataType {
   currency: string;
   costType: string;
   category: string;
-  costCenters: {
-    name: string;
-    value: string;
+  resultCenters: {
+    resultCenterId: string;
+    value: number;
     locked?: boolean;
+    name?: string;
   }[];
   accountingAccount: {
     code: string;
@@ -65,7 +75,10 @@ export default function NewReceivable() {
     useState(true);
 
   const [data, setData] = useState<DataType>({
-    totalValue: 100000,
+    value: 0,
+    fees: 0,
+    bankAccountId: "",
+    serviceType: "",
     entryType: "TOTAL",
     client: {
       name: "",
@@ -77,7 +90,7 @@ export default function NewReceivable() {
     currency: "",
     costType: "",
     category: "",
-    costCenters: [],
+    resultCenters: [],
     accountingAccount: {
       code: "",
       description: "",
@@ -104,7 +117,6 @@ export default function NewReceivable() {
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
-        {/* HEADER -------------------------------------------------------- */}
         <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
           <Image
             src="/logo/logoFull.png"
@@ -114,7 +126,13 @@ export default function NewReceivable() {
             className="h-16 w-auto"
             priority
           />
-
+          <button
+            onClick={() => router.back()}
+            className="absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+          >
+            <ChevronLeft size={16} />
+            Voltar
+          </button>
           <button
             onClick={() => setSteps((s) => s - 1)}
             className={cn(
@@ -126,7 +144,7 @@ export default function NewReceivable() {
             Voltar
           </button>
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push("/transactions/receivable")}
             className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
           >
             Encerrar
@@ -161,17 +179,34 @@ export default function NewReceivable() {
                     />
                     <div className="flex flex-col">
                       <h2 className="text-xl font-semibold">
-                        Confirmar Fatura À Receber
+                        Fatura À Receber
                       </h2>
+                      <span className="flex items-center gap-1 text-sm text-zinc-600">
+                        <Calendar size={16} />
+                        22/03/2025
+                      </span>
                     </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <h2 className="flex flex-row items-center gap-1 text-xl font-semibold">
+                      <span className="flex flex-row items-center gap-1 text-xs">
+                        <div className="bg-primary/20 text-primary flex h-4 w-4 items-center justify-center rounded-full">
+                          <DollarSign size={14} />
+                        </div>
+                        R$
+                      </span>
+                      {data.value.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </h2>
+                    <span className="flex items-center gap-1 text-sm text-zinc-600">
+                      Preço da Fatura
+                    </span>
                   </div>
                 </div>
                 <div className="my-4 h-px bg-zinc-200/60" />
-                <Step1
-                  data={data}
-                  setData={setData}
-                  setIsOpenClientModal={setIsOpenClientModal}
-                />
+                <Step1 data={data} setData={setData} />
               </>
             ) : steps === 2 ? (
               <div className="flex h-[90%] w-[90%] flex-col items-center gap-2 rounded-lg bg-white p-8">
@@ -256,6 +291,7 @@ export default function NewReceivable() {
                 </div>
                 <Step2
                   data={data}
+                  setData={setData}
                   hasBrokenIndividualRules={hasBrokenIndividualRules}
                   setHasBrokenIndividualRules={setHasBrokenIndividualRules}
                 />

@@ -1,4 +1,4 @@
-/* app/(dashboard)/create-business-unit/page.tsx */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { ResultCenterProps } from "@/@types/financial-data";
 import { OrangeButton } from "@/components/OrangeButton";
@@ -18,12 +18,14 @@ import {
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  Loader2,
   MapPin,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { AccountingModal } from "./components/accounting-modal";
 import CreateClientSheet from "./components/create-client-sheet";
 import LaunchTypeModal from "./components/launch-type-modal";
@@ -77,12 +79,12 @@ export default function NewPayable() {
     selectedBusinessUnit,
     setSelectedBusinessUnit,
   } = useBranch();
-  const { suppliers, ledgerAccounts, resultCenters } =
-    useFinancialDataContext();
+  const { resultCenters } = useFinancialDataContext();
 
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
   const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
   const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [steps, setSteps] = useState(1);
   const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
     useState(false);
@@ -183,6 +185,7 @@ export default function NewPayable() {
   };
 
   async function CreatePayable() {
+    setIsCreating(true);
     const create = await PostAPI(
       "/payable",
       {
@@ -194,6 +197,15 @@ export default function NewPayable() {
       },
       true,
     );
+    if (create.status === 200) {
+      toast.success("À Pagar criado com sucesso!");
+      setTimeout(() => {
+        router.push("/calendar");
+      }, 1000);
+      return setIsCreating(false);
+    }
+    toast.error("Erro ao criar À Pagar, tente novamente");
+    return setIsCreating(false);
   }
 
   useEffect(() => {
@@ -217,7 +229,6 @@ export default function NewPayable() {
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
-        {/* HEADER -------------------------------------------------------- */}
         <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
           <Image
             src="/logo/logoFull.png"
@@ -411,15 +422,19 @@ export default function NewPayable() {
                   className="h-9 w-[132px]"
                   onClick={() => {
                     CreatePayable();
-                    // toast.success("À Pagar criado com sucesso!");
-                    // setTimeout(() => {
-                    //   router.push("/calendar");
-                    // }, 1000);
                   }}
                   icon={<ChevronDown size={16} className="-rotate-90" />}
                   iconPosition="right"
+                  disabled={isCreating}
                 >
-                  Salvar
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      <span>Criando...</span>
+                    </>
+                  ) : (
+                    "Criar"
+                  )}
                 </OrangeButton>
               </footer>
             ) : (

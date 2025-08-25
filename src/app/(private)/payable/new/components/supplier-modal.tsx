@@ -27,6 +27,7 @@ export function SupplierModal({
   const [filteredSuppliers, setFilteredSuppliers] = useState("");
   const [selectedSupplier, setSelectedSupplier] =
     useState<SupplierProps | null>(null);
+
   return (
     <>
       <div

@@ -1,8 +1,11 @@
+import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
+import { useScreenWidth } from "@/lib/useScreenWidth";
 import {
   CalendarIcon,
   CircleDollarSign,
@@ -14,12 +17,9 @@ import {
   Trash2,
 } from "lucide-react";
 import moment from "moment";
-import { DataType } from "../page";
-
-import { Calendar } from "@/components/ui/calendar";
-import { useScreenWidth } from "@/lib/useScreenWidth";
 import "moment/locale/pt-br";
 import { useState } from "react";
+import { DataType } from "../page";
 moment.locale("pt-br");
 
 interface Document {
@@ -36,6 +36,7 @@ interface Props {
 }
 
 export function Step1({ setIsOpenSupplierModal, data }: Props) {
+  const { suppliers } = useFinancialDataContext();
   const { width } = useScreenWidth();
   const [documents, setDocuments] = useState<Document[]>([
     {
@@ -237,10 +238,12 @@ export function Step1({ setIsOpenSupplierModal, data }: Props) {
                     />
                     <div className="flex flex-1 flex-col">
                       <span className="flex-1 2xl:text-lg">
-                        {data.supplier.name || "Selecione"}
+                        {suppliers.find((s) => s.id === data.supplierId)
+                          ?.name || "Selecione"}
                       </span>
                       <span className="text-zinc-400">
-                        {data.supplier.cnpj || ""}
+                        {suppliers.find((s) => s.id === data.supplierId)
+                          ?.cnpj || ""}
                       </span>
                     </div>
                     <Edit

@@ -2,6 +2,11 @@
 import { OrangeButton } from "@/components/OrangeButton";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -20,6 +25,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import Stepper from "./components/steper";
 
 interface TransactionProps {
@@ -51,6 +57,16 @@ interface TransactionProps {
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn = "ctrc" | "document" | "status" | "operation" | null;
+type ColumnKey =
+  | "select"
+  | "ctrc"
+  | "document"
+  | "status"
+  | "operation"
+  | "paying"
+  | "receiving"
+  | "value"
+  | "type";
 
 export default function NewReceivable() {
   const router = useRouter();
@@ -60,6 +76,19 @@ export default function NewReceivable() {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [selectedSwitch, setSelectedSwitch] = useState<string>("1");
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
+    new Set([
+      "select",
+      "ctrc",
+      "document",
+      "status",
+      "operation",
+      "paying",
+      "receiving",
+      "value",
+      "type",
+    ]),
+  );
 
   const steps = [
     { label: "Selecionar Pagador", value: "solicitacao" },
@@ -70,24 +99,16 @@ export default function NewReceivable() {
     { label: "Todos", value: "all" },
   ];
 
-  const columns = [
-    { key: "select" as const, label: "", sortable: false }, // Add checkbox column
-    { key: "ctrc" as SortableColumn, label: "CTRC", sortable: true },
-    { key: "document" as SortableColumn, label: "Documento", sortable: true },
-    { key: "status" as SortableColumn, label: "Status", sortable: true },
-    { key: "operation" as SortableColumn, label: "Operação", sortable: true },
-    { key: "paying" as const, label: "CNPJ Pagador", sortable: false },
-    {
-      key: "receiving" as const,
-      label: "CNPJ Recebedor",
-      sortable: false,
-    },
-    {
-      key: "value" as const,
-      label: "Valor Documento",
-      sortable: false,
-    },
-    { key: "type" as const, label: "Tipo de Frota", sortable: false },
+  const columns: Array<{ key: ColumnKey; label: string; sortable: boolean }> = [
+    { key: "select", label: "", sortable: false },
+    { key: "ctrc", label: "CTRC", sortable: true },
+    { key: "document", label: "Documento", sortable: true },
+    { key: "status", label: "Status", sortable: true },
+    { key: "operation", label: "Operação", sortable: true },
+    { key: "paying", label: "CNPJ Pagador", sortable: false },
+    { key: "receiving", label: "CNPJ Recebedor", sortable: false },
+    { key: "value", label: "Valor Documento", sortable: false },
+    { key: "type", label: "Tipo de Frota", sortable: false },
   ];
 
   const rawRows: TransactionProps[] = [
@@ -197,7 +218,6 @@ export default function NewReceivable() {
     },
   ];
 
-  // Handle individual row selection
   const handleRowSelect = (rowId: string) => {
     const newSelected = new Set(selectedRows);
     if (newSelected.has(rowId)) {
@@ -208,7 +228,6 @@ export default function NewReceivable() {
     setSelectedRows(newSelected);
   };
 
-  // Handle select all
   const handleSelectAll = () => {
     if (selectedRows.size === sortedRows.length) {
       setSelectedRows(new Set());
@@ -217,9 +236,20 @@ export default function NewReceivable() {
     }
   };
 
+  const handleColumnToggle = (columnKey: string) => {
+    const newVisibleColumns = new Set(visibleColumns);
+    if (newVisibleColumns.has(columnKey)) {
+      if (columnKey !== "select") {
+        newVisibleColumns.delete(columnKey);
+      }
+    } else {
+      newVisibleColumns.add(columnKey);
+    }
+    setVisibleColumns(newVisibleColumns);
+  };
+
   const handleSort = (column: SortableColumn) => {
     if (sortColumn === column) {
-      // Cycle through: asc -> desc -> null
       if (sortDirection === "asc") {
         setSortDirection("desc");
       } else if (sortDirection === "desc") {
@@ -285,6 +315,10 @@ export default function NewReceivable() {
   const isIndeterminate =
     selectedRows.size > 0 && selectedRows.size < sortedRows.length;
 
+  const visibleColumnsArray = columns.filter((column) =>
+    visibleColumns.has(column.key),
+  );
+
   return (
     <div className="flex h-full w-full flex-col gap-2 xl:gap-4">
       <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
@@ -332,45 +366,58 @@ export default function NewReceivable() {
               4
             </div>
           </div>
-          <div
-            className={cn(
-              "flex h-full cursor-pointer items-center gap-8 border-b border-b-transparent transition duration-200",
-              selectedSwitch === "2" && "border-b-primary",
-            )}
-            onClick={() => setSelectedSwitch("2")}
-          >
-            <span
-              className={cn(
-                "text-sm transition duration-200",
-                selectedSwitch === "2" && "text-primary font-semibold",
-              )}
-            >
-              Lorem
-            </span>
-            <div className="bg-primary/20 text-primary flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm font-semibold">
-              4
-            </div>
-          </div>
-          <div
-            className={cn(
-              "flex h-full cursor-pointer items-center gap-8 border-b border-b-transparent transition duration-200",
-              selectedSwitch === "3" && "border-b-primary",
-            )}
-            onClick={() => setSelectedSwitch("3")}
-          >
-            <span
-              className={cn(
-                "text-sm transition duration-200",
-                selectedSwitch === "3" && "text-primary font-semibold",
-              )}
-            >
-              Lorem
-            </span>
+          <div className="flex h-full cursor-pointer items-center gap-8 border-b border-b-transparent transition duration-200">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <span
+                  className={cn(
+                    "text-sm transition duration-200",
+                    selectedSwitch === "2" && "text-primary font-semibold",
+                  )}
+                >
+                  Selecionar Colunas
+                </span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="scrollbar-hide h-60 overflow-y-scroll">
+                <>
+                  <div className="mb-2 text-sm font-medium text-zinc-700">
+                    Colunas Visíveis
+                  </div>
+                  {columns.map((column) => (
+                    <label
+                      key={column.key}
+                      className={cn(
+                        "flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-zinc-50",
+                        (column.key === "select" || column.key === "ctrc") &&
+                          "cursor-not-allowed opacity-50",
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.has(column.key)}
+                        onChange={() => handleColumnToggle(column.key)}
+                        disabled={
+                          column.key === "select" || column.key === "ctrc"
+                        }
+                        className="accent-primary h-4 w-4 rounded border border-zinc-200"
+                      />
+                      <span>{column.label || "Seleção"}</span>
+                    </label>
+                  ))}
+                </>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         <OrangeButton
           className="h-8"
-          onClick={() => router.push("/receivable/new")}
+          onClick={() => {
+            if (selectedRows.size !== 0) {
+              router.push("/receivable/new");
+            } else {
+              toast.error("Selecione ao menos uma linha");
+            }
+          }}
         >
           Continuar
           <ChevronRight />
@@ -379,16 +426,24 @@ export default function NewReceivable() {
       <Table className="border-collapse">
         <TableHeader>
           <TableRow className="gap-1">
-            {columns.map((column) => (
+            {visibleColumnsArray.map((column) => (
               <TableHead
                 key={column.key}
                 className={cn(
                   "h-12 text-sm text-zinc-500",
                   column.key === "select" ? "w-12" : "cursor-pointer",
                 )}
-                onClick={() =>
-                  column.sortable && handleSort(column.key as SortableColumn)
-                }
+                onClick={() => {
+                  if (
+                    column.sortable &&
+                    (column.key === "ctrc" ||
+                      column.key === "document" ||
+                      column.key === "status" ||
+                      column.key === "operation")
+                  ) {
+                    handleSort(column.key);
+                  }
+                }}
               >
                 {column.key === "select" ? (
                   <input
@@ -454,71 +509,85 @@ export default function NewReceivable() {
                 <div className="flex items-center gap-2">{row.ctrc}</div>
               </TableCell>
 
-              <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
-                <div className="flex items-center gap-4 text-center">
-                  <div className="border-primary flex h-8 w-8 items-center justify-center rounded-full border p-0.5">
-                    {row.document.file ? (
-                      <CircleCheck className="fill-green-500 text-white" />
-                    ) : (
-                      <Image
-                        src="/icons/no-image.png"
-                        alt=""
-                        width={200}
-                        height={200}
-                        className="h-max w-5 object-contain"
-                      />
-                    )}
+              {visibleColumns.has("document") && (
+                <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                  <div className="flex items-center gap-4 text-center">
+                    <div className="border-primary flex h-8 w-8 items-center justify-center rounded-full border p-0.5">
+                      {row.document.file ? (
+                        <CircleCheck className="fill-green-500 text-white" />
+                      ) : (
+                        <Image
+                          src="/icons/no-image.png"
+                          alt=""
+                          width={200}
+                          height={200}
+                          className="h-max w-5 object-contain"
+                        />
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      {row.document.type}
+                      {row.document.name}
+                    </div>
                   </div>
+                </TableCell>
+              )}
+
+              {visibleColumns.has("status") && (
+                <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                  <span className="mx-auto w-max rounded-md bg-amber-700/10 px-2 py-1 text-amber-700">
+                    {row.status}
+                  </span>
+                </TableCell>
+              )}
+
+              {visibleColumns.has("operation") && (
+                <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                  <span className="mx-auto w-max rounded-md bg-green-500/10 px-2 py-1 text-green-500">
+                    {row.operation}
+                  </span>
+                </TableCell>
+              )}
+
+              {visibleColumns.has("paying") && (
+                <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
                   <div className="flex flex-col">
-                    {row.document.type}
-                    {row.document.name}
+                    {row.paying.cnpj}
+                    <div className="flex items-center text-xs">
+                      {row.paying.city} - {row.paying.state}
+                    </div>
                   </div>
-                </div>
-              </TableCell>
+                </TableCell>
+              )}
 
-              <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                <span className="mx-auto w-max rounded-md bg-amber-700/10 px-2 py-1 text-amber-700">
-                  {row.status}
-                </span>
-              </TableCell>
-
-              <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                <span className="mx-auto w-max rounded-md bg-green-500/10 px-2 py-1 text-green-500">
-                  {row.operation}
-                </span>
-              </TableCell>
-
-              <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                <div className="flex flex-col">
-                  {row.paying.cnpj}
-                  <div className="flex items-center text-xs">
-                    {row.paying.city} - {row.paying.state}
+              {visibleColumns.has("receiving") && (
+                <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                  <div className="flex flex-col">
+                    {row.receiving.cnpj}
+                    <div className="flex items-center text-xs">
+                      {row.receiving.city} - {row.receiving.state}
+                    </div>
                   </div>
-                </div>
-              </TableCell>
+                </TableCell>
+              )}
 
-              <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                <div className="flex flex-col">
-                  {row.receiving.cnpj}
-                  <div className="flex items-center text-xs">
-                    {row.receiving.city} - {row.receiving.state}
+              {visibleColumns.has("value") && (
+                <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                  <div className="flex flex-col">
+                    <span>{row.value}</span>
+                    <span className="text-xs">{row.tax}</span>
                   </div>
-                </div>
-              </TableCell>
+                </TableCell>
+              )}
 
-              <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                <div className="flex flex-col">
-                  <span>{row.value}</span>
-                  <span className="text-xs">{row.tax}</span>
-                </div>
-              </TableCell>
-
-              <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
-                <div className="flex w-max flex-col text-start">
-                  <span>{row.typeCode}</span>
-                  <span className="text-xs">{row.type}</span>
-                </div>
-              </TableCell>
+              {visibleColumns.has("type") && (
+                <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                  <div className="flex w-max flex-col text-start">
+                    <span>{row.typeCode}</span>
+                    <span className="text-xs">{row.type}</span>
+                  </div>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

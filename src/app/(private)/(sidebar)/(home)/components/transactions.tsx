@@ -239,15 +239,15 @@ export function HomeTransactions() {
       }
     } else if (row.type === "toReceive") {
       if (row.status === "recebido") {
-        return;
+        return router.push(`/receivable/received/${row.id}`);
       } else if (row.status !== "a_receber") {
-        return router.push(`/receivable/update/${row.id}`);
-      } else if (row.status === "a_receber") {
         if (accessLevel === "common") {
-          return router.push(`/receivable/receive/${row.id}`);
+          return router.push(`/transactions/receivable/update/${row.id}`);
         } else if (accessLevel === "admin") {
-          return router.push(`/receivable/approve/${row.id}`);
+          return router.push(`transactions/receivable/approve/${row.id}`);
         }
+      } else if (row.status === "a_receber") {
+        return router.push(`/receivable/receive/${row.id}`);
       }
     }
   };

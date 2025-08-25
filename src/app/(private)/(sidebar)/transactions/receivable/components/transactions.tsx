@@ -28,6 +28,7 @@ import {
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import CreateClientSheet from "./create-client-sheet";
 import { NewReceivableModal } from "./new-receivable-modal";
 
 type SortDirection = "asc" | "desc" | null;
@@ -45,6 +46,7 @@ export function ReceivableTransactions({ filterType }: Props) {
   const router = useRouter();
   const { viewAllValues } = useValueContext();
   const [currentPage, setCurrentPage] = useState(1);
+  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
   const [rowsPerPage] = useState(10);
   const [showNewReceivableModal, setShowNewReceivableModal] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
@@ -221,23 +223,21 @@ export function ReceivableTransactions({ filterType }: Props) {
 
   const handleRedirect = (row: TransactionProps) => {
     if (row.status === "recebido") {
-      return;
+      return router.push(`/receivable/received/${row.id}`);
     } else if (row.status !== "a_receber") {
-      return router.push(`/receivable/update/${row.id}`);
-    } else if (row.status === "a_receber") {
       if (accessLevel === "common") {
-        return router.push(`/receivable/receive/${row.id}`);
+        return router.push(`/transactions/receivable/update/${row.id}`);
       } else if (accessLevel === "admin") {
-        return router.push(`/receivable/approve/${row.id}`);
+        return router.push(`/transactions/receivable/approve/${row.id}`);
       }
+    } else if (row.status === "a_receber") {
+      return router.push(`/receivable/receive/${row.id}`);
     }
   };
 
-  /* --------------------------------- JSX ---------------------------------- */
   return (
     <>
       <div className="flex flex-col">
-        {/* --------------------------- Header --------------------------- */}
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Fluxo de Recebimentos</span>
@@ -281,7 +281,6 @@ export function ReceivableTransactions({ filterType }: Props) {
           </OrangeButton>
         </div>
 
-        {/* --------------------------- Tabs ---------------------------- */}
         <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
           {tableTypes.map((tab) => {
             const isActive = tab.id === selectedTableType.id;
@@ -290,7 +289,7 @@ export function ReceivableTransactions({ filterType }: Props) {
                 key={tab.id}
                 onClick={() => {
                   setSelectedTableType(tab);
-                  setCurrentPage(1); // reset page when changing tab
+                  setCurrentPage(1);
                 }}
                 className={cn(
                   "flex h-12 items-center gap-2 border-b px-2 text-sm transition",
@@ -315,7 +314,6 @@ export function ReceivableTransactions({ filterType }: Props) {
           })}
         </div>
 
-        {/* --------------------------- Table --------------------------- */}
         <Table className="border-collapse">
           <TableHeader>
             <TableRow>
@@ -345,17 +343,14 @@ export function ReceivableTransactions({ filterType }: Props) {
                   onClick={() => handleRedirect(row)}
                   className="hover:bg-primary/20 h-14 cursor-pointer transition"
                 >
-                  {/* Data */}
                   <TableCell className="py-0.5 text-sm whitespace-nowrap">
                     {moment(row.date).format("DD/MM/YYYY")}
                   </TableCell>
 
-                  {/* Fornecedor */}
                   <TableCell className="py-0.5 text-sm whitespace-nowrap">
                     {row.origin}
                   </TableCell>
 
-                  {/* Valor */}
                   <TableCell
                     className={cn(
                       "py-0.5 text-sm whitespace-nowrap",
@@ -367,12 +362,10 @@ export function ReceivableTransactions({ filterType }: Props) {
                     {viewAllValues ? row.value : "********"}
                   </TableCell>
 
-                  {/* Lançamentos */}
                   <TableCell className="py-0.5 text-sm whitespace-nowrap">
                     {row.category}
                   </TableCell>
 
-                  {/* Documentos */}
                   <TableCell className="py-0.5 text-sm whitespace-nowrap">
                     <div className="flex items-center gap-2 font-bold underline">
                       Ver Documentos
@@ -380,10 +373,8 @@ export function ReceivableTransactions({ filterType }: Props) {
                     </div>
                   </TableCell>
 
-                  {/* Status + Ações */}
                   <TableCell className="py-0.5 text-sm whitespace-nowrap">
                     <div className="flex items-center gap-4">
-                      {/* Badge */}
                       <div
                         className={cn(
                           "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
@@ -422,7 +413,6 @@ export function ReceivableTransactions({ filterType }: Props) {
                                       : "ATRASADO"}
                       </div>
 
-                      {/* Menu */}
                       <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
                         <EllipsisVertical />
                       </button>
@@ -440,7 +430,6 @@ export function ReceivableTransactions({ filterType }: Props) {
           </TableBody>
         </Table>
 
-        {/* ----------------------- Pagination Footer --------------------- */}
         <div className="border-t border-t-zinc-200 p-2">
           <CustomPagination
             currentPage={currentPage}
@@ -453,6 +442,14 @@ export function ReceivableTransactions({ filterType }: Props) {
         <NewReceivableModal
           show={showNewReceivableModal}
           onHide={() => setShowNewReceivableModal(false)}
+          setOpenCreateClientSheet={setOpenCreateClientSheet}
+        />
+      )}
+
+      {openCreateClientSheet && (
+        <CreateClientSheet
+          open={openCreateClientSheet}
+          onOpenChange={setOpenCreateClientSheet}
         />
       )}
     </>
