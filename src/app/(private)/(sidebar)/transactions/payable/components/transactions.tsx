@@ -1,5 +1,6 @@
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
+import { Calendar } from "@/components/ui/calendar";
 import { CustomPagination } from "@/components/ui/custom-pagination";
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ import {
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { SelectSingleEventHandler } from "react-day-picker";
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn =
@@ -55,6 +57,7 @@ export function PayableTransactions({ filterType }: Props) {
     id: "1" | "2" | "3";
     name: string;
   }>(tableTypes[0]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const rawRows: TransactionProps[] = (() => {
     if (filterType === "overdue") {
@@ -228,6 +231,14 @@ export function PayableTransactions({ filterType }: Props) {
     }
   };
 
+  const handleSelect: SelectSingleEventHandler = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+    } else {
+      setSelectedDate(null); // or handle undefined case as needed
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex w-full items-center justify-between">
@@ -336,6 +347,27 @@ export function PayableTransactions({ filterType }: Props) {
             </button>
           );
         })}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex h-12 items-center gap-2 px-2 text-sm transition">
+              {selectedDate
+                ? moment(selectedDate).format("DD/MM/YYYY")
+                : "Filtrar por Dia"}
+              <div className="flex h-4 w-4 items-center justify-center rounded-full">
+                <ChevronDown />
+              </div>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <Calendar
+              initialFocus
+              mode="single"
+              defaultMonth={moment().toDate()}
+              selected={selectedDate ? selectedDate : undefined}
+              onSelect={handleSelect}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Table className="border-collapse">
@@ -361,97 +393,104 @@ export function PayableTransactions({ filterType }: Props) {
         </TableHeader>
 
         <TableBody>
-          {paginatedRows.map((row) => (
-            <Fragment key={row.id}>
-              <TableRow
-                onClick={() => handleRedirect(row)}
-                className="hover:bg-primary/20 h-14 cursor-pointer transition"
-              >
-                {/* Data */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  {moment(row.date).format("DD/MM/YYYY")}
-                </TableCell>
-
-                {/* Fornecedor */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  {row.origin}
-                </TableCell>
-
-                {/* Valor */}
-                <TableCell
-                  className={cn(
-                    "py-0.5 text-sm whitespace-nowrap",
-                    row.type === "toReceive"
-                      ? "text-emerald-600"
-                      : "text-red-500",
-                  )}
+          {paginatedRows
+            .filter(
+              (r) =>
+                selectedDate === null ||
+                moment(r.date).toDate().getTime() === selectedDate.getTime(),
+            )
+            .map((row) => (
+              <Fragment key={row.id}>
+                <TableRow
+                  onClick={() => handleRedirect(row)}
+                  className="hover:bg-primary/20 h-14 cursor-pointer transition"
                 >
-                  {viewAllValues ? row.value : "********"}
-                </TableCell>
+                  {/* Data */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    {moment(row.date).format("DD/MM/YYYY")}
+                  </TableCell>
 
-                {/* Lançamentos */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  {row.category}
-                </TableCell>
+                  {/* Fornecedor */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    {row.origin}
+                  </TableCell>
 
-                {/* Documentos */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  <div className="flex items-center gap-2 font-bold underline">
-                    Ver Documentos
-                    <Files />
-                  </div>
-                </TableCell>
+                  {/* Valor */}
+                  <TableCell
+                    className={cn(
+                      "py-0.5 text-sm whitespace-nowrap",
+                      row.type === "toReceive"
+                        ? "text-emerald-600"
+                        : "text-red-500",
+                    )}
+                  >
+                    {viewAllValues ? row.value : "********"}
+                  </TableCell>
 
-                {/* Status + Ações */}
-                <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                  <div className="flex items-center gap-4">
-                    {/* Badge */}
-                    <div
-                      className={cn(
-                        "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
-                        {
-                          "border-red-500 bg-red-500/20 text-red-500":
-                            row.status === "a_pagar" ||
-                            row.status === "a_receber",
-                          "border-black bg-black/20 text-black":
-                            row.status === "negado",
-                          "border-emerald-600 bg-emerald-600/20 text-emerald-600":
-                            row.status === "recebido" || row.status === "pago",
-                          "border-yellow-600 bg-yellow-600/20 text-yellow-600":
-                            row.status === "pendente",
-                          "border-zinc-400 bg-zinc-400/20 text-zinc-600":
-                            row.status === "rascunho",
-                          "border-orange-500 bg-orange-500/20 text-orange-500":
-                            row.status === "atrasado",
-                        },
-                      )}
-                    >
-                      {row.status === "a_pagar"
-                        ? "À PAGAR"
-                        : row.status === "negado"
-                          ? "NEGADO"
-                          : row.status === "a_receber"
-                            ? "À RECEBER"
-                            : row.status === "recebido"
-                              ? "RECEBIDO"
-                              : row.status === "pendente"
-                                ? "PENDENTE"
-                                : row.status === "rascunho"
-                                  ? "RASCUNHO"
-                                  : row.status === "pago"
-                                    ? "PAGO"
-                                    : "ATRASADO"}
+                  {/* Lançamentos */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    {row.category}
+                  </TableCell>
+
+                  {/* Documentos */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    <div className="flex items-center gap-2 font-bold underline">
+                      Ver Documentos
+                      <Files />
                     </div>
+                  </TableCell>
 
-                    {/* Menu */}
-                    <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
-                      <EllipsisVertical />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </Fragment>
-          ))}
+                  {/* Status + Ações */}
+                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
+                    <div className="flex items-center gap-4">
+                      {/* Badge */}
+                      <div
+                        className={cn(
+                          "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
+                          {
+                            "border-red-500 bg-red-500/20 text-red-500":
+                              row.status === "a_pagar" ||
+                              row.status === "a_receber",
+                            "border-black bg-black/20 text-black":
+                              row.status === "negado",
+                            "border-emerald-600 bg-emerald-600/20 text-emerald-600":
+                              row.status === "recebido" ||
+                              row.status === "pago",
+                            "border-yellow-600 bg-yellow-600/20 text-yellow-600":
+                              row.status === "pendente",
+                            "border-zinc-400 bg-zinc-400/20 text-zinc-600":
+                              row.status === "rascunho",
+                            "border-orange-500 bg-orange-500/20 text-orange-500":
+                              row.status === "atrasado",
+                          },
+                        )}
+                      >
+                        {row.status === "a_pagar"
+                          ? "À PAGAR"
+                          : row.status === "negado"
+                            ? "NEGADO"
+                            : row.status === "a_receber"
+                              ? "À RECEBER"
+                              : row.status === "recebido"
+                                ? "RECEBIDO"
+                                : row.status === "pendente"
+                                  ? "PENDENTE"
+                                  : row.status === "rascunho"
+                                    ? "RASCUNHO"
+                                    : row.status === "pago"
+                                      ? "PAGO"
+                                      : "ATRASADO"}
+                      </div>
+
+                      {/* Menu */}
+                      <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
+                        <EllipsisVertical />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </Fragment>
+            ))}
           {paginatedRows.length < 10 &&
             [...Array(10 - paginatedRows.length)].map((_, i) => (
               <TableRow key={i} className="h-14">

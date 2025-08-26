@@ -7,7 +7,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useScreenWidth } from "@/lib/useScreenWidth";
 import { cn } from "@/utils/cn";
-import { ChevronDown, CreditCard, DollarSign, Edit } from "lucide-react";
+import {
+  ChevronDown,
+  CreditCard,
+  DollarSign,
+  Edit,
+  Upload,
+} from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { DataType } from "../page";
@@ -51,6 +57,15 @@ export function Step2({ data }: Props) {
   return (
     <div className="flex-1">
       <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
+        <div className="border-primary text-primary col-span-12 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-2 text-center">
+          <div className="border-primary flex h-10 w-10 items-center justify-center rounded-full border">
+            <Upload />
+          </div>
+          <span className="font-semibold">Documento Gerador</span>
+          <span className="text-sm font-light">
+            Clique para ter acesso ao documento gerador anexado
+          </span>
+        </div>
         <label className="col-span-7 flex flex-col gap-1">
           <span className="text-zinc-600">Pagamento Via</span>
           <DropdownMenu>
