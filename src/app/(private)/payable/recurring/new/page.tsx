@@ -12,6 +12,7 @@ import {
 import { useApiContext } from "@/context/ApiContext";
 import { useBranch } from "@/context/BranchContext";
 import { useFinancialDataContext } from "@/context/FinancialDataContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -69,6 +70,7 @@ export interface ClientProps {
 }
 
 export default function NewRecurringPayable() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
   const { PostAPI } = useApiContext();
   const {
@@ -91,6 +93,7 @@ export default function NewRecurringPayable() {
   const [selectedResultCenters, setSelectedResultCenters] = useState<
     ResultCenterProps[]
   >([]);
+  const [paymentType, setPaymentType] = useState("FULL");
 
   const [data, setData] = useState<DataType>({
     businessUnitId: selectedBusinessUnit?.id || "",
@@ -194,17 +197,22 @@ export default function NewRecurringPayable() {
           ...center,
           value: Number(center.value),
         })),
+        value:
+          paymentType === "FULL"
+            ? data.value
+            : data.value * data.installmentCount,
+        isTotalValue: paymentType === "FULL" ? true : false,
       },
       true,
     );
     if (create.status === 200) {
-      toast.success("À Pagar criado com sucesso!");
+      toast.success("À Pagar Recorrente criado com sucesso!");
       setTimeout(() => {
-        router.push("/calendar");
+        handleNavigation("/calendar");
       }, 1000);
       return setIsCreating(false);
     }
-    toast.error("Erro ao criar À Pagar, tente novamente");
+    toast.error("Erro ao criar À Pagar Recorrente, tente novamente");
     return setIsCreating(false);
   }
 
@@ -225,6 +233,10 @@ export default function NewRecurringPayable() {
       });
     }
   }, [selectedBusinessUnit]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <>
@@ -287,10 +299,12 @@ export default function NewRecurringPayable() {
                   {data.value.toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })}
+                  })}{" "}
                 </h2>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
-                  Preço da Fatura
+                  {paymentType === "FULL"
+                    ? "Preço da Fatura"
+                    : "Preço da Parcela"}
                 </span>
               </div>
             </div>
@@ -385,9 +399,16 @@ export default function NewRecurringPayable() {
                 setIsOpenSupplierModal={setIsOpenSupplierModal}
                 setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
                 setIsOpenLaunchTypeModal={setIsOpenLaunchTypeModal}
+                paymentType={paymentType}
+                setPaymentType={setPaymentType}
               />
             ) : steps === 2 ? (
-              <Step3 data={data} setData={setData} />
+              <Step3
+                data={data}
+                setData={setData}
+                paymentType={paymentType}
+                setPaymentType={setPaymentType}
+              />
             ) : (
               <></>
             )}

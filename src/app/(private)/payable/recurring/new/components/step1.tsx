@@ -39,6 +39,8 @@ interface Props {
     React.SetStateAction<ResultCenterProps[]>
   >;
   handleResultCenterToggle: (resultCenterName: string) => void;
+  paymentType: string;
+  setPaymentType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function Step1({
@@ -50,6 +52,8 @@ export function Step1({
   selectedResultCenters,
   setSelectedResultCenters,
   handleResultCenterToggle,
+  paymentType,
+  setPaymentType,
 }: Props) {
   const installments = [
     "12",
@@ -97,6 +101,30 @@ export function Step1({
   return (
     <>
       <div className="flex-1">
+        <div className="flex w-full flex-row items-center justify-center">
+          <div className="mt-2 flex gap-2">
+            <div className="bg-primary/40 relative flex w-96 flex-row overflow-hidden rounded-lg p-2">
+              <div
+                className={`absolute top-0 bottom-0 left-0 flex w-1/2 transform items-center justify-center transition-transform duration-300 ${paymentType === "FULL" ? "translate-x-0 pl-2" : "translate-x-full"}`}
+              >
+                <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
+              </div>
+              <button
+                onClick={() => setPaymentType("FULL")}
+                className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${paymentType === "FULL" ? "font-semibold text-white" : "text-white/80"}`}
+              >
+                VALOR INTEIRO
+              </button>
+              <button
+                onClick={() => setPaymentType("DIVIDED")}
+                className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${paymentType === "DIVIDED" ? "font-semibold text-white" : "text-white/80"}`}
+              >
+                VALOR DA PARCELA
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="my-4 h-px bg-zinc-200/60" />
         <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
           <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">
@@ -161,7 +189,9 @@ export function Step1({
 
           <div className="col-span-12 grid grid-cols-11 gap-2 xl:gap-4">
             <label className="col-span-5 flex flex-col gap-1">
-              <span className="text-zinc-600">Valor</span>
+              <span className="text-zinc-600">
+                Valor {paymentType === "FULL" ? " Total" : " da Parcela"}
+              </span>
               <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
                 <DollarSign
                   size={16}
@@ -563,7 +593,11 @@ export function Step1({
           </label>
         </div>
         {data.resultCenters.length > 0 && (
-          <ResultCentersList data={data} setData={setData} />
+          <ResultCentersList
+            data={data}
+            setData={setData}
+            paymentType={paymentType}
+          />
         )}
       </div>
     </>

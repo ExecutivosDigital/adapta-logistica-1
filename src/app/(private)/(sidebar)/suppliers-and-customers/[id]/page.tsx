@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Attachments } from "./components/attachments";
 import { Gallery } from "./components/gallery";
 import { Header } from "./components/header";
@@ -7,6 +8,10 @@ import { Kpis } from "./components/kpis";
 import { SuppliersAndCustomersTable } from "./components/os-table";
 
 export default function Home2() {
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex h-full w-full flex-col pb-20 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">

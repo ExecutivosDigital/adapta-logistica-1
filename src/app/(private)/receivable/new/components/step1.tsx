@@ -12,8 +12,9 @@ import { DataType } from "../page";
 interface Props {
   data: DataType;
   setData: (value: DataType) => void;
+  setIsOpenCteModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export function Step1({ data, setData }: Props) {
+export function Step1({ data, setData, setIsOpenCteModal }: Props) {
   const collaborators = [
     "Giovanni",
     "Alex Marin",
@@ -179,7 +180,10 @@ export function Step1({ data, setData }: Props) {
 
           <label className="col-span-4 flex flex-col gap-1">
             <span className="text-zinc-600">Documentos</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div
+              onClick={() => setIsOpenCteModal(true)}
+              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
+            >
               <DollarSign
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"

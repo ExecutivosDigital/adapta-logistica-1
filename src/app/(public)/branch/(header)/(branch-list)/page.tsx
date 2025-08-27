@@ -1,18 +1,20 @@
 "use client";
+import { BusinessUnitProps } from "@/@types/branches";
 import { useBranch } from "@/context/BranchContext";
-import { BusinessUnit } from "@/mock/business-unit";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ChevronRight, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NewBusinessButton } from "./components/NewBusinessButton";
 
 export default function BranchDetails() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [value, setValue] = useState("");
-  const { selectedBranch } = useBranch();
-  const filteredBusinessUnits = BusinessUnit.filter(
-    (businessUnit) => businessUnit.code === Number(selectedBranch?.id),
-  );
+  const { businessUnits } = useBranch();
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="grid h-full w-full grid-cols-3 gap-8 p-4">
       <div className="col-span-3 flex w-full flex-row items-center justify-between">
@@ -33,25 +35,23 @@ export default function BranchDetails() {
       </div>
       <NewBusinessButton />
 
-      {filteredBusinessUnits
+      {businessUnits
         .filter((item) =>
           value.trim().length > 0
-            ? item.corporateName
-                .toLowerCase()
-                .includes(value.trim().toLowerCase())
+            ? item.name.toLowerCase().includes(value.trim().toLowerCase())
             : true,
         )
-        .map((unit: BusinessUnit, index) => (
+        .map((unit: BusinessUnitProps, index) => (
           <div
             key={index}
-            onClick={() => router.push("/register/unit-details")}
+            onClick={() => handleNavigation("/register/unit-details")}
             className="border-primary relative w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition duration-300 hover:scale-[1.005]"
           >
             <div className="flex h-full w-full flex-col justify-between gap-4">
               {/* Header: Nome e Sigla */}
               <div className="flex flex-row items-start justify-between">
                 <span className="text-xl font-bold text-gray-800">
-                  {unit.businessUnit}
+                  {unit.name}
                 </span>
                 <div className="bg-primary rounded-md px-3 py-1 text-sm font-semibold text-white">
                   {unit.acronym}
@@ -62,7 +62,7 @@ export default function BranchDetails() {
               <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
                 <div>
                   <span className="font-semibold">Status da Unidade:</span>{" "}
-                  {unit.businessUnitStatus}
+                  unit.status
                 </div>
               </div>
 

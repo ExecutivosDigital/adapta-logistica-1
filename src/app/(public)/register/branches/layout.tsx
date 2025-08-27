@@ -1,15 +1,15 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export default function RegisterLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
 
   return (
     <>
@@ -20,7 +20,7 @@ export default function RegisterLayout({
           {/* Cabeçalho com itens posicionados absolutamente */}
           <div className="relative p-8 pb-0">
             <button
-              onClick={() => router.push("/register/branches-list")}
+              onClick={() => handleNavigation("/register/branches-list")}
               className="text-primary hover:text-primary-dark absolute top-5 left-5 flex cursor-pointer items-center gap-2 transition duration-300"
             >
               <ArrowLeft />

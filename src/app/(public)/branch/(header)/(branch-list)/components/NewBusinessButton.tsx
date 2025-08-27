@@ -1,13 +1,14 @@
+import { useLoadingContext } from "@/context/LoadingContext";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export function NewBusinessButton() {
   // const { openCreateBusinessUnitModal } = useCreateBusinessUnit();
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
+
   return (
     <button
-      onClick={() => router.push("/branch/create-business-unit ")}
+      onClick={() => handleNavigation("/branch/create-business-unit ")}
       className="border-primary relative h-full w-full cursor-pointer gap-1 overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 hover:scale-[1.02]"
     >
       <Image

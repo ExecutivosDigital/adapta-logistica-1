@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toPay, toReceive, TransactionProps } from "@/const/transactions";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 
@@ -21,7 +22,6 @@ import {
   Search,
 } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 
 type SortDirection = "asc" | "desc" | null;
@@ -35,7 +35,7 @@ type SortableColumn =
 
 export function SuppliersAndCustomersTable() {
   const { viewAllValues } = useValueContext();
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
 
   /* ----------------------------- State & Consts ---------------------------- */
   const [currentPage, setCurrentPage] = useState(1);
@@ -227,7 +227,7 @@ export function SuppliersAndCustomersTable() {
         <div className="flex items-center gap-2">
           <span className="font-semibold">Histórico de Pagamentos</span>
           <button
-            onClick={() => router.push("/transactions/payable/all")}
+            onClick={() => handleNavigation("/transactions/payable/all")}
             className="text-primary flex items-center gap-2 text-sm font-semibold"
           >
             <span>Ver todas</span>

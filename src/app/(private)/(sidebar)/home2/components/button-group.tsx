@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/utils/cn";
 import { NotepadText } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function Home2ButtonGroup() {
   const [buttons, setButtons] = useState([
@@ -18,6 +18,10 @@ export function Home2ButtonGroup() {
       selected: false,
     },
   ]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex flex-wrap items-center gap-2">

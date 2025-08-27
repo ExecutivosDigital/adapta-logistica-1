@@ -8,16 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ActiveClients } from "@/mock/active-clients";
 import { InactiveClients } from "@/mock/inactive-clients";
 import { cn } from "@/utils/cn";
 import { EllipsisVertical, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+
 type ClientWithActive = ActiveClients & { active: boolean };
+
 export function ClientsTable() {
+  const { handleNavigation } = useLoadingContext();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const router = useRouter();
   const [tableType, setTableType] = useState<"all" | "active" | "inactive">(
     "all",
   );
@@ -161,7 +163,9 @@ export function ClientsTable() {
           {paginatedClients.map((row: ClientWithActive, index) => (
             <TableRow
               onClick={() =>
-                router.push(`/suppliers-and-customers/${row["CNPJ Pagador"]}`)
+                handleNavigation(
+                  `/suppliers-and-customers/${row["CNPJ Pagador"]}`,
+                )
               }
               key={index}
               className="hover:bg-primary/10 h-14 cursor-pointer border-b border-zinc-200"

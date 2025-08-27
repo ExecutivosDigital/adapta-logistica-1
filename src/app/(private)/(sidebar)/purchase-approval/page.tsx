@@ -1,8 +1,7 @@
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
 import { ArrowRight, ClipboardList } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ApprovalTable } from "./components/approval-table";
 import { BudgetApprovalTable } from "./components/budget-approval-table";
 import { DeleteRequestModal } from "./components/delete-request-modal";
@@ -12,10 +11,11 @@ import { NewPurchaseBudgetModal } from "./components/new-purchase-budget-modal";
 import { NewPurchaseRequestModal } from "./components/new-purchase-request-modal";
 import { RequestTable } from "./components/request-table";
 
+import { useLoadingContext } from "@/context/LoadingContext";
 import Stepper from "./components/steper";
 
 export default function PurchaseApproval() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [showNewPurchaseRequestModal, setShowNewPurchaseRequestModal] =
     useState<boolean>(false);
@@ -45,9 +45,13 @@ export default function PurchaseApproval() {
     } else if (currentStep === 2) {
       setShowNewPurchaseBudgetModal(true);
     } else if (currentStep === 3) {
-      router.push(`/purchase-approval/1`);
+      handleNavigation(`/purchase-approval/1`);
     }
   };
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <>

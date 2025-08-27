@@ -2,9 +2,14 @@
 import { OrangeButton } from "@/components/OrangeButton";
 import { CostCenter, CostCenterProps } from "@/mock/cost-center";
 import { ChevronRight, Plus, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 export default function BranchDetails() {
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex w-full flex-col gap-4">

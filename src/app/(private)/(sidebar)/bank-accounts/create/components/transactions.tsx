@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { CreditCard, EllipsisVertical } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Card from "../../../../../../../public/icons/cart";
 import { Home2NewReleaseSheet } from "./new-release-sheet";
@@ -20,6 +20,7 @@ export function BankAccount() {
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
+  const { handleNavigation } = useLoadingContext();
 
   const columns = [
     { key: "bankAccount", label: "Conta Bancária" },
@@ -122,7 +123,7 @@ export function BankAccount() {
       actions: "PAUSADA",
     },
   ];
-  const router = useRouter();
+
   return (
     <>
       <div className="flex flex-col">
@@ -131,7 +132,9 @@ export function BankAccount() {
             <span className="border-b-primary text-primary flex h-full items-center justify-center border-b font-semibold">
               Contas
             </span>
-            <OrangeButton onClick={() => router.push("/bank-accounts/create")}>
+            <OrangeButton
+              onClick={() => handleNavigation("/bank-accounts/create")}
+            >
               <CreditCard />
               <span className="text-sm"> Banco</span>
             </OrangeButton>

@@ -1,11 +1,15 @@
 "use client";
 import CalendarApp from "@/components/calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ButtonGroup } from "./components/button-group";
 
 export default function Calendar() {
   const [accessLevel, setAccessLevel] = useState("common");
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">

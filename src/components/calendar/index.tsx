@@ -23,8 +23,8 @@ import {
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 // ---- Seus componentes/arquivos já existentes ----
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
-import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/date-picker";
 import { Modal } from "../ui/Modal";
@@ -209,7 +209,7 @@ function MonthSummaryEvent({ event }: { event: SummaryEvent }) {
 
 // ==== Arquivo principal ====
 const CalendarApp = ({ accessLevel, filter }: ButtonGroupProps) => {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [calevents, setCalEvents] = useState<EventType2[]>(Events2);
   const [open, setOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -404,32 +404,38 @@ const CalendarApp = ({ accessLevel, filter }: ButtonGroupProps) => {
     }
     if (event.movementType === "Saida") {
       if (event.status === "Pago") {
-        return router.push(`/payable/payed/${event.id}`);
+        return handleNavigation(`/payable/payed/${event.id}`);
       }
       if (event.status !== "À Pagar") {
         if (accessLevel === "common") {
           if (event.type === "Recorrentes") {
-            return router.push(`/payable/recurring/add-document/${event.id}`);
+            return handleNavigation(
+              `/payable/recurring/add-document/${event.id}`,
+            );
           } else {
-            return router.push(`/payable/add-document/${event.id}`);
+            return handleNavigation(`/payable/add-document/${event.id}`);
           }
         } else if (accessLevel === "admin") {
-          return router.push(`/payable/approve/${event.id}`);
+          return handleNavigation(`/payable/approve/${event.id}`);
         }
       } else if (event.status === "À Pagar") {
-        return router.push(`/payable/pay/${event.id}`);
+        return handleNavigation(`/payable/pay/${event.id}`);
       }
     } else if (event.movementType === "Entrada") {
       if (event.status === "Recebido") {
-        return router.push(`/receivable/received/${event.id}`);
+        return handleNavigation(`/receivable/received/${event.id}`);
       } else if (event.status !== "À Receber") {
         if (accessLevel === "common") {
-          return router.push(`/transactions/receivable/update/${event.id}`);
+          return handleNavigation(
+            `/transactions/receivable/update/${event.id}`,
+          );
         } else if (accessLevel === "admin") {
-          return router.push(`/transactions/receivable/approve/${event.id}`);
+          return handleNavigation(
+            `/transactions/receivable/approve/${event.id}`,
+          );
         }
       } else if (event.status === "À Receber") {
-        return router.push(`/receivable/receive/${event.id}`);
+        return handleNavigation(`/receivable/receive/${event.id}`);
       }
     }
   };

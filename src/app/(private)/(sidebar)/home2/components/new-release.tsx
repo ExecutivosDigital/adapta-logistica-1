@@ -6,13 +6,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Home2NewReleaseSheet } from "./new-release-sheet";
 
 export function Home2NewRelease() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [isNewReleaseSheetOpen, setIsNewReleaseSheetOpen] = useState(false);
 
   return (
@@ -31,7 +31,7 @@ export function Home2NewRelease() {
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="end" className="z-[999]">
           <DropdownMenuItem
-            onClick={() => router.push("/payable/new")}
+            onClick={() => handleNavigation("/payable/new")}
             className="hover:bg-primary/20 cursor-pointer transition duration-300"
           >
             <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -46,7 +46,7 @@ export function Home2NewRelease() {
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => router.push("/payable/recurring/new")}
+            onClick={() => handleNavigation("/payable/recurring/new")}
             className="hover:bg-primary/20 cursor-pointer transition duration-300"
           >
             <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

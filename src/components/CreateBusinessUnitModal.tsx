@@ -8,15 +8,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCreateBusinessUnit } from "@/context/CreateBusinessUnitContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import * as Dialog from "@radix-ui/react-dialog";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { ArrowRight, Check, X } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { OrangeButton } from "./OrangeButton";
+
 export function CreateBusinessUnitModal() {
+  const { handleNavigation } = useLoadingContext();
   const { isOpenCreateBusinessUnitModal, closeCreateBusinessUnitModal } =
     useCreateBusinessUnit();
 
@@ -29,7 +31,7 @@ export function CreateBusinessUnitModal() {
   const [name, setName] = useState("");
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const router = useRouter();
+
   return (
     <Dialog.Root
       open={isOpenCreateBusinessUnitModal}
@@ -200,7 +202,7 @@ export function CreateBusinessUnitModal() {
 
               <OrangeButton
                 type="submit"
-                onClick={() => router.push("/create-business-unit")}
+                onClick={() => handleNavigation("/create-business-unit")}
                 disabled={confirmedName === "" || confirmedName !== name}
                 iconPosition="right"
                 icon={<ArrowRight size={16} />}

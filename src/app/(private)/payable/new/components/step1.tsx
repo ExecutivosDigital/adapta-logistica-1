@@ -147,7 +147,7 @@ export function Step1({
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
               />
-              <div className="flex flex-1 flex-col">
+              <div className="flex flex-1 flex-col truncate">
                 <span className="flex-1 2xl:text-lg">
                   {suppliers.find((s) => s.id === data.supplierId)?.name ||
                     "Selecione"}
@@ -179,7 +179,7 @@ export function Step1({
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
               />
-              <div className="flex h-full flex-1 items-center">
+              <div className="flex h-full flex-1 items-center truncate">
                 <span className="flex-1 2xl:text-lg">
                   {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
                     ?.name || "Selecione"}

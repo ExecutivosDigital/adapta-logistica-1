@@ -13,10 +13,22 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useApiContext } from "./ApiContext";
 import { useBranch } from "./BranchContext";
 
+export interface LedgerAccountFiltersProps {
+  type: string;
+  level: number;
+  page: number;
+  query: string;
+}
+
 interface FinancialDataContextProps {
   suppliers: SupplierProps[];
   GetSuppliers: () => Promise<void>;
   ledgerAccounts: LedgerAccountsProps[];
+  ledgerAccountFilters: LedgerAccountFiltersProps;
+  setLedgerAccountFilters: React.Dispatch<
+    React.SetStateAction<LedgerAccountFiltersProps>
+  >;
+  ledgerAccountPages: number;
   resultCenters: ResultCenterProps[];
   supplierGroups: SupplierGroupProps[];
   supplierTypes: SupplierTypeProps[];
@@ -39,6 +51,13 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
   const [ledgerAccounts, setLedgerAccounts] = useState<LedgerAccountsProps[]>(
     [],
   );
+  const [ledgerAccountFilters, setLedgerAccountFilters] = useState({
+    type: "EXPENSE",
+    level: 4,
+    page: 1,
+    query: "",
+  });
+  const [ledgerAccountPages, setLedgerAccountPages] = useState(0);
   const [resultCenters, setResultCenters] = useState<ResultCenterProps[]>([]);
   const [supplierGroups, setSupplierGroups] = useState<SupplierGroupProps[]>(
     [],
@@ -60,13 +79,14 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
   }
 
   async function GetLedgerAccounts() {
+    const filter = `?type=${ledgerAccountFilters.type}&level=${ledgerAccountFilters.level}&page=${ledgerAccountFilters.page}&query=${ledgerAccountFilters.query}`;
     const ledgerAccounts = await GetAPI(
-      `/ledger-account/fetch/${selectedBranch?.companyId}`,
+      `/ledger-account/fetch/${selectedBranch?.companyId}${filter}`,
       true,
     );
-    console.log("ledgerAccounts", ledgerAccounts);
     if (ledgerAccounts.status === 200) {
       setLedgerAccounts(ledgerAccounts.body.ledgerAccounts);
+      setLedgerAccountPages(ledgerAccounts.body.pages);
     }
   }
 
@@ -128,12 +148,20 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
     GetTributaryRegimes();
   }, [selectedBranch]);
 
+  useEffect(() => {
+    if (!selectedBranch) return;
+    GetLedgerAccounts();
+  }, [ledgerAccountFilters]);
+
   return (
     <FinancialDataContext.Provider
       value={{
         suppliers,
         GetSuppliers,
         ledgerAccounts,
+        ledgerAccountFilters,
+        setLedgerAccountFilters,
+        ledgerAccountPages,
         resultCenters,
         supplierGroups,
         supplierTypes,

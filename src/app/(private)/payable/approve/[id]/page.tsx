@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -17,7 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Step1 } from "./components/step1";
 import { Step2 } from "./components/step2";
@@ -59,6 +60,7 @@ export interface DataType {
 }
 
 export default function ApprovePayable() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
 
   const [steps, setSteps] = useState(1);
@@ -93,6 +95,10 @@ export default function ApprovePayable() {
     approval: "",
     mail: "",
   });
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -182,7 +188,7 @@ export default function ApprovePayable() {
           onClick={() => {
             toast.success("Fatura aprovada com sucesso!");
             setTimeout(() => {
-              router.push("/calendar");
+              handleNavigation("/calendar");
             }, 1000);
           }}
           icon={<ChevronDown size={16} className="-rotate-90" />}

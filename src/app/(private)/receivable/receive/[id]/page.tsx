@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -17,7 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Step1 } from "./components/step1";
 import { Step2 } from "./components/step2";
 
@@ -58,6 +59,7 @@ export interface DataType {
 }
 
 export default function ReceiveReceivable() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
 
   const [steps, setSteps] = useState(1);
@@ -92,6 +94,10 @@ export default function ReceiveReceivable() {
     approval: "",
     mail: "",
   });
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -177,7 +183,7 @@ export default function ReceiveReceivable() {
       <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
         <OrangeButton
           className="h-9 w-[132px]"
-          onClick={() => router.push("/calendar")}
+          onClick={() => handleNavigation("/calendar")}
           icon={<ChevronDown size={16} className="-rotate-90" />}
           iconPosition="right"
         >

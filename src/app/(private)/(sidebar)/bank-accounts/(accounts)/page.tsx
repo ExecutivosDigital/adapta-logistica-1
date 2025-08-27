@@ -2,7 +2,7 @@
 import { Modal } from "@/components/ui/Modal";
 import { Edit2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Home2ButtonGroup } from "./components/button-group";
 import { Home2ResultsGraph } from "./components/results-graph";
 import { BankAccount } from "./components/transactions";
@@ -21,6 +21,11 @@ export default function Home2() {
       /* abre edição */
     },
   };
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">Contas Bancárias</span>

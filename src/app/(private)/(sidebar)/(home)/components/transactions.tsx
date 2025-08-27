@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toPay, toReceive, TransactionProps } from "@/const/transactions";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 
@@ -27,7 +28,6 @@ import {
   Files,
 } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 
 type SortDirection = "asc" | "desc" | null;
@@ -40,8 +40,8 @@ type SortableColumn =
   | "status";
 
 export function HomeTransactions() {
+  const { handleNavigation } = useLoadingContext();
   const { viewAllValues } = useValueContext();
-  const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
@@ -227,27 +227,27 @@ export function HomeTransactions() {
       if (row.status === "negado") {
         return;
       } else if (row.status === "pago") {
-        return router.push(`/payable/payed/${row.id}`);
+        return handleNavigation(`/payable/payed/${row.id}`);
       } else if (row.status !== "a_pagar") {
         if (accessLevel === "common") {
-          return router.push(`/payable/add-document/${row.id}`);
+          return handleNavigation(`/payable/add-document/${row.id}`);
         } else if (accessLevel === "admin") {
-          return router.push(`/payable/approve/${row.id}`);
+          return handleNavigation(`/payable/approve/${row.id}`);
         }
       } else if (row.status === "a_pagar") {
-        return router.push(`/payable/pay/${row.id}`);
+        return handleNavigation(`/payable/pay/${row.id}`);
       }
     } else if (row.type === "toReceive") {
       if (row.status === "recebido") {
-        return router.push(`/receivable/received/${row.id}`);
+        return handleNavigation(`/receivable/received/${row.id}`);
       } else if (row.status !== "a_receber") {
         if (accessLevel === "common") {
-          return router.push(`/transactions/receivable/update/${row.id}`);
+          return handleNavigation(`/transactions/receivable/update/${row.id}`);
         } else if (accessLevel === "admin") {
-          return router.push(`transactions/receivable/approve/${row.id}`);
+          return handleNavigation(`transactions/receivable/approve/${row.id}`);
         }
       } else if (row.status === "a_receber") {
-        return router.push(`/receivable/receive/${row.id}`);
+        return handleNavigation(`/receivable/receive/${row.id}`);
       }
     }
   };
@@ -259,7 +259,7 @@ export function HomeTransactions() {
           <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
             <span className="font-semibold">Fluxo de Pagamentos</span>
             <button
-              onClick={() => router.push("/transactions/payable/all")}
+              onClick={() => handleNavigation("/transactions/payable/all")}
               className="text-primary flex items-center gap-2 text-sm font-semibold"
             >
               <span>Ver todas</span>
@@ -310,7 +310,7 @@ export function HomeTransactions() {
           </DropdownMenuTrigger>
           <DropdownMenuContent side="bottom" align="end" className="z-[999]">
             <DropdownMenuItem
-              onClick={() => router.push("/payable/new")}
+              onClick={() => handleNavigation("/payable/new")}
               className="hover:bg-primary/20 cursor-pointer transition duration-300"
             >
               <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -325,7 +325,7 @@ export function HomeTransactions() {
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push("/payable/recurring/new")}
+              onClick={() => handleNavigation("/payable/recurring/new")}
               className="hover:bg-primary/20 cursor-pointer transition duration-300"
             >
               <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

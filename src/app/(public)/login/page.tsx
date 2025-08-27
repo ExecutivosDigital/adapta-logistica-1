@@ -3,14 +3,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useApiContext } from "@/context/ApiContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useCookies } from "next-client-cookies";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
@@ -22,7 +22,7 @@ const LoginSchema = z.object({
 type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const cookies = useCookies();
   const { PostAPI } = useApiContext();
   const { register, handleSubmit } = useForm<LoginForm>({
@@ -31,9 +31,11 @@ export default function Login() {
     shouldFocusError: true,
     defaultValues: { email: "", password: "" },
   });
+
   const [passwordType, setPasswordType] = useState<"text" | "password">(
     "password",
   );
+
   const togglePasswordType = () =>
     setPasswordType((p) => (p === "text" ? "password" : "text"));
 
@@ -46,7 +48,7 @@ export default function Login() {
           process.env.NEXT_PUBLIC_USER_TOKEN as string,
           res.body.accessToken,
         );
-        router.push("/register/branches");
+        handleNavigation("/register/branches");
       } else {
         toast.error(res?.body?.message ?? "Não foi possível realizar o login.");
       }
@@ -57,6 +59,10 @@ export default function Login() {
       toast.error(String(message));
     },
   );
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full">

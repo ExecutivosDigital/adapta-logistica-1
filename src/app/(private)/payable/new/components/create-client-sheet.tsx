@@ -243,7 +243,6 @@ export default function CreateSupplierSheet({ open, onOpenChange }: Props) {
           neighborhood,
         },
       };
-      console.log("finalParsed", finalParsed);
       form.setValue("cnpj", finalParsed.cnpj);
       form.setValue("name", finalParsed.fullName);
       form.setValue("emails", finalParsed.email);
@@ -325,10 +324,11 @@ export default function CreateSupplierSheet({ open, onOpenChange }: Props) {
       );
       if (create.status === 200) {
         GetSuppliers();
-        toast.success("Formulário enviado com sucesso!");
+        toast.success("Fornecedor criado com sucesso!");
+        onOpenChange(false);
         return setIsSubmitting(false);
       }
-      toast.error("Erro ao enviar formulário, tente novamente");
+      toast.error("Erro ao criar Fornecedor, tente novamente");
       return setIsSubmitting(false);
     }
   };
@@ -874,7 +874,7 @@ export default function CreateSupplierSheet({ open, onOpenChange }: Props) {
                                   />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                  className="z-[2000]"
+                                  className="z-[2000] h-80 overflow-y-scroll"
                                   align="start"
                                 >
                                   {fiscalGroups.map((fg) => (
@@ -929,7 +929,7 @@ export default function CreateSupplierSheet({ open, onOpenChange }: Props) {
                                   />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                  className="z-[2000]"
+                                  className="z-[2000] h-80 overflow-y-scroll"
                                   align="start"
                                 >
                                   {supplierGroups.map((sg) => (
@@ -1095,7 +1095,7 @@ export default function CreateSupplierSheet({ open, onOpenChange }: Props) {
                                   />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                  className="z-[2000]"
+                                  className="z-[2000] h-80 overflow-y-scroll"
                                   align="start"
                                 >
                                   {ledgerAccounts.map((la) => (
@@ -1150,7 +1150,7 @@ export default function CreateSupplierSheet({ open, onOpenChange }: Props) {
                                   />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                  className="z-[2000]"
+                                  className="z-[2000] h-80 overflow-y-scroll"
                                   align="start"
                                 >
                                   {resultCenters.map((cr) => (

@@ -2,6 +2,7 @@
 "use client";
 import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -12,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClientModal } from "./components/client-modal";
 import { Step1 } from "./components/step1";
 import { Step2 } from "./components/step2";
@@ -67,6 +68,7 @@ export interface DataType {
 }
 
 export default function ApproveReceivable2() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
   const [isOpenClientModal, setIsOpenClientModal] = useState(false);
   const [steps, setSteps] = useState(1);
@@ -113,6 +115,10 @@ export default function ApproveReceivable2() {
     return;
   };
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -143,7 +149,7 @@ export default function ApproveReceivable2() {
             Voltar
           </button>
           <button
-            onClick={() => router.push("/transactions/receivable")}
+            onClick={() => handleNavigation("/transactions/receivable")}
             className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
           >
             Encerrar
@@ -297,7 +303,7 @@ export default function ApproveReceivable2() {
               <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
                 <OrangeButton
                   className="h-9 w-[132px]"
-                  onClick={() => router.push("/calendar")}
+                  onClick={() => handleNavigation("/calendar")}
                   icon={<ChevronDown size={16} className="-rotate-90" />}
                   iconPosition="right"
                 >

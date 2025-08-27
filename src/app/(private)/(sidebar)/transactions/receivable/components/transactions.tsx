@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toReceive, TransactionProps } from "@/const/transactions";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import {
@@ -26,7 +27,6 @@ import {
   Files,
 } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import CreateClientSheet from "./create-client-sheet";
 import { NewReceivableModal } from "./new-receivable-modal";
@@ -43,7 +43,7 @@ interface Props {
   filterType?: string;
 }
 export function ReceivableTransactions({ filterType }: Props) {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const { viewAllValues } = useValueContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
@@ -223,15 +223,15 @@ export function ReceivableTransactions({ filterType }: Props) {
 
   const handleRedirect = (row: TransactionProps) => {
     if (row.status === "recebido") {
-      return router.push(`/receivable/received/${row.id}`);
+      return handleNavigation(`/receivable/received/${row.id}`);
     } else if (row.status !== "a_receber") {
       if (accessLevel === "common") {
-        return router.push(`/transactions/receivable/update/${row.id}`);
+        return handleNavigation(`/transactions/receivable/update/${row.id}`);
       } else if (accessLevel === "admin") {
-        return router.push(`/transactions/receivable/approve/${row.id}`);
+        return handleNavigation(`/transactions/receivable/approve/${row.id}`);
       }
     } else if (row.status === "a_receber") {
-      return router.push(`/receivable/receive/${row.id}`);
+      return handleNavigation(`/receivable/receive/${row.id}`);
     }
   };
 

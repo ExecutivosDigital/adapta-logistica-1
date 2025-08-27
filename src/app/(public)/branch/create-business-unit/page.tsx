@@ -3,6 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { useApiContext } from "@/context/ApiContext";
+import { useBranch } from "@/context/BranchContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { maskCep, maskCpf, maskPhone } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,23 +38,25 @@ interface CnpjCardResponse {
  * Zod Schema
  * -------------------------------------------------------------- */
 const FormSchema = z.object({
-  nomeUnidade: z.string().min(1, "Nome da unidade obrigatório"),
-  sigla: z.string().min(1, "Sigla obrigatória"),
+  name: z.string().min(1, "Nome da unidade obrigatório"),
+  acronym: z.string().min(1, "Sigla obrigatória"),
   filialId: z.string().min(1, "Filial obrigatória"),
   enderecoFilial: z.boolean(),
-  logradouro: z.string().min(1, "Logradouro obrigatório"),
-  cep: z.string().regex(/\d{5}-\d{3}/, "CEP inválido"),
-  cidade: z.string().min(1, "Cidade obrigatória"),
-  bairro: z.string().min(1, "Bairro obrigatório"),
-  uf: z.string().length(2, "UF inválida"),
-  numero: z.string().min(1, "Número obrigatório"),
-  complemento: z.string().nullable().optional(),
-  nomeResponsavel: z.string().min(1, "Nome do responsável obrigatório"),
-  cpfResponsavel: z
+  address: z.string().min(1, "Endereço obrigatório"),
+  postalCode: z.string().regex(/\d{5}-\d{3}/, "CEP inválido"),
+  city: z.string().min(1, "Cidade obrigatória"),
+  neighborhood: z.string().min(1, "Bairro obrigatório"),
+  state: z.string().length(2, "UF inválida"),
+  number: z.string().min(1, "Número obrigatório"),
+  complement: z.string().nullable().optional(),
+  responsibleName: z.string().min(1, "Nome do responsável obrigatório"),
+  responsibleCpf: z
     .string()
     .regex(/\d{3}\.\d{3}\.\d{3}-\d{2}/, "Formato CPF 000.000.000-00"),
-  celular: z.string().min(8, "Telefone obrigatório"),
-  email: z.string().email("E-mail inválido"),
+  responsiblePhone: z.string().min(8, "Telefone obrigatório"),
+  responsibleEmail: z.string().email("E-mail inválido"),
+  companyId: z.string(),
+  subsidiaryId: z.string(),
 });
 
 export type UnidadeNegocioFormData = z.infer<typeof FormSchema>;
@@ -60,34 +65,38 @@ export type UnidadeNegocioFormData = z.infer<typeof FormSchema>;
  * Componente principal
  * -------------------------------------------------------------- */
 export default function CadastroUnidadeNegocioForm() {
+  const { PostAPI } = useApiContext();
+  const { selectedBranch } = useBranch();
+  const { handleNavigation } = useLoadingContext();
+
   const form = useForm<UnidadeNegocioFormData>({
     resolver: zodResolver(FormSchema),
     shouldFocusError: false,
     mode: "onBlur",
     defaultValues: {
-      nomeUnidade: "",
-      sigla: "",
+      name: "",
+      acronym: "",
       filialId: "",
       enderecoFilial: false,
-      logradouro: "",
-      cep: "",
-      cidade: "",
-      bairro: "",
-      uf: "",
-      numero: "",
-      complemento: "",
-      nomeResponsavel: "",
-      cpfResponsavel: "",
-      celular: "",
-      email: "",
+      address: "",
+      postalCode: "",
+      city: "",
+      neighborhood: "",
+      state: "",
+      number: "",
+      complement: "",
+      responsibleName: "",
+      responsibleCpf: "",
+      responsiblePhone: "",
+      responsibleEmail: "",
+      companyId: "",
+      subsidiaryId: "",
     },
   });
 
   const { control, handleSubmit, setValue, watch } = form;
 
-  /* ----------------------------------------------------------------
-   * Estados & refs
-   * -------------------------------------------------------------- */
+  const [isCreating, setIsCreating] = useState(false);
   const [loadingCard, setLoadingCard] = useState(false);
   const openaiRef = useRef<OpenAI | null>(null);
   if (!openaiRef.current) {
@@ -104,14 +113,14 @@ export default function CadastroUnidadeNegocioForm() {
    * -------------------------------------------------------------- */
   const fillWithSummary = (summary: CnpjCardResponse) => {
     // Muitas unidades de negócio não possuem CNPJ próprio, mas ainda assim podemos usar dados de endereço
-    setValue("logradouro", summary.address.address);
-    setValue("numero", summary.address.number);
-    setValue("bairro", summary.address.province);
-    setValue("cidade", summary.address.city);
-    setValue("uf", summary.address.state);
-    setValue("cep", summary.address.postalCode);
-    setValue("email", summary.email);
-    setValue("celular", maskPhone(summary.contactNumber));
+    setValue("address", summary.address.address);
+    setValue("number", summary.address.number);
+    setValue("neighborhood", summary.address.province);
+    setValue("city", summary.address.city);
+    setValue("state", summary.address.state);
+    setValue("postalCode", summary.address.postalCode);
+    setValue("responsibleEmail", summary.email);
+    setValue("responsiblePhone", maskPhone(summary.contactNumber));
   };
 
   /* ----------------------------------------------------------------
@@ -119,8 +128,8 @@ export default function CadastroUnidadeNegocioForm() {
    * -------------------------------------------------------------- */
   useEffect(() => {
     const sub = watch(async (all, { name }) => {
-      if (name !== "cep") return;
-      const cepDigits = all.cep?.replace(/\D/g, "");
+      if (name !== "postalCode") return;
+      const cepDigits = all.postalCode?.replace(/\D/g, "");
       if (cepDigits?.length !== 8) return;
 
       try {
@@ -136,10 +145,10 @@ export default function CadastroUnidadeNegocioForm() {
           shouldFocus: false,
         } as const;
 
-        setValue("logradouro", data.logradouro ?? "", opts);
-        setValue("bairro", data.bairro ?? "", opts);
-        setValue("cidade", data.localidade ?? "", opts);
-        setValue("uf", data.uf ?? "", opts);
+        setValue("address", data.logradouro ?? "", opts);
+        setValue("neighborhood", data.bairro ?? "", opts);
+        setValue("city", data.localidade ?? "", opts);
+        setValue("state", data.uf ?? "", opts);
       } catch {
         /* vazio */
       }
@@ -261,32 +270,48 @@ export default function CadastroUnidadeNegocioForm() {
    * Lista de campos em ordem visual
    * -------------------------------------------------------------- */
   const fields: (readonly [FieldName, string, ((v: string) => string)?])[] = [
-    ["nomeUnidade", "Nome Unid."],
-    ["sigla", "Sigla"],
+    ["name", "Nome Unid."],
+    ["acronym", "Sigla"],
     ["filialId", "Filial da Unid."],
-    ["logradouro", "Logradouro"],
-    ["cep", "CEP", maskCep],
-    ["cidade", "Cidade"],
-    ["bairro", "Bairro"],
-    ["uf", "UF"],
-    ["numero", "Número"],
-    ["complemento", "Comp."],
-    ["nomeResponsavel", "Nome do Resp."],
-    ["cpfResponsavel", "CPF", maskCpf],
-    ["celular", "Celular", maskPhone],
-    ["email", "E-mail"],
+    ["address", "Endereço"],
+    ["postalCode", "CEP", maskCep],
+    ["city", "Cidade"],
+    ["neighborhood", "Bairro"],
+    ["state", "UF"],
+    ["number", "Número"],
+    ["complement", "Comp."],
+    ["responsibleName", "Nome do Resp."],
+    ["responsibleCpf", "CPF", maskCpf],
+    ["responsiblePhone", "Celular", maskPhone],
+    ["responsibleEmail", "E-mail"],
   ];
 
   /* ----------------------------------------------------------------
    * Submit handler
    * -------------------------------------------------------------- */
-  const onSubmit = handleSubmit(() => {
-    toast.success("Unidade de negócio salva com sucesso!");
+  const onSubmit = handleSubmit(async () => {
+    setIsCreating(true);
+    const create = await PostAPI("/business-unit", form.getValues(), true);
+    if (create.status === 200) {
+      toast.success("Unidade de Negócio cadastrada com sucesso!");
+      handleNavigation("/branch");
+      return setIsCreating(false);
+    }
+    toast.error("Erro ao cadastrar Unidade de Negócio, tente novamente");
+    return setIsCreating(false);
   });
 
-  /* ----------------------------------------------------------------
-   * JSX
-   * -------------------------------------------------------------- */
+  useEffect(() => {
+    if (selectedBranch) {
+      form.setValue("companyId", selectedBranch.companyId);
+      form.setValue("subsidiaryId", selectedBranch.id);
+    }
+  }, [selectedBranch]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <form
       onSubmit={onSubmit}
@@ -346,7 +371,7 @@ export default function CadastroUnidadeNegocioForm() {
       {/* Corpo */}
       <div className="grid grid-cols-1 divide-y divide-gray-300 lg:grid-cols-2">
         {fields.map(([name, label, maskFn], index) => {
-          if (name === "email") {
+          if (name === "responsibleEmail") {
             // Render switch antes de seguir com campos de endereço
             return (
               <>
@@ -426,9 +451,9 @@ export default function CadastroUnidadeNegocioForm() {
                         {...field}
                         value={field.value?.toString() ?? ""}
                         maxLength={
-                          name === "uf"
+                          name === "state"
                             ? 2
-                            : name === "cpfResponsavel"
+                            : name === "responsibleCpf"
                               ? 14
                               : undefined
                         }
@@ -459,7 +484,9 @@ export default function CadastroUnidadeNegocioForm() {
         >
           Voltar
         </Button>
-        <Button type="submit">Salvar</Button>
+        <Button type="submit" disabled={isCreating}>
+          {isCreating ? <Loader2 className="animate-spin" /> : "Salvar"}
+        </Button>
       </div>
     </form>
   );

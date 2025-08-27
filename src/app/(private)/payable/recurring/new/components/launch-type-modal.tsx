@@ -1,4 +1,5 @@
 "use client";
+import { CustomPagination } from "@/components/ui/custom-pagination";
 import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import { Search, X } from "lucide-react";
@@ -25,7 +26,12 @@ export default function LaunchTypeModal({
   data,
   setData,
 }: LaunchTypeModalProps) {
-  const { ledgerAccounts } = useFinancialDataContext();
+  const {
+    ledgerAccounts,
+    ledgerAccountPages,
+    ledgerAccountFilters,
+    setLedgerAccountFilters,
+  } = useFinancialDataContext();
 
   return (
     <div
@@ -39,7 +45,7 @@ export default function LaunchTypeModal({
     >
       <div
         className={cn(
-          "relative z-20 flex h-max w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
+          "relative z-20 flex h-[85vh] w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
         )}
       >
         <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
@@ -55,23 +61,22 @@ export default function LaunchTypeModal({
             </button>
           </div>
 
-          <div className="scrollbar-hide h-[calc(100%-8rem)] w-full overflow-scroll">
-            <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
-              <label className="mb-2 block text-xl text-[#6C7386]">
-                Selecione o Tipo:
-              </label>
-              <div className="bg-primary/20 border-primary relative flex w-2/3 flex-1 items-center rounded-md border px-4 py-2">
-                <input
-                  type="text"
-                  placeholder="Digite o código ou descrição"
-                  className="w-full flex-1 px-2 text-sm outline-none"
-                />
-                <span className="text-primary">
-                  <Search size={18} />
-                </span>
-              </div>
+          <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
+            <label className="mb-2 block text-xl text-[#6C7386]">
+              Selecione o Tipo:
+            </label>
+            <div className="bg-primary/20 border-primary relative flex w-2/3 flex-1 items-center rounded-md border px-4 py-2">
+              <input
+                type="text"
+                placeholder="Digite o código ou descrição"
+                className="w-full flex-1 px-2 text-sm outline-none"
+              />
+              <span className="text-primary">
+                <Search size={18} />
+              </span>
             </div>
-
+          </div>
+          <div className="scrollbar-hide h-[calc(100%-12rem)] w-full overflow-scroll">
             <ul className="space-y-2 px-2 xl:space-y-4 xl:px-6">
               {ledgerAccounts.length === 0 && (
                 <li className="flex justify-center py-10 text-zinc-500">
@@ -100,6 +105,18 @@ export default function LaunchTypeModal({
                 </li>
               ))}
             </ul>
+          </div>
+          <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
+            <CustomPagination
+              pages={ledgerAccountPages}
+              currentPage={ledgerAccountFilters.page}
+              setCurrentPage={(page) =>
+                setLedgerAccountFilters((prev) => ({
+                  ...prev,
+                  page: page,
+                }))
+              }
+            />
           </div>
 
           <div className="flex justify-between border-t border-zinc-200 px-6 py-4">

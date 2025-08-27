@@ -2,12 +2,13 @@
 
 import { clsx } from "clsx";
 import { ChevronDown } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useSidebar } from "@/context/SidebarContext";
 import Image from "next/image";
 import { useState } from "react";
+import { LoadingOverlay } from "./loading-overlay";
 
 /* ---------- estrutura de navegação ---------- */
 export type Item = {
@@ -144,6 +145,7 @@ const NAV: { heading: string; items: Item[] }[] = [
 
 /* ---------- componente ---------- */
 export default function Sidebar() {
+  const { isNavigating } = useLoadingContext();
   const pathname = usePathname();
   const { isOpenMobile, isCollapsed, closeMobile, toggleCollapse } =
     useSidebar();
@@ -204,6 +206,7 @@ export default function Sidebar() {
   /* ---------- output ---------- */
   return (
     <>
+      {isNavigating && <LoadingOverlay />}
       {/* backdrop (mobile) */}
       <div
         onClick={closeMobile}
@@ -290,6 +293,7 @@ function SidebarItem({
   isSub,
   closeMobile,
 }: SidebarItemProps) {
+  const { handleNavigation } = useLoadingContext();
   // estilos base
   const base =
     "group flex items-center  w-full gap-3   px-3 py-2 text-sm font-medium transition-all duration-300";
@@ -380,7 +384,8 @@ function SidebarItem({
       <button
         onClick={() => {
           if (item.href) {
-            window.location.href = item.href;
+            handleNavigation(item.href);
+            // window.location.href = item.href;
           } else toggle?.();
         }}
         className={cls}
@@ -391,8 +396,14 @@ function SidebarItem({
   }
 
   return (
-    <Link href={item.href ?? "#"} onClick={closeMobile} className={cls}>
+    <button
+      onClick={() => {
+        handleNavigation(item.href!);
+        closeMobile();
+      }}
+      className={cls}
+    >
       {inner}
-    </Link>
+    </button>
   );
 }

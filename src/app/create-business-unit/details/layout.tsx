@@ -8,17 +8,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CreateBusinessUnitProvider } from "@/context/CreateBusinessUnitContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { ArrowLeft, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function RegisterLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
 
   const routes = [
     {
@@ -43,7 +44,7 @@ export default function RegisterLayout({
             {/* Cabeçalho com itens posicionados absolutamente */}
             <div className="relative p-8 pb-0">
               <button
-                onClick={() => router.push("/register/branches-list")}
+                onClick={() => handleNavigation("/register/branches-list")}
                 className="text-primary absolute top-5 left-5 flex cursor-pointer items-center gap-2"
               >
                 <ArrowLeft />
@@ -109,7 +110,7 @@ export default function RegisterLayout({
                   {routes.map((tab, index) => (
                     <button
                       key={index}
-                      onClick={() => router.push(tab.route)}
+                      onClick={() => handleNavigation(tab.route)}
                       className={`hover:text-primary flex h-12 cursor-pointer items-center justify-center border-b px-2 transition transition-all duration-300 ${
                         pathname === tab.route
                           ? "text-primary border-b-primary"

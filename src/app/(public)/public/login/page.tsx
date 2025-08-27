@@ -1,10 +1,10 @@
 "use client";
 import { useApiContext } from "@/context/ApiContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
@@ -21,11 +21,11 @@ const schema = z.object({
 });
 
 export default function Login() {
+  const { handleNavigation } = useLoadingContext();
+  const { PostAPI } = useApiContext();
   const [continueConnected, setContinueConnected] = useState(true);
   const [isShowingPassword, setIsShowingPassword] = useState(false);
-  const { PostAPI } = useApiContext();
   const [loginError, setLoginError] = useState("");
-  const router = useRouter();
   const [isLogging, setIsLogging] = useState(false);
 
   const {
@@ -50,7 +50,7 @@ export default function Login() {
     if (login.status === 200) {
       // cookies.set(Token, login.body.accessToken);
       setTimeout(() => {
-        router.push("/");
+        handleNavigation("/");
       }, 1000);
     } else {
       toast.error("Erro ao logar, tente novamente");
@@ -58,6 +58,10 @@ export default function Login() {
       setLoginError(login.body.message);
     }
   }
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <main className="relative flex min-h-screen w-full flex-col overflow-hidden bg-white">
@@ -125,7 +129,7 @@ export default function Login() {
             )}
             <button
               type="button"
-              onClick={() => router.push("/public/recover-password")}
+              onClick={() => handleNavigation("/public/recover-password")}
               className="self-start text-[10px] text-black"
             >
               Esqueci minha senha
@@ -162,7 +166,7 @@ export default function Login() {
           <span className="text-md mt-4 text-[#8392AB]">
             Não tem conta ainda?
             <button
-              onClick={() => router.push("/public/register")}
+              onClick={() => handleNavigation("/public/register")}
               className="bg-primary ml-1 cursor-pointer bg-clip-text font-bold text-transparent"
             >
               Se cadastre agora

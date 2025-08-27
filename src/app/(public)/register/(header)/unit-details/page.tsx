@@ -7,12 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { Ban, ChevronRight, EllipsisVertical } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function UnitDetails() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const columns = [
     { key: "actions", label: "Ações" },
     { key: "name", label: "Colaboradores" },
@@ -185,6 +186,10 @@ export default function UnitDetails() {
     },
   ];
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <Table>
       <TableHeader>
@@ -210,7 +215,7 @@ export default function UnitDetails() {
         {rows.map((row) => (
           <TableRow
             key={row.id}
-            onClick={() => router.push("/branch/branch-overview")}
+            onClick={() => handleNavigation("/branch/branch-overview")}
             className="hover:bg-primary/20 h-10 max-h-10 cursor-pointer text-center transition duration-300"
           >
             <TableCell className="flex h-full items-center gap-2 text-sm font-medium whitespace-nowrap">

@@ -1,11 +1,11 @@
 "use client";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { maskCpfCnpj, maskPhone } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Header } from "../components/Header";
@@ -40,6 +40,7 @@ interface RegisterFormData {
 }
 
 export default function Register() {
+  const { handleNavigation } = useLoadingContext();
   const [isShowingPassword, setIsShowingPassword] = useState(false);
   const [isShowingConfirmPassword, setIsShowingConfirmPassword] =
     useState(false);
@@ -49,7 +50,6 @@ export default function Register() {
   const [checkedPrivacy, setCheckedPrivacy] = useState(false);
   const [openTermsModal, setOpenTermsModal] = useState(false);
   const [openPrivacyModal, setOpenPrivacyModal] = useState(false);
-  const router = useRouter();
 
   const {
     register,
@@ -74,7 +74,7 @@ export default function Register() {
   //   }, false);
   //   if (response.status === 200) {
   //     cookies.set(Token, response.body.accessToken);
-  //     router.push("/checkout");
+  //     handleNavigation("/checkout");
   //   } else {
   //     toast.error("Erro ao registrar, tente novamente");
   //     if (response.body.message === "Resource already exists") {
@@ -102,6 +102,10 @@ export default function Register() {
     const maskedValue: string = maskCpfCnpj(event.target.value);
     setValue("cpfCnpj", maskedValue); // Atualiza o valor do campo com a máscara
   };
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <main className="relative flex min-h-screen w-full flex-col overflow-hidden bg-white">
@@ -308,7 +312,7 @@ export default function Register() {
               type="button"
               className="bg-primary rounded-md border p-2 font-bold text-white"
               disabled={isRegistering}
-              onClick={() => router.push("/public/checkout")}
+              onClick={() => handleNavigation("/public/checkout")}
             >
               {isRegistering ? "Carregando..." : "Cadastrar"}
             </button>
@@ -319,7 +323,7 @@ export default function Register() {
           <span className="text-md text-[#8392AB]">
             Já possui uma conta?
             <button
-              onClick={() => router.push("/public/login")}
+              onClick={() => handleNavigation("/public/login")}
               className="bg-primary ml-1 cursor-pointer bg-clip-text font-bold text-transparent"
             >
               Entrar Agora

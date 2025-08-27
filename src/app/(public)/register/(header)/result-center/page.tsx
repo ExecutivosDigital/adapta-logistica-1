@@ -1,14 +1,19 @@
 "use client";
 import { OrangeButton } from "@/components/OrangeButton";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ChevronRight, Plus, Search } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function BranchDetails() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
 
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex-ro flex w-full items-center justify-between">
@@ -51,7 +56,7 @@ export default function BranchDetails() {
         {Array.from({ length: 11 }).map((_, index) => (
           <div
             key={index}
-            onClick={() => router.push("/register/center-detail")}
+            onClick={() => handleNavigation("/register/center-detail")}
             className="border-primary relative h-40 w-full cursor-pointer rounded-xl border-2 bg-white p-4 shadow-lg transition-all duration-300 hover:scale-[1.005]"
           >
             <div className="flex h-full w-full flex-col justify-between">

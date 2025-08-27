@@ -13,10 +13,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { faker } from "@faker-js/faker";
 import { Loader2, Pencil, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 
@@ -66,7 +66,7 @@ const members = [
 ];
 
 export default function Home() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -82,7 +82,7 @@ export default function Home() {
 
   async function analyze(buffer: Buffer) {
     try {
-      const file = new File([buffer], "edital.pdf", {
+      const file = new File([buffer.buffer as ArrayBuffer], "edital.pdf", {
         type: "application/pdf",
       });
 
@@ -163,6 +163,10 @@ export default function Home() {
     }
   }, [summary]);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <>
       <div
@@ -211,7 +215,7 @@ export default function Home() {
                   ))}
                 </AvatarGroup>
                 <button
-                  onClick={() => router.push("/register/user")}
+                  onClick={() => handleNavigation("/register/user")}
                   className="text-primary hover:text-primary-dark cursor-pointer underline transition duration-300"
                 >
                   Ver todos

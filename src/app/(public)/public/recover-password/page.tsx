@@ -1,9 +1,9 @@
 "use client";
 import { useApiContext } from "@/context/ApiContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -42,6 +42,7 @@ interface EditPasswordFormData {
 }
 export default function RecoverPassword() {
   const { PostAPI, GetAPI, PutAPI } = useApiContext();
+  const { handleNavigation } = useLoadingContext();
   const [currentStep, setCurrentStep] = useState(1);
   const [isShowingPassword, setIsShowingPassword] = useState(false);
   const [isShowingConfirmPassword, setIsShowingConfirmPassword] =
@@ -50,7 +51,6 @@ export default function RecoverPassword() {
   const [isLogging, setIsLogging] = useState(false);
   const [timer, setTimer] = useState(10); // 2 minutos
   const [email, setEmail] = useState("");
-  const router = useRouter();
   const [code, setCode] = useState("");
 
   // Contagem regressiva para reenviar o código
@@ -147,11 +147,15 @@ export default function RecoverPassword() {
     setIsLogging(false);
 
     if (response.status === 200) {
-      router.push("/public/login");
+      handleNavigation("/public/login");
     } else {
       setRecoverError(response.body.message);
     }
   }
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <main className="relative flex min-h-screen w-full flex-col overflow-hidden bg-white">
@@ -347,7 +351,7 @@ export default function RecoverPassword() {
             </form>
           )}
           <button
-            onClick={() => router.push("/public/login")}
+            onClick={() => handleNavigation("/public/login")}
             className="bg-primary ml-1 cursor-pointer bg-clip-text text-sm font-bold text-transparent"
           >
             Voltar ao Login

@@ -3,13 +3,17 @@ import { useBranch } from "@/context/BranchContext";
 import { useScreenWidth } from "@/lib/useScreenWidth";
 import { cn } from "@/utils/cn";
 import { Building2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function HomeButtonGroup() {
   const { businessUnits, selectedBusinessUnit, setSelectedBusinessUnit } =
     useBranch();
   const { width } = useScreenWidth();
   const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex w-full flex-wrap items-center gap-1">

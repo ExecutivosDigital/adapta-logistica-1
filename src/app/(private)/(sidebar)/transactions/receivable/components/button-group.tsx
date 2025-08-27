@@ -2,7 +2,7 @@
 import { OrangeButton } from "@/components/OrangeButton";
 import { cn } from "@/utils/cn";
 import { ChevronRight, NotepadText } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateClientSheet from "./create-client-sheet";
 import { NewReceivableModal } from "./new-receivable-modal";
 
@@ -23,6 +23,10 @@ export function ReceivableButtonGroup() {
       selected: false,
     },
   ]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <>

@@ -2,13 +2,19 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Building2 } from "lucide-react";
+import { useEffect } from "react";
 import { DataType } from "../page";
 
 interface ResultCentersListProps {
   data: DataType;
   setData: (value: DataType) => void;
+  paymentType: string;
 }
-export function ResultCentersList({ data, setData }: ResultCentersListProps) {
+export function ResultCentersList({
+  data,
+  setData,
+  paymentType,
+}: ResultCentersListProps) {
   const distributeValueEvenly = () => {
     if (data.resultCenters.length === 0) return;
 
@@ -22,14 +28,23 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
       0,
     );
 
-    const remainingValue = data.value - lockedTotal;
+    // ✅ If FULL, every unlocked center gets the full data.value
+    // ✅ If DIVIDED, we split remaining value evenly
+    const totalValue =
+      paymentType === "FULL" ? data.value : data.value * data.installmentCount;
+
+    const remainingValue = totalValue - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
       const remainingCents = Math.round(remainingValue * 100);
-      const baseValueCents = Math.floor(
-        remainingCents / unlockedCenters.length,
-      );
-      const remainder = remainingCents % unlockedCenters.length;
+
+      const baseValueCents =
+        paymentType === "FULL"
+          ? remainingCents // ✅ FULL → full value per center
+          : Math.floor(remainingCents / unlockedCenters.length);
+
+      const remainder =
+        paymentType === "FULL" ? 0 : remainingCents % unlockedCenters.length;
 
       const updatedResultCenters = data.resultCenters.map((center, index) => {
         if (center.locked) {
@@ -39,8 +54,13 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
         const unlockedIndex = unlockedCenters.findIndex(
           (uc) => data.resultCenters.findIndex((dc) => dc === uc) === index,
         );
-        const extraCent = unlockedIndex < remainder ? 1 : 0;
-        const finalValueCents = baseValueCents + extraCent;
+
+        const extraCent =
+          paymentType === "FULL" ? 0 : unlockedIndex < remainder ? 1 : 0;
+
+        const finalValueCents =
+          paymentType === "FULL" ? baseValueCents : baseValueCents + extraCent;
+
         const finalValue = finalValueCents / 100;
 
         return {
@@ -118,12 +138,41 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
       return sum + (Number(center.value) || 0);
     }, 0);
 
-    const totalCents = Math.round(data.value * 100);
+    // ✅ FULL → total should be data.value * number of centers
+    const expectedTotal =
+      paymentType === "FULL"
+        ? data.value * data.resultCenters.length
+        : data.value * data.installmentCount;
+
+    const totalCents = Math.round(expectedTotal * 100);
     const assignedCents = Math.round(totalAssigned * 100);
     const remainingCents = totalCents - assignedCents;
 
     return remainingCents / 100;
   };
+
+  useEffect(() => {
+    if (data.resultCenters.length === 1) {
+      const totalValue =
+        paymentType === "FULL"
+          ? data.value
+          : data.value * data.installmentCount;
+
+      const updatedResultCenters = [
+        {
+          ...data.resultCenters[0],
+          value: parseFloat(totalValue.toFixed(2)),
+        },
+      ];
+
+      setData({ ...data, resultCenters: updatedResultCenters });
+    }
+  }, [
+    data.value,
+    data.installmentCount,
+    paymentType,
+    data.resultCenters.length,
+  ]);
 
   return (
     <>
@@ -149,9 +198,16 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
       <div className="mb-2 flex justify-between text-sm text-zinc-500">
         <span>
           Total: R${" "}
-          {data.value.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-          })}
+          {paymentType === "FULL"
+            ? data.value.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+              })
+            : Number(data.value * data.installmentCount).toLocaleString(
+                "pt-BR",
+                {
+                  minimumFractionDigits: 2,
+                },
+              )}
         </span>
         <span
           className={`${calculateRemainingValue() !== 0 ? "text-red-500" : "text-green-500"}`}

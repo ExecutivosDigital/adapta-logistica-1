@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Home2ButtonGroup } from "./components/button-group";
 import { CarrierTable } from "./components/carrier";
 import { DriverTable } from "./components/driver";
@@ -8,6 +8,10 @@ import { ClientsTable } from "./components/transactions";
 
 export default function Home2() {
   const [selectedToolType, setSelectedToolType] = useState(0);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col pb-20 xl:pb-0">

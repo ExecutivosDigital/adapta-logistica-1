@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useApiContext } from "@/context/ApiContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import {
   maskCard,
   maskCep,
@@ -30,7 +31,6 @@ import { copyToClipboard } from "@/utils/copy-to-clipboard";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, CheckCheck, ChevronDown, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -78,7 +78,7 @@ const FormSchema = z.object({
 // }
 
 export default function Checkout() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const { GetAPI } = useApiContext();
   // const [selectedPlan, setSelectedPlan] = useState<PlanProps | null>(null);
   const [selectedPayment, setSelectedPayment] = useState("card");
@@ -148,7 +148,7 @@ export default function Checkout() {
           return setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
       } else if (activeStep === 2) {
-        router.push("/");
+        handleNavigation("/");
       }
     }
   };
@@ -190,7 +190,7 @@ export default function Checkout() {
   //     true,
   //   );
   //   if (card.status === 200) {
-  //     router.push("/");
+  //     handleNavigation("/");
   //     return setIsPaying(false);
   //   }
   //   alert(card.body.message);
@@ -216,6 +216,10 @@ export default function Checkout() {
   useEffect(() => {
     GetPlans();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
   }, []);
 
   return (
@@ -730,7 +734,7 @@ export default function Checkout() {
                           )}
                         </>
                         <button
-                          onClick={() => router.push("/")}
+                          onClick={() => handleNavigation("/")}
                           className={cn(
                             "bg-primary mx-auto flex h-12 w-60 items-center justify-center gap-2 rounded-lg p-2 font-semibold text-white transition-all duration-300 hover:scale-[1.05]",
                             !isPixGenerated && "hidden",

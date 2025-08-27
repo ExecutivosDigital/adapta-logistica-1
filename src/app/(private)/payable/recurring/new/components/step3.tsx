@@ -13,10 +13,12 @@ import { TransactionsList } from "./installments-list";
 
 interface Props {
   data: DataType;
-  setData: (value: DataType) => void;
+  setData: React.Dispatch<React.SetStateAction<DataType>>;
+  paymentType: string;
+  setPaymentType: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function Step3({ data, setData }: Props) {
+export function Step3({ data, setData, paymentType, setPaymentType }: Props) {
   const paymentTypes = [
     "PIX",
     "Boleto",
@@ -56,6 +58,30 @@ export function Step3({ data, setData }: Props) {
 
   return (
     <div className="flex-1">
+      <div className="flex w-full flex-row items-center justify-center">
+        <div className="mt-2 flex gap-2">
+          <div className="bg-primary/40 relative flex w-96 flex-row overflow-hidden rounded-lg p-2">
+            <div
+              className={`absolute top-0 bottom-0 left-0 flex w-1/2 transform items-center justify-center transition-transform duration-300 ${paymentType === "FULL" ? "translate-x-0 pl-2" : "translate-x-full"}`}
+            >
+              <div className="bg-primary h-[80%] w-[95%] rounded-lg"></div>
+            </div>
+            <button
+              onClick={() => setPaymentType("FULL")}
+              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${paymentType === "FULL" ? "font-semibold text-white" : "text-white/80"}`}
+            >
+              VALOR INTEIRO
+            </button>
+            <button
+              onClick={() => setPaymentType("DIVIDED")}
+              className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${paymentType === "DIVIDED" ? "font-semibold text-white" : "text-white/80"}`}
+            >
+              VALOR DA PARCELA
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="my-4 h-px bg-zinc-200/60" />
       <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
         <label className="col-span-7 flex flex-col gap-1">
           <span className="text-zinc-600">Valor no Documento</span>
@@ -67,10 +93,19 @@ export function Step3({ data, setData }: Props) {
             <div className="flex h-full flex-1 items-center text-center">
               <span className="font-semi-bold flex-1 text-xl">
                 <input
-                  value={data.value.toLocaleString("pt-br", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  value={
+                    paymentType === "FULL"
+                      ? data.value.toLocaleString("pt-br", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : Number(
+                          data.value * data.installmentCount,
+                        ).toLocaleString("pt-br", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                  }
                   onChange={handleChange}
                   placeholder="R$ 0,00"
                   className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
@@ -143,7 +178,7 @@ export function Step3({ data, setData }: Props) {
       </div>
       <div>
         <h3 className="mb-4 text-base font-semibold">Detalhes do Pagamento</h3>
-        <TransactionsList data={data} setData={setData} />
+        <TransactionsList data={data} setData={setData} type={paymentType} />
       </div>
     </div>
   );

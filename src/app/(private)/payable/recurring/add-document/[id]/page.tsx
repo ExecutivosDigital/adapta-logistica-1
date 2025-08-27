@@ -3,6 +3,7 @@
 import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
 import { Modal } from "@/components/ui/Modal";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Step1 } from "./components/step1";
 
@@ -55,6 +56,7 @@ export interface DataType {
 }
 
 export default function PayableAddDocument() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
 
   const [data, setData] = useState<DataType>({
@@ -135,6 +137,10 @@ export default function PayableAddDocument() {
   const handleData = () => {
     return;
   };
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -354,7 +360,7 @@ export default function PayableAddDocument() {
               onClick={() => {
                 toast.success("Fatura atualizada com sucesso!");
                 setTimeout(() => {
-                  router.push("/calendar");
+                  handleNavigation("/calendar");
                 }, 1000);
               }}
               icon={<ChevronDown size={16} className="-rotate-90" />}

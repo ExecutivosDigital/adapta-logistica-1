@@ -286,6 +286,10 @@ export default function CadastroCompanyForm() {
     }
   });
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <form
       onSubmit={onSubmit}

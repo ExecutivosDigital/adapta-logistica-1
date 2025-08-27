@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
@@ -37,6 +38,7 @@ interface MemberField {
 /* component */
 
 export default function CreateBusinessUnitPage() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
 
   /* ------------------------------ state ------------------------------ */
@@ -384,7 +386,7 @@ export default function CreateBusinessUnitPage() {
 
         <OrangeButton
           className="h-9 w-[132px]"
-          onClick={() => router.push("/create-business-unit/details")}
+          onClick={() => handleNavigation("/create-business-unit/details")}
           icon={<ChevronDown size={16} className="-rotate-90" />}
           iconPosition="right"
         >

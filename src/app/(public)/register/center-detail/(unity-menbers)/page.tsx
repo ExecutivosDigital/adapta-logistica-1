@@ -8,14 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { ChevronRight, EllipsisVertical, Plus, Search } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CenterDetails() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
+  const [value, setValue] = useState("");
+
   const columns = [
     { key: "actions", label: "Ações" },
     { key: "name", label: "Razão Social" },
@@ -157,7 +159,11 @@ export default function CenterDetails() {
       place: "Curitiba - Paraná",
     },
   ];
-  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex-ro flex w-full items-center justify-between">
@@ -200,7 +206,7 @@ export default function CenterDetails() {
           {rows.map((row) => (
             <TableRow
               key={row.id}
-              onClick={() => router.push("/branch")}
+              onClick={() => handleNavigation("/branch")}
               className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
             >
               {/* AÇÕES – 28 px, sem padding */}

@@ -10,14 +10,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/utils/cn";
 import { CalendarIcon, ChevronDown } from "lucide-react";
 import moment from "moment";
+import { useEffect } from "react";
 import { DataType } from "../page";
 
 interface TransactionsListProps {
   data: DataType;
-  setData: (value: DataType) => void;
+  setData: React.Dispatch<React.SetStateAction<DataType>>;
+  type: string;
 }
 
-export function TransactionsList({ data, setData }: TransactionsListProps) {
+export function TransactionsList({
+  data,
+  setData,
+  type,
+}: TransactionsListProps) {
   const paymentType = [
     "PIX",
     "Boleto",
@@ -31,39 +37,36 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
   const getTransactions = () => {
     const numTransactions = data.installmentCount || 1;
 
-    if (!data.transactions || data.transactions.length !== numTransactions) {
-      const totalCents = Math.round(data.value * 100);
-      const baseValueCents = Math.floor(totalCents / numTransactions);
-      const remainder = totalCents % numTransactions;
+    const totalCents = Math.round(data.value * 100);
+    const baseValueCents = Math.floor(
+      totalCents / (type === "FULL" ? numTransactions : 1),
+    );
+    const remainder = totalCents % numTransactions;
 
-      const newTransactions = Array.from(
-        { length: numTransactions },
-        (_, index) => {
-          const extraCent = index < remainder ? 1 : 0;
-          const finalValueCents = baseValueCents + extraCent;
-          const finalValue = finalValueCents / 100;
+    return Array.from({ length: numTransactions }, (_, index) => {
+      const extraCent = index < remainder ? 1 : 0;
+      const finalValueCents = baseValueCents + extraCent;
+      const finalValue = finalValueCents / 100;
 
-          return {
-            dueDate: moment()
-              .add(index * 30, "days")
-              .format("YYYY-MM-DD"),
-            position: index + 1,
-            status: "PENDING" as const,
-            value: parseFloat(finalValue.toFixed(2)),
-            paymentType: "",
-            locked: false,
-          };
-        },
-      );
-
-      setData({ ...data, transactions: newTransactions });
-      return newTransactions;
-    }
-
-    return data.transactions.map((t) => ({ ...t, locked: t.locked || false }));
+      return {
+        dueDate: moment()
+          .add(index * 30, "days")
+          .format("YYYY-MM-DD"),
+        position: index + 1,
+        status: "PENDING" as const,
+        value: parseFloat(finalValue.toFixed(2)),
+        paymentType: "",
+        locked: false,
+      };
+    });
   };
 
-  const transactions = getTransactions();
+  useEffect(() => {
+    const newTransactions = getTransactions();
+    setData((prev) => ({ ...prev, transactions: newTransactions }));
+  }, [type, data.value, data.installmentCount]);
+
+  const transactions = data.transactions || [];
 
   const distributeValueEvenly = () => {
     if (transactions.length === 0) return;
@@ -203,7 +206,9 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       return sum + (transaction.value || 0);
     }, 0);
 
-    const totalCents = Math.round(data.value * 100);
+    const totalCents = Math.round(
+      (type === "FULL" ? data.value : data.value * transactions.length) * 100,
+    );
     const assignedCents = Math.round(totalAssigned * 100);
     const remainingCents = totalCents - assignedCents;
 
@@ -238,9 +243,13 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
       <div className="mb-2 flex justify-between text-sm text-zinc-500">
         <span>
           Total: R${" "}
-          {data.value.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-          })}
+          {type === "FULL"
+            ? data.value.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+              })
+            : Number(data.value * transactions.length).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+              })}
         </span>
         <span
           className={`${calculateRemainingValue() !== 0 ? "text-red-500" : "text-green-500"}`}

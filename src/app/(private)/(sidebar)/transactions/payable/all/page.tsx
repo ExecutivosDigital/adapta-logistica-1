@@ -6,14 +6,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { AllPayableButtonGroup } from "./components/button-group";
 import { AllPayableGoalCards } from "./components/goal-cards";
 import { AllPayableTransactions } from "./components/transactions";
 
 export default function AllPayable() {
   const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col gap-2 lg:gap-4">
@@ -40,7 +47,7 @@ export default function AllPayable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" className="z-[999]">
               <DropdownMenuItem
-                onClick={() => router.push("/payable/new")}
+                onClick={() => handleNavigation("/payable/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -55,7 +62,7 @@ export default function AllPayable() {
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push("/payable/recurring/new")}
+                onClick={() => handleNavigation("/payable/recurring/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

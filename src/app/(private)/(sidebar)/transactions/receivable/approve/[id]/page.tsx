@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   ChevronDown,
@@ -23,8 +24,8 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import Stepper from "./components/steper";
 
 interface TransactionProps {
@@ -68,7 +69,7 @@ type ColumnKey =
   | "type";
 
 export default function ApproveReceivable() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const pathname = usePathname();
   const id = pathname.split("/").pop();
   const [transactionPages] = useState<number>(8);
@@ -302,6 +303,10 @@ export default function ApproveReceivable() {
     visibleColumns.has(column.key),
   );
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex h-full w-full flex-col gap-2 xl:gap-4">
       <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
@@ -394,7 +399,7 @@ export default function ApproveReceivable() {
         </div>
         <OrangeButton
           className="h-8"
-          onClick={() => router.push(`/receivable/approve-2/${id}`)}
+          onClick={() => handleNavigation(`/receivable/approve-2/${id}`)}
         >
           Continuar
           <ChevronRight />

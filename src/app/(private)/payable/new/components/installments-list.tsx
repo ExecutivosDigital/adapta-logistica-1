@@ -210,7 +210,7 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
     return remainingCents / 100;
   };
 
-  if (data.paymentMode !== "INSTALLMENT" || transactions.length <= 1) {
+  if (transactions.length === 0) {
     return null;
   }
 

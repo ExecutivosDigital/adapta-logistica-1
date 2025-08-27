@@ -7,18 +7,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useBranch } from "@/context/BranchContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { branches } from "@/mock/branches";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { ArrowLeft, ChevronsUpDown, PlusSquare } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function RegisterLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
+  const { selectedBranch } = useBranch();
+  const pathname = usePathname();
 
   const routes = [
     { id: "1", name: "Filiais Cadastradas", route: "/register/branches-list" },
@@ -34,7 +37,6 @@ export default function RegisterLayout({
     },
     { id: "5", name: "Usuários", route: "/register/user" },
   ];
-  const pathname = usePathname();
 
   // const [isLoading, setIsLoading] = useState(true);
 
@@ -44,7 +46,6 @@ export default function RegisterLayout({
   //     setIsLoading(false);
   //   }, 700);
   // }, [pathname]);
-  const { selectedBranch } = useBranch();
   return (
     <>
       {/* <div
@@ -68,7 +69,7 @@ export default function RegisterLayout({
           {/* Cabeçalho com itens posicionados absolutamente */}
           <div className="relative p-8 pb-0">
             <button
-              onClick={() => router.push("/")}
+              onClick={() => handleNavigation("/")}
               className="text-primary hover:text-primary-dark absolute top-5 left-5 flex cursor-pointer items-center gap-2 transition duration-300"
             >
               <ArrowLeft />
@@ -129,7 +130,7 @@ export default function RegisterLayout({
                   </DropdownMenu>
                 </div>
                 <button
-                  onClick={() => router.push("/branch/create-branch")}
+                  onClick={() => handleNavigation("/branch/create-branch")}
                   className="border-primary hover:bg-primary text-primary flex cursor-pointer items-center gap-2 rounded-lg border p-1 transition duration-300 hover:text-white"
                 >
                   <PlusSquare />
@@ -142,7 +143,7 @@ export default function RegisterLayout({
                 {routes.map((tab, index) => (
                   <button
                     key={index}
-                    onClick={() => router.push(tab.route)}
+                    onClick={() => handleNavigation(tab.route)}
                     className={`hover:text-primary flex h-12 cursor-pointer items-center justify-center border-b px-2 transition-all duration-300 ${
                       pathname === tab.route
                         ? "text-primary border-b-primary"

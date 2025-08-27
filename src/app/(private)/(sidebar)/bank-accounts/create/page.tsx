@@ -10,7 +10,7 @@ import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { Check, ChevronDown, CreditCard, Plus, Search } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /* ------------------------------------------------------------------ */
 /* types */
@@ -68,6 +68,11 @@ export default function Home2() {
     accountNumber: "",
     branchNumber: "",
   });
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="border-primary flex h-full w-full flex-col gap-2 overflow-hidden rounded-2xl border pb-20 lg:gap-4 xl:pb-0">
       <div className="grid w-full flex-1 grid-cols-12 gap-2 xl:gap-8">

@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   ChevronDown,
@@ -23,8 +24,8 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Stepper from "./components/steper";
 
@@ -69,7 +70,7 @@ type ColumnKey =
   | "type";
 
 export default function UpdateReceivable() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const pathname = usePathname();
   const id = pathname.split("/").pop();
   const [transactionPages] = useState<number>(8);
@@ -323,6 +324,10 @@ export default function UpdateReceivable() {
     visibleColumns.has(column.key),
   );
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex h-full w-full flex-col gap-2 xl:gap-4">
       <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
@@ -417,7 +422,7 @@ export default function UpdateReceivable() {
           className="h-8"
           onClick={() => {
             if (selectedRows.size !== 0) {
-              router.push(`/receivable/update-2/${id}`);
+              handleNavigation(`/receivable/update-2/${id}`);
             } else {
               toast.error("Selecione ao menos uma linha");
             }

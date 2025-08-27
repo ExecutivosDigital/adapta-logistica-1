@@ -15,16 +15,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { ChevronRight, EllipsisVertical } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Home2NewReleaseSheet } from "./new-release-sheet";
 
 export function Home2Transactions() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const { viewAllValues } = useValueContext();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -149,7 +149,7 @@ export function Home2Transactions() {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" className="z-[999]">
               <DropdownMenuItem
-                onClick={() => router.push("/payable/new")}
+                onClick={() => handleNavigation("/payable/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -164,7 +164,7 @@ export function Home2Transactions() {
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push("/payable/recurring/new")}
+                onClick={() => handleNavigation("/payable/recurring/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

@@ -13,15 +13,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { branches } from "@/mock/branches";
 import { cn } from "@/utils/cn";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, EllipsisVertical, Info } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function BranchesList() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const columns = [
     { key: "actions", label: "Ações" },
     { key: "name", label: "Razão Social" },
@@ -29,6 +30,10 @@ export default function BranchesList() {
     { key: "place", label: "Cidade e Estado" },
     { key: "unit", label: "Acesso à Filial" },
   ];
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -57,7 +62,7 @@ export default function BranchesList() {
           {branches.map((row) => (
             <TableRow
               key={row.id}
-              onClick={() => router.push("/branch")}
+              onClick={() => handleNavigation("/branch")}
               className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
             >
               {/* AÇÕES – 28 px, sem padding */}

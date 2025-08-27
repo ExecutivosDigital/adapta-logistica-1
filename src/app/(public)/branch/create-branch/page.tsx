@@ -10,11 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useApiContext } from "@/context/ApiContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { maskCep, maskCnpj, maskCpf, maskPhone } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, UseFormReturn } from "react-hook-form";
@@ -189,7 +189,7 @@ function toSubsidiaryPayload(values: SubsidiaryFormData): SubsidiaryPayload {
 type Option = { id: string; name: string; code?: string };
 
 export default function SubsidiaryForm() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const { PostAPI, GetAPI } = useApiContext();
 
   const form = useForm<SubsidiaryFormData>({
@@ -910,11 +910,15 @@ export default function SubsidiaryForm() {
     const res = await PostAPI("/subsidiary", payload, true);
     if (res?.status === 200) {
       toast.success("Filial salva com sucesso!");
-      router.push("/branch/branch-details");
+      handleNavigation("/branch/branch-details");
     } else {
       toast.error(res?.body?.message ?? "Erro ao salvar filial.");
     }
   });
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <form

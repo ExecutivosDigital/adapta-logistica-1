@@ -5,6 +5,7 @@ import {
   AiFileReader,
   PaymentDocumentProps,
 } from "@/components/ai-file-reader";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -72,6 +73,7 @@ export interface ClientProps {
 }
 
 export default function PurchaseApproval() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
 
   const [data, setData] = useState<DataType>({
@@ -216,6 +218,10 @@ export default function PurchaseApproval() {
     setCurrentPage(1);
   }, [filteredContabilAccounts]);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -328,7 +334,7 @@ export default function PurchaseApproval() {
                   onClick={() => {
                     toast.success("Compra Aprovada com Sucesso!");
                     setTimeout(() => {
-                      router.push("/calendar");
+                      handleNavigation("/calendar");
                     }, 1000);
                   }}
                   icon={<ChevronDown size={16} className="-rotate-90" />}

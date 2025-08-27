@@ -1,7 +1,7 @@
 "use client";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { Plus, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DollarIcon from "../../../../../../../public/icons/dollar";
 
@@ -24,7 +24,7 @@ export function NewReceivableModal({
   onHide,
   setOpenCreateClientSheet,
 }: NewReceivableModalProps) {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredClients, setFilteredClients] = useState("");
   const [selectedClient, setSelectedClient] = useState<ClientProps | null>(
@@ -206,7 +206,7 @@ export function NewReceivableModal({
                 Cancelar
               </button>
               <button
-                onClick={() => router.push("/transactions/receivable/new")}
+                onClick={() => handleNavigation("/transactions/receivable/new")}
                 className="text-primary hover:bg-primary hover:border-primary flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 font-bold transition duration-200 hover:text-white xl:px-6 xl:py-2"
               >
                 Selecionar →

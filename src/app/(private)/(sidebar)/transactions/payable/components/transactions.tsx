@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toPay, TransactionProps } from "@/const/transactions";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 
@@ -28,7 +29,6 @@ import {
   Files,
 } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { SelectSingleEventHandler } from "react-day-picker";
 
@@ -45,7 +45,7 @@ interface Props {
 }
 export function PayableTransactions({ filterType }: Props) {
   const { viewAllValues } = useValueContext();
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
   const [accessLevel, setAccessLevel] = useState("common");
@@ -219,15 +219,15 @@ export function PayableTransactions({ filterType }: Props) {
     if (row.status === "negado") {
       return;
     } else if (row.status === "pago") {
-      return router.push(`/payable/payed/${row.id}`);
+      return handleNavigation(`/payable/payed/${row.id}`);
     } else if (row.status !== "a_pagar") {
       if (accessLevel === "common") {
-        return router.push(`/payable/add-document/${row.id}`);
+        return handleNavigation(`/payable/add-document/${row.id}`);
       } else if (accessLevel === "admin") {
-        return router.push(`/payable/approve/${row.id}`);
+        return handleNavigation(`/payable/approve/${row.id}`);
       }
     } else if (row.status === "a_pagar") {
-      return router.push(`/payable/pay/${row.id}`);
+      return handleNavigation(`/payable/pay/${row.id}`);
     }
   };
 
@@ -289,7 +289,7 @@ export function PayableTransactions({ filterType }: Props) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="bottom" className="z-[999]">
             <DropdownMenuItem
-              onClick={() => router.push("/payable/new")}
+              onClick={() => handleNavigation("/payable/new")}
               className="hover:bg-primary/20 cursor-pointer transition duration-300"
             >
               <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -304,7 +304,7 @@ export function PayableTransactions({ filterType }: Props) {
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push("/payable/recurring/new")}
+              onClick={() => handleNavigation("/payable/recurring/new")}
               className="hover:bg-primary/20 cursor-pointer transition duration-300"
             >
               <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

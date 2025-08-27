@@ -23,9 +23,10 @@ import {
   Plus,
   Search,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function BranchesList() {
+  const [value, setValue] = useState("");
   const columns = [
     { key: "actions", label: "Ações" },
     { key: "name", label: "Colaboradores" },
@@ -93,7 +94,11 @@ export default function BranchesList() {
       unit: "Unidades de Negócio Vinculadas",
     },
   ];
-  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex-ro flex w-full items-center justify-between">

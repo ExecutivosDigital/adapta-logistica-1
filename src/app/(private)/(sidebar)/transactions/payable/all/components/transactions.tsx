@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import debounce from "lodash.debounce";
@@ -25,7 +26,6 @@ import {
   EllipsisVertical,
   Search,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 interface TransactionProps {
@@ -58,7 +58,7 @@ type SortableColumn =
 
 export function AllPayableTransactions() {
   const { viewAllValues } = useValueContext();
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
@@ -474,7 +474,7 @@ export function AllPayableTransactions() {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end" className="z-[999]">
               <DropdownMenuItem
-                onClick={() => router.push("/payable/new")}
+                onClick={() => handleNavigation("/payable/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
@@ -489,7 +489,7 @@ export function AllPayableTransactions() {
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push("/payable/recurring/new")}
+                onClick={() => handleNavigation("/payable/recurring/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
                 <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">

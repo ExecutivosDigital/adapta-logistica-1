@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useApiContext } from "@/context/ApiContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { maskCep, maskCnpj } from "@/lib/masks";
 import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Pencil, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -103,7 +103,7 @@ function toHoldingPayload(
 }
 
 export default function CadastroContratanteForm() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const { PostAPI, GetAPI } = useApiContext();
 
   const form = useForm<ContratanteFormData>({
@@ -317,11 +317,15 @@ export default function CadastroContratanteForm() {
     const res = await PostAPI("/holding", payload, true);
     if (res?.status === 200) {
       toast.success("Contratante salvo com sucesso!");
-      router.push("/register/branches-list");
+      handleNavigation("/register/branches-list");
     } else {
       toast.error(res?.body?.message ?? "Erro ao salvar contratante.");
     }
   });
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <form

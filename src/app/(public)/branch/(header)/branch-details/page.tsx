@@ -13,9 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { faker } from "@faker-js/faker";
 import { Loader2, Pencil, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
 
@@ -65,7 +65,7 @@ const members = [
 ];
 
 export default function BranchOverview() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [summary, setSummary] = useState<CnpjCardResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -81,7 +81,7 @@ export default function BranchOverview() {
 
   async function analyze(buffer: Buffer) {
     try {
-      const file = new File([buffer], "edital.pdf", {
+      const file = new File([buffer.buffer as ArrayBuffer], "edital.pdf", {
         type: "application/pdf",
       });
 
@@ -162,6 +162,10 @@ export default function BranchOverview() {
     }
   }, [summary]);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="w-full rounded-xl border border-gray-300">
       <div className="flex w-full justify-between px-6 py-4">
@@ -204,7 +208,7 @@ export default function BranchOverview() {
                 ))}
               </AvatarGroup>
               <button
-                onClick={() => router.push("/branch/branch-users")}
+                onClick={() => handleNavigation("/branch/branch-users")}
                 className="text-primary hover:text-primary-dark cursor-pointer underline transition duration-300"
               >
                 Ver todos

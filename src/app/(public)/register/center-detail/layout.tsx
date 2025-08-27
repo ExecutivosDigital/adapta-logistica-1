@@ -1,5 +1,6 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { ArrowLeft, ChevronsUpDown, PlusSquare } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -9,7 +10,10 @@ export default function RegisterLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { handleNavigation } = useLoadingContext();
+  const pathname = usePathname();
   const router = useRouter();
+
   const routes = [
     { id: "1", name: "Membros Unidade", route: "/register/center-detail" },
     {
@@ -18,7 +22,7 @@ export default function RegisterLayout({
       route: "/register/center-detail/cost-center",
     },
   ];
-  const pathname = usePathname();
+
   return (
     // Contêiner principal que ocupa a tela inteira
     <div className="bg-primary h-full min-h-screen w-full p-8">
@@ -83,7 +87,7 @@ export default function RegisterLayout({
               {routes.map((tab, index) => (
                 <button
                   key={index}
-                  onClick={() => router.push(tab.route)}
+                  onClick={() => handleNavigation(tab.route)}
                   className={`flex h-12 cursor-pointer items-center justify-center border-b px-2 transition-all duration-300 ${
                     pathname === tab.route
                       ? "text-primary border-b-primary"

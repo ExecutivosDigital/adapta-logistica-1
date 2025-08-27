@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   ChevronDown,
@@ -23,8 +24,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Stepper from "./components/steper";
 
@@ -69,7 +69,7 @@ type ColumnKey =
   | "type";
 
 export default function NewReceivable() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [transactionPages] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
@@ -319,6 +319,10 @@ export default function NewReceivable() {
     visibleColumns.has(column.key),
   );
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex h-full w-full flex-col gap-2 xl:gap-4">
       <div className="flex w-full flex-col items-start justify-between xl:flex-row xl:items-center">
@@ -413,7 +417,7 @@ export default function NewReceivable() {
           className="h-8"
           onClick={() => {
             if (selectedRows.size !== 0) {
-              router.push("/receivable/new");
+              handleNavigation("/receivable/new");
             } else {
               toast.error("Selecione ao menos uma linha");
             }

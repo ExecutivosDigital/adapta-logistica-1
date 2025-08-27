@@ -2,6 +2,7 @@
 "use client";
 import { AiFileReader } from "@/components/ai-file-reader";
 import { OrangeButton } from "@/components/OrangeButton";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -12,9 +13,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { ClientModal } from "./components/client-modal";
+import { CteModal } from "./components/cte-modal";
 import { Step1 } from "./components/step1";
 import { Step2 } from "./components/step2";
 
@@ -68,8 +69,9 @@ export interface DataType {
 }
 
 export default function NewReceivable() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
-  const [isOpenClientModal, setIsOpenClientModal] = useState(false);
+  const [isOpenCteModal, setIsOpenCteModal] = useState(false);
   const [steps, setSteps] = useState(1);
   const [hasBrokenIndividualRules, setHasBrokenIndividualRules] =
     useState(true);
@@ -114,6 +116,10 @@ export default function NewReceivable() {
     return;
   };
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -144,7 +150,7 @@ export default function NewReceivable() {
             Voltar
           </button>
           <button
-            onClick={() => router.push("/transactions/receivable")}
+            onClick={() => handleNavigation("/transactions/receivable")}
             className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
           >
             Encerrar
@@ -206,7 +212,11 @@ export default function NewReceivable() {
                   </div>
                 </div>
                 <div className="my-4 h-px bg-zinc-200/60" />
-                <Step1 data={data} setData={setData} />
+                <Step1
+                  data={data}
+                  setData={setData}
+                  setIsOpenCteModal={setIsOpenCteModal}
+                />
               </>
             ) : steps === 2 ? (
               <div className="flex h-[90%] w-[90%] flex-col items-center gap-2 rounded-lg bg-white p-8">
@@ -315,7 +325,7 @@ export default function NewReceivable() {
                   onClick={
                     hasBrokenIndividualRules === true
                       ? () => toast.error("Existem Alterações Necessárias")
-                      : () => router.push("/calendar")
+                      : () => handleNavigation("/calendar")
                   }
                   icon={<ChevronDown size={16} className="-rotate-90" />}
                   iconPosition="right"
@@ -327,10 +337,10 @@ export default function NewReceivable() {
           </section>
         </main>
       </div>
-      {isOpenClientModal && (
-        <ClientModal
-          show={isOpenClientModal}
-          onHide={() => setIsOpenClientModal(false)}
+      {isOpenCteModal && (
+        <CteModal
+          show={isOpenCteModal}
+          onHide={() => setIsOpenCteModal(false)}
           data={data}
           setData={setData}
         />

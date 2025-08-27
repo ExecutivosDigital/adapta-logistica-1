@@ -1,28 +1,35 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VerificationCodeInput from "./VerificationCodeInput";
 
 export default function RecoverPassword() {
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
 
   const [steps, setSteps] = useState(1);
   // const [code, setCode] = useState<string>("");
+
   const handleComplete = () => {
     // setCode(filledCode);
   };
+
   function handleBack() {
     if (steps > 1) {
       setSteps(steps - 1);
     } else {
-      router.push("/login");
+      handleNavigation("/login");
     }
   }
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full">
       <div className="flex h-screen w-full flex-col items-center justify-center p-4 lg:w-5/12 lg:p-0">
@@ -174,7 +181,7 @@ export default function RecoverPassword() {
                 </div>
 
                 <button
-                  onClick={() => router.push("/login")}
+                  onClick={() => handleNavigation("/login")}
                   className="bg-primary h-12 w-full cursor-pointer rounded-lg font-semibold text-white"
                 >
                   Entrar agora

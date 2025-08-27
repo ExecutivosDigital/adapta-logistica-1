@@ -79,10 +79,9 @@ export default function Home() {
 
   async function analyze(buffer: Buffer) {
     try {
-      const file = new File([buffer], "edital.pdf", {
+      const file = new File([buffer.buffer as ArrayBuffer], "edital.pdf", {
         type: "application/pdf",
       });
-
       const sendFile = await client.files.create({
         file: file,
         purpose: "assistants",
@@ -159,6 +158,10 @@ export default function Home() {
       textarea.style.height = textarea.scrollHeight + "px";
     }
   }, [summary]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <div className="w-full rounded-xl border border-gray-300">

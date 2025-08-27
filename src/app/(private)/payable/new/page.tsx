@@ -12,6 +12,7 @@ import {
 import { useApiContext } from "@/context/ApiContext";
 import { useBranch } from "@/context/BranchContext";
 import { useFinancialDataContext } from "@/context/FinancialDataContext";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
@@ -69,6 +70,7 @@ export interface ClientProps {
 }
 
 export default function NewPayable() {
+  const { handleNavigation } = useLoadingContext();
   const router = useRouter();
   const { PostAPI } = useApiContext();
   const {
@@ -200,7 +202,7 @@ export default function NewPayable() {
     if (create.status === 200) {
       toast.success("À Pagar criado com sucesso!");
       setTimeout(() => {
-        router.push("/calendar");
+        handleNavigation("/calendar");
       }, 1000);
       return setIsCreating(false);
     }
@@ -225,6 +227,10 @@ export default function NewPayable() {
       });
     }
   }, [selectedBusinessUnit]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
 
   return (
     <>

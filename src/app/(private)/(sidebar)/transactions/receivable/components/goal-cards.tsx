@@ -6,12 +6,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
 import { getLocalTimeZone } from "@internationalized/date";
 import { EllipsisVertical } from "lucide-react";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DateValue } from "react-aria-components";
 import { DateRange, SelectRangeEventHandler } from "react-day-picker";
@@ -20,7 +20,7 @@ interface selectedTableType {
 }
 export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
   const { viewAllValues } = useValueContext();
-  const router = useRouter();
+  const { handleNavigation } = useLoadingContext();
   const [date, setDate] = useState<Date | null>(new Date());
   const [openDateRange, setOpenDateRange] = useState({
     from: moment().subtract(1, "month").toDate(),
@@ -107,7 +107,9 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <button
-            onClick={() => router.push("/transactions/receivable/consolidated")}
+            onClick={() =>
+              handleNavigation("/transactions/receivable/consolidated")
+            }
             className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
           >
             Ver Transações Recebidas
@@ -168,7 +170,9 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <button
-            onClick={() => router.push("/transactions/receivable/this-month")}
+            onClick={() =>
+              handleNavigation("/transactions/receivable/this-month")
+            }
             className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
           >
             Ver Transações em Aberto
@@ -229,7 +233,7 @@ export function ReceivableGoalCards({ selectedTableType }: selectedTableType) {
           </div>
           <div className="mx-auto h-px w-3/4 bg-zinc-200" />
           <button
-            onClick={() => router.push("/transactions/receivable/overdue")}
+            onClick={() => handleNavigation("/transactions/receivable/overdue")}
             className="text-primary self-center rounded-lg border border-zinc-400 p-2 text-sm transition-all duration-300 hover:scale-[1.02]"
           >
             Ver Transações Atrasadas

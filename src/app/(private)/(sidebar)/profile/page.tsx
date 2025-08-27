@@ -1,6 +1,12 @@
+"use client";
 import { Pencil } from "lucide-react";
+import { useEffect } from "react";
 
-export default function profile() {
+export default function Profile() {
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("navigationComplete"));
+  }, []);
+
   return (
     <div className="flex h-full w-full flex-col gap-2 pb-20 lg:gap-4 xl:pb-0">
       <span className="text-lg font-semibold lg:text-xl">Meu Perfil</span>

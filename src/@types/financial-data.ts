@@ -19,10 +19,15 @@ export interface SupplierProps {
 }
 
 export interface LedgerAccountsProps {
-  code: number;
+  code: string;
   companyId: string;
   id: string;
+  level: number;
   name: string;
+  normalizedCode: string;
+  parentLedgerAccountId: string;
+  resultCenterId: string;
+  type: string;
 }
 
 export interface ResultCenterProps {
