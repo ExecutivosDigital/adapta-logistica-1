@@ -1,67 +1,66 @@
-/* app/(dashboard)/create-business-unit/page.tsx */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { AiFileReader } from "@/components/ai-file-reader";
+import { ResultCenterProps } from "@/@types/financial-data";
 import { OrangeButton } from "@/components/OrangeButton";
+import { AiFileReader } from "@/components/ai-file-reader";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useApiContext } from "@/context/ApiContext";
+import { useBranch } from "@/context/BranchContext";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import {
   Calendar,
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  Loader2,
+  MapPin,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { AccontsType, Accounts } from "./components/acconts";
 import { AccountingModal } from "./components/accounting-modal";
-import CreateClientSheet from "./components/create-client-sheet";
+import CreateSupplierSheet from "./components/create-client-sheet";
+import LaunchTypeModal from "./components/launch-type-modal";
 import { Step1 } from "./components/step1";
 import { Step3 } from "./components/step3";
 import { SupplierModal } from "./components/supplier-modal";
 
 export interface DataType {
-  totalValue: number;
-  entryType: "DESPESAS" | "IMPOSTOS" | "C. VENDAS";
-  supplier: {
-    name: string;
-    cnpj: string;
-  };
-  documentType: string;
-  amount: number;
-  currency: string;
-  costType: string;
-  category: string;
-  costCenters: {
-    name: string;
-    value: string;
+  businessUnitId: string;
+  dueDate: string;
+  installmentCount: number;
+  ledgerAccountId: string;
+  paymentMode: "FULL" | "INSTALLMENT";
+  paymentType?: string;
+  resultCenters: {
+    resultCenterId: string;
+    value: number;
+    locked?: boolean;
+    name?: string;
+  }[];
+  status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED";
+  subsidiaryId: string;
+  supplierId: string;
+  transactions: {
+    dueDate: string;
+    position: number;
+    status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED";
+    value: number;
+    paymentType: string;
     locked?: boolean;
   }[];
-  accountingAccount: {
-    code: string;
-    description: string;
-  };
-  paymentMethod: {
-    bank: string;
-    account: string;
-  };
-  paymentForm: string;
-  documentNumber: string;
-  issueDate: string; // Format: 'YYYY-MM-DD'
-  dueDate: string; // Format: 'YYYY-MM-DD'
-  paymentTerms: string;
-  paymentDetails: string;
-  description: string;
-  approval: string;
-  mail: string;
-}
-
-export interface SupplierProps {
-  name: string;
-  cnpj: string;
-  expirationDate: string;
-  status: string;
+  type: "EXPENSE" | "FEE" | "COST" | "RECURRING";
+  mainDocumentUrl?: string;
+  referenceMonth: number | null;
+  value: number;
 }
 
 export interface ClientProps {
@@ -69,145 +68,167 @@ export interface ClientProps {
   cnpj: string;
 }
 
-export default function NewRecurringPayment() {
+export default function NewRecurringPayable() {
   const router = useRouter();
-
-  const [data, setData] = useState<DataType>({
-    totalValue: 100000,
-    entryType: "DESPESAS",
-    supplier: {
-      name: "",
-      cnpj: "",
-    },
-    documentType: "",
-    amount: 0,
-    currency: "",
-    costType: "",
-    category: "",
-    costCenters: [],
-    accountingAccount: {
-      code: "",
-      description: "",
-    },
-    paymentMethod: {
-      bank: "",
-      account: "",
-    },
-    paymentForm: "",
-    documentNumber: "",
-    issueDate: "",
-    dueDate: "",
-    paymentTerms: "",
-    paymentDetails: "",
-    description: "",
-    approval: "",
-    mail: "",
-  });
-  /* render */
+  const { PostAPI } = useApiContext();
+  const {
+    branches,
+    selectedBranch,
+    setSelectedBranch,
+    businessUnits,
+    selectedBusinessUnit,
+    setSelectedBusinessUnit,
+  } = useBranch();
+  const { resultCenters } = useFinancialDataContext();
 
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
+  const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
+  const [openCreateSupplierSheet, setOpenCreateSupplierSheet] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [steps, setSteps] = useState(1);
   const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
     useState(false);
-  const suppliers = [
-    {
-      name: "Fornecedor 1",
-      cnpj: "11.111.111/0001-11",
-      expirationDate: "01/01/2025",
-      status: "ATIVO",
-    },
-    {
-      name: "Fornecedor 2",
-      cnpj: "22.222.222/0002-22",
-      expirationDate: "02/02/2025",
-      status: "INATIVO",
-    },
-    {
-      name: "Fornecedor 3",
-      cnpj: "33.333.333/0003-33",
-      expirationDate: "03/03/2025",
-      status: "ATIVO",
-    },
-    {
-      name: "Fornecedor 4",
-      cnpj: "44.444.444/0004-44",
-      expirationDate: "04/04/2025",
-      status: "INATIVO",
-    },
-    {
-      name: "Fornecedor 5",
-      cnpj: "55.555.555/0005-55",
-      expirationDate: "05/05/2025",
-      status: "ATIVO",
-    },
-  ];
-  const [currentPage, setCurrentPage] = useState(1);
-  const [steps, setSteps] = useState(1);
-  const [selectedClient, setSelectedClient] = useState({
-    name: "",
-    cnpj: "",
-  });
-  const [filteredSuppliers, setFilteredSuppliers] = useState("");
-  const [filteredContabilAccounts, setFilteredContabilAccounts] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<AccontsType>({
-    contaContabil: "",
-    descricao: "",
-    tipoCusto: "",
-    grupo: "",
-    tipoConta: "",
-  });
-  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
+  const [selectedResultCenters, setSelectedResultCenters] = useState<
+    ResultCenterProps[]
+  >([]);
 
-  const filteredAccounts = useMemo(() => {
-    if (!filteredContabilAccounts.trim()) return Accounts;
+  const [data, setData] = useState<DataType>({
+    businessUnitId: selectedBusinessUnit?.id || "",
+    dueDate: "",
+    installmentCount: 1,
+    ledgerAccountId: "",
+    paymentMode: "INSTALLMENT",
+    referenceMonth: null,
+    resultCenters: [],
+    status: "PENDING",
+    subsidiaryId: selectedBranch?.id || "",
+    supplierId: "",
+    transactions: [],
+    type: "RECURRING",
+    value: 0,
+    mainDocumentUrl: "",
+  });
 
-    const term = filteredContabilAccounts.toLowerCase();
-    return Accounts.filter(
-      (acc) =>
-        acc.contaContabil.includes(filteredContabilAccounts) ||
-        acc.descricao.toLowerCase().includes(term),
+  const handleResultCenterToggle = (ResultCenterId: string) => {
+    const isSelected = selectedResultCenters.some(
+      (cc) => cc.id === ResultCenterId,
     );
-  }, [Accounts, filteredContabilAccounts]);
-
-  const ITEMS_PER_PAGE = 6;
-  const pageCount = Math.max(
-    1,
-    Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE),
-  );
-
-  const paginatedAccounts = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredAccounts.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredAccounts, currentPage]);
-
-  const pages = useMemo(() => {
-    const maxButtons = 5;
-
-    if (pageCount <= maxButtons)
-      return [...Array(pageCount)].map((_, i) => i + 1);
-
-    const half = Math.floor(maxButtons / 2);
-    let from = Math.max(1, currentPage - half);
-    const to = Math.min(pageCount, from + maxButtons - 1);
-
-    if (to - from < maxButtons - 1) {
-      from = Math.max(1, to - maxButtons + 1);
+    let updatedSelectedCenters;
+    let updatedResultCenters;
+    if (isSelected) {
+      updatedSelectedCenters = selectedResultCenters.filter(
+        (cc) => cc.id !== ResultCenterId,
+      );
+      updatedResultCenters = data.resultCenters.filter(
+        (cc) => cc.resultCenterId !== ResultCenterId,
+      );
+    } else {
+      const newResultCenter = {
+        name:
+          resultCenters.find((center) => center.id === ResultCenterId)?.name ||
+          "",
+        resultCenterId: ResultCenterId,
+        value: 0,
+        locked: false,
+      };
+      updatedSelectedCenters = [...selectedResultCenters, newResultCenter];
+      updatedResultCenters = [...data.resultCenters, newResultCenter];
     }
-
-    return Array.from({ length: to - from + 1 }, (_, i) => from + i);
-  }, [pageCount, currentPage]);
+    setSelectedResultCenters(updatedSelectedCenters as ResultCenterProps[]);
+    if (updatedResultCenters.length > 0) {
+      const lockedCenters = updatedResultCenters.filter(
+        (center) => center.locked,
+      );
+      const unlockedCenters = updatedResultCenters.filter(
+        (center) => !center.locked,
+      );
+      const lockedTotal = lockedCenters.reduce(
+        (sum, center) => sum + (center.value || 0),
+        0,
+      );
+      const remainingValue = data.value - lockedTotal;
+      if (unlockedCenters.length > 0 && remainingValue >= 0) {
+        const remainingCents = Math.round(remainingValue * 100);
+        const baseValueCents = Math.floor(
+          remainingCents / unlockedCenters.length,
+        );
+        const remainder = remainingCents % unlockedCenters.length;
+        const finalUpdatedResultCenters = updatedResultCenters.map(
+          (center, index) => {
+            if (center.locked) {
+              return center;
+            }
+            const unlockedIndex = unlockedCenters.findIndex(
+              (uc) =>
+                updatedResultCenters.findIndex((dc) => dc === uc) === index,
+            );
+            const extraCent = unlockedIndex < remainder ? 1 : 0;
+            const finalValueCents = baseValueCents + extraCent;
+            const finalValue = (finalValueCents / 100).toFixed(2);
+            return {
+              ...center,
+              value: finalValue,
+            };
+          },
+        );
+        setData({ ...data, resultCenters: finalUpdatedResultCenters as any });
+      } else {
+        setData({ ...data, resultCenters: updatedResultCenters as any });
+      }
+    } else {
+      setData({ ...data, resultCenters: [] });
+    }
+  };
 
   const handleData = () => {
     return;
   };
 
+  async function CreatePayable() {
+    setIsCreating(true);
+    const create = await PostAPI(
+      "/payable",
+      {
+        ...data,
+        resultCenters: data.resultCenters.map((center) => ({
+          ...center,
+          value: Number(center.value),
+        })),
+      },
+      true,
+    );
+    if (create.status === 200) {
+      toast.success("À Pagar criado com sucesso!");
+      setTimeout(() => {
+        router.push("/calendar");
+      }, 1000);
+      return setIsCreating(false);
+    }
+    toast.error("Erro ao criar À Pagar, tente novamente");
+    return setIsCreating(false);
+  }
+
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredContabilAccounts]);
+    if (selectedBranch) {
+      setData({
+        ...data,
+        subsidiaryId: selectedBranch.id,
+      });
+    }
+  }, [selectedBranch]);
+
+  useEffect(() => {
+    if (selectedBusinessUnit) {
+      setData({
+        ...data,
+        businessUnitId: selectedBusinessUnit.id,
+      });
+    }
+  }, [selectedBusinessUnit]);
 
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
-        {/* HEADER -------------------------------------------------------- */}
         <header className="relative flex items-center justify-center border-b border-orange-200 border-b-zinc-400 px-8 py-4">
           <Image
             src="/logo/logoFull.png"
@@ -247,7 +268,7 @@ export default function NewRecurringPayment() {
                 />
                 <div className="flex flex-col">
                   <h2 className="text-xl font-semibold">
-                    Lançamento Recorrente
+                    Fatura Recorrente À Pagar
                   </h2>
                   <span className="flex items-center gap-1 text-sm text-zinc-600">
                     <Calendar size={16} />
@@ -263,23 +284,107 @@ export default function NewRecurringPayment() {
                     </div>
                     R$
                   </span>
-                  {data.totalValue.toLocaleString("pt-BR", {
+                  {data.value.toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </h2>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
-                  Preço do Documento
+                  Preço da Fatura
                 </span>
               </div>
+            </div>
+            <div className="my-4 h-px bg-zinc-200/60" />
+            <div className="flex items-center justify-between gap-4">
+              <label className="flex w-1/2 flex-col gap-1">
+                <span className="text-zinc-600">Filial</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                      <MapPin
+                        size={16}
+                        className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                      />
+                      <div className="flex flex-1 flex-col">
+                        <span className="flex-1 2xl:text-lg">
+                          {selectedBranch?.name}
+                        </span>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[var(--radix-dropdown-menu-trigger-width)]"
+                    side="top"
+                  >
+                    {branches.map((branch) => (
+                      <DropdownMenuItem
+                        className={cn(
+                          selectedBranch?.id === branch.id && "bg-primary/20",
+                        )}
+                        key={branch.id}
+                        onClick={() => setSelectedBranch(branch)}
+                      >
+                        {branch.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </label>
+              <label className="flex w-1/2 flex-col gap-1">
+                <span className="text-zinc-600">Unidade de Negócio</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                      <MapPin
+                        size={16}
+                        className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                      />
+                      <div className="flex flex-1 flex-col">
+                        <span className="flex-1 2xl:text-lg">
+                          {selectedBusinessUnit?.name}
+                        </span>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[var(--radix-dropdown-menu-trigger-width)]"
+                    side="top"
+                  >
+                    {businessUnits.map((businessUnit) => (
+                      <DropdownMenuItem
+                        className={cn(
+                          selectedBusinessUnit?.id === businessUnit.id &&
+                            "bg-primary/20",
+                        )}
+                        key={businessUnit.id}
+                        onClick={() => setSelectedBusinessUnit(businessUnit)}
+                      >
+                        {businessUnit.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </label>
             </div>
             <div className="my-4 h-px bg-zinc-200/60" />
             {steps === 1 ? (
               <Step1
                 data={data}
                 setData={setData}
+                selectedResultCenters={selectedResultCenters}
+                setSelectedResultCenters={setSelectedResultCenters}
+                handleResultCenterToggle={handleResultCenterToggle}
                 setIsOpenSupplierModal={setIsOpenSupplierModal}
                 setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
+                setIsOpenLaunchTypeModal={setIsOpenLaunchTypeModal}
               />
             ) : steps === 2 ? (
               <Step3 data={data} setData={setData} />
@@ -288,21 +393,23 @@ export default function NewRecurringPayment() {
             )}
             {steps === 1 ? (
               <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
-                <button
-                  onClick={() => router.back()}
-                  className="h-9 w-max rounded-lg border border-zinc-300 px-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
-                >
-                  Salvar rascunho
-                </button>
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={() => router.back()}
+                    className="h-9 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                  >
+                    Salvar rascunho
+                  </button>
 
-                <OrangeButton
-                  className="h-9 w-[132px]"
-                  onClick={() => setSteps(steps + 1)}
-                  icon={<ChevronDown size={16} className="-rotate-90" />}
-                  iconPosition="right"
-                >
-                  Continuar
-                </OrangeButton>
+                  <OrangeButton
+                    className="h-9 w-[132px]"
+                    onClick={() => setSteps(steps + 1)}
+                    icon={<ChevronDown size={16} className="-rotate-90" />}
+                    iconPosition="right"
+                  >
+                    Continuar
+                  </OrangeButton>
+                </div>
               </footer>
             ) : steps === 2 ? (
               <footer className="mt-auto flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
@@ -316,15 +423,20 @@ export default function NewRecurringPayment() {
                 <OrangeButton
                   className="h-9 w-[132px]"
                   onClick={() => {
-                    toast.success("À Pagar criado com sucesso!");
-                    setTimeout(() => {
-                      router.push("/calendar");
-                    }, 1000);
+                    CreatePayable();
                   }}
                   icon={<ChevronDown size={16} className="-rotate-90" />}
                   iconPosition="right"
+                  disabled={isCreating}
                 >
-                  Salvar
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      <span>Criando...</span>
+                    </>
+                  ) : (
+                    "Criar"
+                  )}
                 </OrangeButton>
               </footer>
             ) : (
@@ -341,42 +453,33 @@ export default function NewRecurringPayment() {
 
         {/* FOOTER -------------------------------------------------------- */}
       </div>
-      {openCreateClientSheet && (
-        <CreateClientSheet
-          open={openCreateClientSheet}
-          onOpenChange={setOpenCreateClientSheet}
+      {openCreateSupplierSheet && (
+        <CreateSupplierSheet
+          open={openCreateSupplierSheet}
+          onOpenChange={setOpenCreateSupplierSheet}
         />
       )}
       {isOpenSupplierModal && (
         <SupplierModal
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          setOpenCreateClientSheet={setOpenCreateClientSheet}
-          filteredSuppliers={filteredSuppliers}
-          setFilteredSuppliers={setFilteredSuppliers}
-          suppliers={suppliers}
-          selectedClient={selectedClient}
-          setSelectedClient={setSelectedClient}
+          setOpenCreateSupplierSheet={setOpenCreateSupplierSheet}
           isOpenSupplierModal={isOpenSupplierModal}
           setIsOpenSupplierModal={setIsOpenSupplierModal}
           data={data}
           setData={setData}
         />
       )}
+      {isOpenLaunchTypeModal && (
+        <LaunchTypeModal
+          show={isOpenLaunchTypeModal}
+          onClose={() => setIsOpenLaunchTypeModal(false)}
+          data={data}
+          setData={setData}
+        />
+      )}
       {isOpenContabilAccountModal && (
         <AccountingModal
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+          isOpenContabilAccountModal={isOpenContabilAccountModal}
           setIsOpenContabilAccountModal={setIsOpenContabilAccountModal}
-          filteredContabilAccounts={filteredContabilAccounts}
-          setFilteredContabilAccounts={setFilteredContabilAccounts}
-          paginatedAccounts={paginatedAccounts}
-          selectedAccount={selectedAccount}
-          pages={pages}
-          pageCount={pageCount}
-          setSelectedAccount={setSelectedAccount}
-          isOpenAccountingModal={isOpenContabilAccountModal}
-          setIsOpenAccountingModal={setIsOpenContabilAccountModal}
           data={data}
           setData={setData}
         />

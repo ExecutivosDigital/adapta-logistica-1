@@ -1,60 +1,83 @@
 "use client";
+import { LedgerAccountsProps } from "@/@types/financial-data";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import { Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { DataType } from "../page";
-import { AccontsType } from "./acconts";
 
 interface AccountingModalProps {
+  isOpenContabilAccountModal: boolean;
   setIsOpenContabilAccountModal: React.Dispatch<React.SetStateAction<boolean>>;
-  filteredContabilAccounts: string;
-  setFilteredContabilAccounts: React.Dispatch<React.SetStateAction<string>>;
-  paginatedAccounts: AccontsType[];
-  selectedAccount: AccontsType;
-  pages: number[];
-  pageCount: number;
-  setSelectedAccount: React.Dispatch<React.SetStateAction<AccontsType>>;
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  isOpenAccountingModal: boolean;
-  setIsOpenAccountingModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: DataType;
   setData: React.Dispatch<React.SetStateAction<DataType>>;
 }
 
 export function AccountingModal({
+  isOpenContabilAccountModal,
   setIsOpenContabilAccountModal,
-  filteredContabilAccounts,
-  setFilteredContabilAccounts,
-  paginatedAccounts,
-  selectedAccount,
-  setSelectedAccount,
-  pages,
-  pageCount,
-  currentPage,
-  setCurrentPage,
-  isOpenAccountingModal,
-  setIsOpenAccountingModal,
   data,
   setData,
 }: AccountingModalProps) {
+  const { ledgerAccounts } = useFinancialDataContext();
+  const [filteredContabilAccounts, setFilteredContabilAccounts] = useState("");
+  const [selectedAccount, setSelectedAccount] =
+    useState<LedgerAccountsProps | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const filteredAccounts = useMemo(() => {
+    if (!filteredContabilAccounts.trim()) return ledgerAccounts;
+
+    const term = filteredContabilAccounts.toLowerCase();
+    return ledgerAccounts.filter(
+      (acc) =>
+        acc.name.includes(filteredContabilAccounts) ||
+        acc.name.toLowerCase().includes(term),
+    );
+  }, [ledgerAccounts, filteredContabilAccounts]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredAccounts.length / 6));
+
+  const paginatedAccounts = useMemo(() => {
+    const start = (currentPage - 1) * 6;
+    return filteredAccounts.slice(start, start + 6);
+  }, [filteredAccounts, currentPage]);
+
+  const pages = useMemo(() => {
+    const maxButtons = 5;
+
+    if (pageCount <= maxButtons)
+      return [...Array(pageCount)].map((_, i) => i + 1);
+
+    const half = Math.floor(maxButtons / 2);
+    let from = Math.max(1, currentPage - half);
+    const to = Math.min(pageCount, from + maxButtons - 1);
+
+    // se não alcançou o máximo de botões, ajusta início
+    if (to - from < maxButtons - 1) {
+      from = Math.max(1, to - maxButtons + 1);
+    }
+
+    return Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  }, [pageCount, currentPage]);
+
   return (
     <>
       <div
         className="fixed top-0 right-0 bottom-0 left-0 z-[990] flex w-full cursor-pointer items-center justify-center bg-white/50 p-4 text-center backdrop-blur-[4px] transition-opacity duration-300 ease-in-out"
-        style={{ opacity: isOpenAccountingModal ? 1 : 0 }}
+        style={{ opacity: isOpenContabilAccountModal ? 1 : 0 }}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            setIsOpenAccountingModal(false);
+            setIsOpenContabilAccountModal(false);
           }
         }}
       >
         <div
           className={cn(
-            "relative z-20 flex h-[85vh] w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
+            "relative z-20 flex h-max w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
           )}
         >
           <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
-            {/* Cabeçalho */}
             <div className="bg-primary flex h-16 items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
                 Lista de Contas
@@ -67,7 +90,6 @@ export function AccountingModal({
               </button>
             </div>
             <div className="scrollbar-hide h-[calc(100%-8rem)] w-full overflow-scroll">
-              {/* Campo de busca */}
               <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
                 <label className="mb-2 block text-xl text-[#6C7386]">
                   Selecione a Conta Contábil:
@@ -88,7 +110,6 @@ export function AccountingModal({
                 </div>
               </div>
 
-              {/* Lista filtrada + paginada */}
               <ul className="space-y-2 px-2 xl:space-y-4 xl:px-6">
                 {paginatedAccounts.length === 0 && (
                   <li className="flex justify-center py-10 text-zinc-500">
@@ -98,40 +119,37 @@ export function AccountingModal({
 
                 {paginatedAccounts.map((acc, i) => (
                   <li
-                    key={`${acc.contaContabil}-${i}`}
+                    key={`${acc.id}-${i}`}
                     onClick={() => setSelectedAccount(acc)}
                     className={`hover:bg-primary/10 flex cursor-pointer flex-col items-center gap-2 rounded-lg border-b border-zinc-200 p-2 transition-colors xl:flex-row xl:gap-8 ${
-                      selectedAccount?.contaContabil === acc.contaContabil
-                        ? "bg-primary/20"
-                        : ""
+                      selectedAccount?.id === acc.id ? "bg-primary/20" : ""
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="bg-primary h-4 w-4 rounded-full" />
                       <div className="flex flex-col text-sm">
                         <span className="font-medium text-zinc-800">
-                          {acc.contaContabil}
+                          {acc.code}
                         </span>
                       </div>
                     </div>
                     <div className="flex flex-1 items-center gap-3">
                       <div className="flex flex-col text-sm">
                         <span className="-mt-1 text-xs text-zinc-500">
-                          {acc.descricao}
+                          {acc.name}
                         </span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-6 text-sm">
                       <span className="rounded-md border border-emerald-500 bg-emerald-600/20 px-3 py-1 font-semibold text-emerald-600">
-                        {acc.tipoCusto}
+                        acc.tipoCusto
                       </span>
                     </div>
                   </li>
                 ))}
               </ul>
 
-              {/* Paginação */}
               <div className="my-6 flex items-center justify-center gap-2 text-sm">
                 <button
                   disabled={currentPage === 1}
@@ -166,8 +184,7 @@ export function AccountingModal({
                 </button>
               </div>
             </div>
-            {/* Botões de ação */}
-            <div className="flex h-16 justify-between border-t border-zinc-200 px-6 py-4">
+            <div className="flex justify-between border-t border-zinc-200 px-6 py-4">
               <button
                 onClick={() => setIsOpenContabilAccountModal(false)}
                 className="text-primary rounded-md border border-zinc-200 px-2 py-1 font-bold xl:px-6 xl:py-2"
@@ -180,10 +197,7 @@ export function AccountingModal({
                   if (selectedAccount) {
                     setData({
                       ...data,
-                      accountingAccount: {
-                        code: selectedAccount.contaContabil,
-                        description: selectedAccount.descricao,
-                      },
+                      ledgerAccountId: selectedAccount.id,
                     });
                     setIsOpenContabilAccountModal(false);
                   }

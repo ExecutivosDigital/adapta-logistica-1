@@ -8,7 +8,7 @@ import DollarIcon from "../../../../../../public/icons/dollar";
 import { DataType } from "../page";
 
 interface SupplierModalProps {
-  setOpenCreateClientSheet: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenCreateSupplierSheet: React.Dispatch<React.SetStateAction<boolean>>;
   isOpenSupplierModal: boolean;
   setIsOpenSupplierModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: DataType;
@@ -16,7 +16,7 @@ interface SupplierModalProps {
 }
 
 export function SupplierModal({
-  setOpenCreateClientSheet,
+  setOpenCreateSupplierSheet,
   isOpenSupplierModal,
   setIsOpenSupplierModal,
   data,
@@ -50,7 +50,7 @@ export function SupplierModal({
                 Lista de Fornecedores no Sistema
               </h2>
               <button
-                onClick={() => setOpenCreateClientSheet(true)}
+                onClick={() => setOpenCreateSupplierSheet(true)}
                 className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl"
               >
                 <Plus />

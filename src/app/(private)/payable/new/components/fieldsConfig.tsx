@@ -91,43 +91,6 @@ export const fieldsConfig: FieldConfig[] = [
   },
 
   {
-    id: "tipogrupo",
-    label: "Tipo de Grupo",
-    type: "text",
-    importance: 2,
-    group: "Segmentação",
-  },
-  {
-    id: "grupocliente",
-    label: "Grupo do Cliente",
-    type: "text",
-    importance: 2,
-    group: "Segmentação",
-  },
-
-  {
-    id: "clientecodigo",
-    label: "Código do Cliente",
-    type: "text",
-    importance: 2,
-    group: "Identificação",
-  },
-  {
-    id: "clientepagador",
-    label: "Cliente Pagador",
-    type: "text",
-    importance: 2,
-    group: "Identificação",
-  },
-  {
-    id: "cnpjpagador",
-    label: "CNPJ do Pagador",
-    type: "text",
-    importance: 2,
-    group: "Identificação",
-  },
-
-  {
     id: "rginscest",
     label: "Inscrição Estadual",
     type: "text",
@@ -140,68 +103,5 @@ export const fieldsConfig: FieldConfig[] = [
     type: "text",
     importance: 3,
     group: "Documentos Fiscais",
-  },
-
-  {
-    id: "nrtelefone",
-    label: "Telefone 2",
-    type: "text",
-    importance: 3,
-    group: "Contato",
-  },
-  {
-    id: "nrcelular",
-    label: "Celular",
-    type: "text",
-    importance: 2,
-    group: "Contato",
-  },
-  {
-    id: "endemail",
-    label: "E-mail 2",
-    type: "text",
-    importance: 3,
-    group: "Contato",
-  },
-
-  {
-    id: "fgsubstituircli",
-    label: "Substituir Cliente?",
-    type: "switch",
-    value: true,
-    importance: 3,
-    group: "Configurações",
-  },
-  {
-    id: "fgsubstituirendere",
-    label: "Substituir Endereço?",
-    type: "switch",
-    value: false,
-    importance: 3,
-    group: "Configurações",
-  },
-  {
-    id: "fgsubstituirie",
-    label: "Substituir IE?",
-    type: "switch",
-    value: false,
-    importance: 3,
-    group: "Configurações",
-  },
-
-  {
-    id: "creditlimit",
-    label: "Limite de Crédito (%)",
-    type: "percent",
-    importance: 2,
-    group: "Financeiro",
-  },
-
-  {
-    id: "fginformatomador",
-    label: "FGINFORMATOMADOR",
-    type: "text",
-    importance: 3,
-    group: "Avançado",
   },
 ];

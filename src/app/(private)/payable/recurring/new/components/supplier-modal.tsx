@@ -1,18 +1,14 @@
 "use client";
+import { SupplierProps } from "@/@types/financial-data";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import { Plus, Search } from "lucide-react";
+import { useState } from "react";
 import DollarIcon from "../../../../../../../public/icons/dollar";
-import { ClientProps, DataType, SupplierProps } from "../page";
+import { DataType } from "../page";
 
 interface SupplierModalProps {
-  setOpenCreateClientSheet: React.Dispatch<React.SetStateAction<boolean>>;
-  filteredSuppliers: string;
-  setFilteredSuppliers: React.Dispatch<React.SetStateAction<string>>;
-  suppliers: SupplierProps[];
-  selectedClient: ClientProps;
-  setSelectedClient: React.Dispatch<React.SetStateAction<ClientProps>>;
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setOpenCreateSupplierSheet: React.Dispatch<React.SetStateAction<boolean>>;
   isOpenSupplierModal: boolean;
   setIsOpenSupplierModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: DataType;
@@ -20,19 +16,18 @@ interface SupplierModalProps {
 }
 
 export function SupplierModal({
-  setOpenCreateClientSheet,
-  filteredSuppliers,
-  setFilteredSuppliers,
-  suppliers,
-  selectedClient,
-  setSelectedClient,
-  currentPage,
-  setCurrentPage,
+  setOpenCreateSupplierSheet,
   isOpenSupplierModal,
   setIsOpenSupplierModal,
   data,
   setData,
 }: SupplierModalProps) {
+  const { suppliers } = useFinancialDataContext();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredSuppliers, setFilteredSuppliers] = useState("");
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<SupplierProps | null>(null);
+
   return (
     <>
       <div
@@ -46,24 +41,23 @@ export function SupplierModal({
       >
         <div
           className={cn(
-            "relative z-20 flex h-[85vh] w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
+            "relative z-20 flex h-max w-[90vw] flex-col items-center justify-start gap-4 overflow-hidden rounded-xl border bg-white shadow-md xl:w-[50vw]",
           )}
         >
           <div className="flex h-full w-full flex-col justify-between rounded-xl shadow-xl">
-            {/* Cabeçalho */}
             <div className="bg-primary flex h-16 items-center justify-between px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
                 Lista de Fornecedores no Sistema
               </h2>
               <button
-                onClick={() => setOpenCreateClientSheet(true)}
+                onClick={() => setOpenCreateSupplierSheet(true)}
                 className="text-primary flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xl"
               >
                 <Plus />
               </button>
             </div>
+
             <div className="scrollbar-hide h-[calc(100%-8rem)] w-full overflow-scroll">
-              {/* Campo de busca */}
               <div className="flex flex-col items-center gap-0 px-6 py-4 xl:flex-row xl:gap-2">
                 <label className="mb-2 block text-[#6C7386]">
                   Selecione o Fornecedor:
@@ -82,7 +76,6 @@ export function SupplierModal({
                 </div>
               </div>
 
-              {/* Lista de fornecedors */}
               <ul className="space-y-2 px-2 xl:space-y-4 xl:px-6">
                 {suppliers.filter(
                   (fornecedor) =>
@@ -112,10 +105,10 @@ export function SupplierModal({
                   )
                   .map((fornecedor, index) => (
                     <li
-                      onClick={() => setSelectedClient(fornecedor)}
+                      onClick={() => setSelectedSupplier(fornecedor)}
                       key={index}
                       className={`hover:bg-primary/20 flex cursor-pointer flex-col items-start justify-between rounded-lg border-b border-zinc-200 p-1 transition duration-200 xl:flex-row xl:items-center xl:p-2 ${
-                        selectedClient.cnpj === fornecedor.cnpj
+                        selectedSupplier?.cnpj === fornecedor.cnpj
                           ? "bg-primary/20"
                           : ""
                       }`}
@@ -143,17 +136,17 @@ export function SupplierModal({
                               className="fill-primary text-primary"
                             />
                           </span>
-                          <span>{fornecedor.expirationDate}</span>
+                          <span>fornecedor.expirationDate</span>
                         </div>
                         <span
                           className={cn(
                             "w-32 rounded-md border px-3 py-1 font-semibold",
-                            fornecedor.status === "ATIVO"
-                              ? "border-emerald-600 bg-emerald-600/20 text-emerald-600"
-                              : "border-rose-600 bg-rose-600/20 text-rose-600",
+                            // fornecedor.status === "ATIVO"
+                            //   ? "border-emerald-600 bg-emerald-600/20 text-emerald-600"
+                            //   : "border-rose-600 bg-rose-600/20 text-rose-600",
                           )}
                         >
-                          {fornecedor.status}
+                          fornecedor.status
                         </span>
                       </div>
                     </li>
@@ -178,13 +171,16 @@ export function SupplierModal({
               </div>
             </div>
             {/* Botões de ação */}
-            <div className="flex h-16 justify-between border-t border-zinc-200 px-6 py-4">
+            <div className="flex justify-between border-t border-zinc-200 px-6 py-4">
               <button className="text-primary cursor-pointer rounded-md border border-zinc-200 px-2 py-1 font-bold xl:px-6 xl:py-2">
                 Cancelar
               </button>
               <button
                 onClick={() => {
-                  setData({ ...data, supplier: selectedClient });
+                  setData({
+                    ...data,
+                    supplierId: selectedSupplier?.id as string,
+                  });
                   setIsOpenSupplierModal(false);
                 }}
                 className="text-primary hover:bg-primary hover:border-primary flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 font-bold transition duration-200 hover:text-white xl:px-6 xl:py-2"

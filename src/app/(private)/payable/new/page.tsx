@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AccountingModal } from "./components/accounting-modal";
-import CreateClientSheet from "./components/create-client-sheet";
+import CreateSupplierSheet from "./components/create-client-sheet";
 import LaunchTypeModal from "./components/launch-type-modal";
 import { Step1 } from "./components/step1";
 import { Step3 } from "./components/step3";
@@ -83,7 +83,7 @@ export default function NewPayable() {
 
   const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
   const [isOpenLaunchTypeModal, setIsOpenLaunchTypeModal] = useState(false);
-  const [openCreateClientSheet, setOpenCreateClientSheet] = useState(false);
+  const [openCreateSupplierSheet, setOpenCreateSupplierSheet] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [steps, setSteps] = useState(1);
   const [isOpenContabilAccountModal, setIsOpenContabilAccountModal] =
@@ -451,15 +451,15 @@ export default function NewPayable() {
 
         {/* FOOTER -------------------------------------------------------- */}
       </div>
-      {openCreateClientSheet && (
-        <CreateClientSheet
-          open={openCreateClientSheet}
-          onOpenChange={setOpenCreateClientSheet}
+      {openCreateSupplierSheet && (
+        <CreateSupplierSheet
+          open={openCreateSupplierSheet}
+          onOpenChange={setOpenCreateSupplierSheet}
         />
       )}
       {isOpenSupplierModal && (
         <SupplierModal
-          setOpenCreateClientSheet={setOpenCreateClientSheet}
+          setOpenCreateSupplierSheet={setOpenCreateSupplierSheet}
           isOpenSupplierModal={isOpenSupplierModal}
           setIsOpenSupplierModal={setIsOpenSupplierModal}
           data={data}

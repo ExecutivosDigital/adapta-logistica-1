@@ -32,3 +32,30 @@ export interface ResultCenterProps {
   name: string;
   locked?: boolean;
 }
+
+export interface SupplierGroupProps {
+  code: number;
+  companyId: string;
+  id: string;
+  name: string;
+}
+
+export interface SupplierTypeProps {
+  code: number;
+  companyId: string;
+  id: string;
+  name: string;
+}
+
+export interface TributaryRegimeProps {
+  code: string;
+  id: string;
+  name: string;
+}
+
+export interface FiscalGroupProps {
+  code: number;
+  companyId: string;
+  id: string;
+  name: string;
+}

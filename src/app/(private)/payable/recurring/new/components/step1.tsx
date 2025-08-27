@@ -1,261 +1,111 @@
+import { ResultCenterProps } from "@/@types/financial-data";
+import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
+import { useScreenWidth } from "@/lib/useScreenWidth";
+import { getLocalTimeZone } from "@internationalized/date";
 import {
   Building2,
+  CalendarIcon,
   Check,
   DollarSign,
   Edit,
   FileText,
   MapPin,
   Search,
-  X,
 } from "lucide-react";
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
-import { DataType } from "../page";
-import { CostCentersList } from "./cost-centers-list";
-
-import { useScreenWidth } from "@/lib/useScreenWidth";
 import "moment/locale/pt-br";
-import { LaunchTypes } from "./launch-types";
+import { useState } from "react";
+import { DateValue } from "react-aria-components";
+import { DataType } from "../page";
+import { ResultCentersList } from "./result-centers-list";
 moment.locale("pt-br");
+
 interface Props {
   setIsOpenSupplierModal: (value: boolean) => void;
   setIsOpenContabilidadeModal: (value: boolean) => void;
+  setIsOpenLaunchTypeModal: (value: boolean) => void;
   data: DataType;
   setData: (value: DataType) => void;
+  selectedResultCenters: ResultCenterProps[];
+  setSelectedResultCenters: React.Dispatch<
+    React.SetStateAction<ResultCenterProps[]>
+  >;
+  handleResultCenterToggle: (resultCenterName: string) => void;
 }
 
 export function Step1({
   setIsOpenSupplierModal,
   data,
   setData,
+  setIsOpenLaunchTypeModal,
   setIsOpenContabilidadeModal,
+  selectedResultCenters,
+  setSelectedResultCenters,
+  handleResultCenterToggle,
 }: Props) {
-  const costCenters = [
-    "Centro de Custo",
-    "Abastecimento Interno",
-    "Administrativo",
-    "Armazém / CD",
-    "Atendimento ao Cliente / SAC",
-    "Auditoria / Conformidade",
-    "Backoffice / Suporte",
-    "Caixa Interno / Fundo Fixo",
-    "Capex / Investimentos",
-    "Comercial",
-    "Compras / Suprimentos",
-    "Consultivo Empresarial",
-    "Consultoria Estratégica",
-    "Contabilidade",
-    "Contencioso Trabalhista",
-    "Controle de Estoque / Inventário",
-    "Departamento Pessoal",
-    "Desenvolvimento de Produto",
-    "Desenvolvimento de Sistemas",
-    "Engenharia de Processos",
-    "Equipamentos Logísticos",
-    "Filiais / Regionais",
-    "Financeiro",
-    "Fiscal / Tributário",
-    "Frota",
-    "Funcionários em Viagem",
-    "Gerenciamento de Crises",
-    "Gestão Ambiental",
-    "Infraestrutura",
-    "Infraestrutura / Manutenção",
-    "Infraestrutura de TI",
-    "Inovação e P&D",
-    "Investimentos",
-    "Jurídico",
-    "Licenças e Softwares",
-    "Manutenção Predial",
-    "Marketing Digital",
-    "Motoristas",
-    "Novas Filiais",
-    "Obras e Projetos",
-    "Obras e Reformas",
-    "Oficina Interna",
-    "Operacional",
-    "Parcerias Estratégicas / Franquias",
-    "Planejamento Operacional",
-    "Produção",
-    "Projetos Estratégicos",
-    "Projetos e Expansão",
-    "Provisões Jurídicas",
-    "Qualidade / Compliance Operacional",
-    "RH",
-    "Recrutamento e Seleção",
-    "Reembolsos e Adiantamentos",
-    "Relacionamento com Cliente",
-    "Saúde e Segurança do Trabalho",
-    "Sede / Escritório Central",
-    "Segurança Logística",
-    "Suporte Técnico",
-    "TI",
-    "Tecnologia",
-    "Tesouraria",
-    "Transferência / Roteirização",
-    "Transportadoras Parceiras",
-    "Treinamento e Desenvolvimento",
-    "Vendas Diretas",
-    "Viagens Corporativas",
-  ];
-
-  const documents = [
-    "Boleto",
-    "Nota Fiscal",
-    "Contrato",
-    "Ordem de Serviço",
-    "Fatura",
-    "Lorem",
-    "Lorem",
-    "Lorem",
-  ];
-
   const installments = [
-    "2 Pagamentos",
-    "3 Pagamentos",
-    "4 Pagamentos",
-    "5 Pagamentos",
-    "6 Pagamentos",
-    "7 Pagamentos",
-    "8 Pagamentos",
-    "9 Pagamentos",
-    "10 Pagamentos",
-    "11 Pagamentos",
-    "12 Pagamentos",
-    "13 Pagamentos",
-    "14 Pagamentos",
-    "15 Pagamentos",
-    "16 Pagamentos",
-    "17 Pagamentos",
-    "18 Pagamentos",
-    "19 Pagamentos",
-    "20 Pagamentos",
-    "21 Pagamentos",
-    "22 Pagamentos",
-    "23 Pagamentos",
-    "24 Pagamentos",
+    "12",
+    "24",
+    "36",
+    "48",
+    "60",
+    "72",
+    "84",
+    "96",
+    "108",
+    "120",
   ];
 
-  const paymentTerms = LaunchTypes;
-
-  const [filteredCostCenters, setFilteredCostCenters] = useState("");
-  const [filteredDocuments, setFilteredDocuments] = useState("");
-  const [filteredLaunchTypes, setFilteredLaunchTypes] = useState("");
-  const [selectedCostCenters, setSelectedCostCenters] = useState<
-    { name: string; value: string; locked?: boolean }[]
-  >([]);
-  const [isDocumentTypeDropdownOpen, setIsDocumentTypeDropdownOpen] =
-    useState(false);
-  const [isLaunchTypeDropdownOpen, setIsLaunchTypeDropdownOpen] =
-    useState(false);
-  const [filterInstallments, setFilterInstallments] = useState("");
-  const [otherInstallments, setOtherInstallments] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const { width } = useScreenWidth();
+  const { suppliers, ledgerAccounts, resultCenters } =
+    useFinancialDataContext();
 
-  useEffect(() => {
-    if (otherInstallments && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [otherInstallments]);
+  const [filteredResultCenters, setFilteredResultCenters] = useState("");
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+  const [filterInstallments, setFilterInstallments] = useState("");
+  const [isCustomInputActive, setIsCustomInputActive] = useState(false);
+  const [customValue, setCustomValue] = useState("");
 
-  const handleCostCenterToggle = (costCenterName: string) => {
-    const isSelected = selectedCostCenters.some(
-      (cc) => cc.name === costCenterName,
-    );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onlyDigits = e.target.value.replace(/\D/g, "");
+    const amountNumber = Number(onlyDigits) / 100;
 
-    let updatedSelectedCenters;
-    let updatedCostCenters;
+    setData({ ...data, value: amountNumber });
+  };
 
-    if (isSelected) {
-      // Remove the cost center
-      updatedSelectedCenters = selectedCostCenters.filter(
-        (cc) => cc.name !== costCenterName,
-      );
-      updatedCostCenters = data.costCenters.filter(
-        (cc) => cc.name !== costCenterName,
-      );
-    } else {
-      // Add the cost center
-      const newCostCenter = {
-        name: costCenterName,
-        value: "0.00",
-        locked: false,
-      };
-      updatedSelectedCenters = [...selectedCostCenters, newCostCenter];
-      updatedCostCenters = [...data.costCenters, newCostCenter];
+  const handleDateChange = (value: DateValue | null) => {
+    if (!value) {
+      setData({ ...data, referenceMonth: null });
+      return;
     }
 
-    setSelectedCostCenters(updatedSelectedCenters);
+    const date =
+      "toDate" in value ? value.toDate(getLocalTimeZone()) : (value as Date);
 
-    // Apply the same distribution logic as distributeValueEvenly
-    if (updatedCostCenters.length > 0) {
-      const lockedCenters = updatedCostCenters.filter(
-        (center) => center.locked,
-      );
-      const unlockedCenters = updatedCostCenters.filter(
-        (center) => !center.locked,
-      );
-
-      const lockedTotal = lockedCenters.reduce(
-        (sum, center) => sum + (parseFloat(center.value) || 0),
-        0,
-      );
-
-      const remainingValue = data.totalValue - lockedTotal;
-
-      if (unlockedCenters.length > 0 && remainingValue >= 0) {
-        // Convert to cents to avoid floating point issues
-        const remainingCents = Math.round(remainingValue * 100);
-        const baseValueCents = Math.floor(
-          remainingCents / unlockedCenters.length,
-        );
-        const remainder = remainingCents % unlockedCenters.length;
-
-        const finalUpdatedCostCenters = updatedCostCenters.map(
-          (center, index) => {
-            if (center.locked) {
-              return center;
-            }
-
-            // Find the position of this center in the unlocked centers array
-            const unlockedIndex = unlockedCenters.findIndex(
-              (uc) => updatedCostCenters.findIndex((dc) => dc === uc) === index,
-            );
-
-            // Distribute remainder to first N centers (where N = remainder)
-            const extraCent = unlockedIndex < remainder ? 1 : 0;
-            const finalValueCents = baseValueCents + extraCent;
-            const finalValue = (finalValueCents / 100).toFixed(2);
-
-            return {
-              ...center,
-              value: finalValue,
-            };
-          },
-        );
-
-        setData({ ...data, costCenters: finalUpdatedCostCenters });
-      } else {
-        setData({ ...data, costCenters: updatedCostCenters });
-      }
-    } else {
-      setData({ ...data, costCenters: [] });
-    }
+    const monthNumber = moment(date).month();
+    setData({ ...data, referenceMonth: monthNumber });
   };
 
   return (
     <>
       <div className="flex-1">
-        <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
+        <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
           <label className="col-span-7 flex flex-col gap-1">
-            <span className="text-zinc-600">Fornecedor</span>
+            <span className="text-zinc-600">
+              {data.type === "EXPENSE"
+                ? "Fornecedor"
+                : data.type === "FEE"
+                  ? "Impostos"
+                  : "Parceiro"}
+            </span>
             <button
               onClick={() => setIsOpenSupplierModal(true)}
               className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
@@ -266,10 +116,11 @@ export function Step1({
               />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1 2xl:text-lg">
-                  {data.supplier.name || "Selecione"}
+                  {suppliers.find((s) => s.id === data.supplierId)?.name ||
+                    "Selecione"}
                 </span>
                 <span className="text-zinc-400">
-                  {data.supplier.cnpj || ""}
+                  {suppliers.find((s) => s.id === data.supplierId)?.cnpj || ""}
                 </span>
               </div>
               <Edit
@@ -280,184 +131,172 @@ export function Step1({
           </label>
 
           <label className="col-span-5 flex flex-col gap-1">
-            <span className="text-zinc-600">Documento Gerador</span>
-            <DropdownMenu
-              open={isDocumentTypeDropdownOpen}
-              onOpenChange={setIsDocumentTypeDropdownOpen}
+            <span className="text-zinc-600">
+              {data.type === "EXPENSE"
+                ? "Tipo de Lançamento"
+                : data.type === "FEE"
+                  ? "Imposto - Código"
+                  : "Tipo de Lançamento"}
+            </span>
+            <button
+              onClick={() => setIsOpenLaunchTypeModal(true)}
+              className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
             >
-              <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
-                  <DollarSign
-                    size={16}
-                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              <DollarSign
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
+              <div className="flex h-full flex-1 items-center">
+                <span className="flex-1 2xl:text-lg">
+                  {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
+                    ?.name || "Selecione"}
+                </span>
+              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
+            </button>
+          </label>
+
+          <div className="col-span-12 grid grid-cols-11 gap-2 xl:gap-4">
+            <label className="col-span-5 flex flex-col gap-1">
+              <span className="text-zinc-600">Valor</span>
+              <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                <DollarSign
+                  size={16}
+                  className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                />
+                <div className="flex h-full w-full flex-1 items-center justify-center text-center">
+                  <input
+                    value={data.value.toLocaleString("pt-br", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                    onChange={handleChange}
+                    placeholder="R$ 0,00"
+                    className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                   />
-                  <div className="flex h-full flex-1 items-center">
-                    <span className="flex-1 2xl:text-lg">
-                      {data.documentType || "Selecione"}
-                    </span>
+                </div>
+              </div>
+            </label>
+
+            <label className="col-span-3 flex flex-col gap-1">
+              <span className="text-zinc-600">Mês Referência</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                    <CalendarIcon
+                      size={16}
+                      className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    />
+                    <div className="flex-1 text-zinc-700 2xl:text-lg">
+                      {data.referenceMonth !== null
+                        ? moment().month(data.referenceMonth).format("MMM")
+                        : moment().format("MMMM")}
+                    </div>
+                    <Edit
+                      size={16}
+                      className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                    />
+                    <SimpleDatePicker
+                      value={
+                        data.referenceMonth !== null
+                          ? moment().month(data.referenceMonth).toDate()
+                          : null
+                      }
+                      view="month"
+                      invisible
+                      onChange={handleDateChange}
+                    />
                   </div>
-                  <div className="flex h-full w-6 justify-end">
+                </DropdownMenuTrigger>
+              </DropdownMenu>
+            </label>
+
+            <label className="col-span-3 flex flex-col gap-1">
+              <span className="text-zinc-600">Vencimento</span>
+              <DropdownMenu
+                open={isDateDropdownOpen}
+                onOpenChange={setIsDateDropdownOpen}
+              >
+                <DropdownMenuTrigger asChild>
+                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                    <CalendarIcon
+                      size={16}
+                      className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+                    />
+                    <div className="flex-1 text-zinc-700 2xl:text-lg">
+                      {data.dueDate
+                        ? moment(data.dueDate).format("DD/MM/YYYY")
+                        : moment().format("DD/MM/YYYY")}
+                    </div>
                     <Edit
                       size={16}
                       className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
                     />
                   </div>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side={width > 768 ? "bottom" : "top"}
-                sideOffset={0}
-                align={width > 768 ? "start" : "end"}
-                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200"
-              >
-                <X
-                  className="text-primary ml-auto cursor-pointer"
-                  onClick={() => setIsDocumentTypeDropdownOpen(false)}
-                />
-                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
-                  <input
-                    value={filteredDocuments}
-                    onChange={(e) => setFilteredDocuments(e.target.value)}
-                    placeholder="Pesquisar tipos de Documentos"
-                    className="flex-1 focus:outline-none"
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side={width > 768 ? "right" : "bottom"}
+                  sideOffset={0}
+                  align={width > 768 ? "start" : "end"}
+                  className="z-[999] w-72 border-zinc-200"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={moment(data.dueDate).toDate()}
+                    onSelect={(date) => {
+                      if (date) {
+                        setData({ ...data, dueDate: moment(date).format() });
+                        setIsDateDropdownOpen(false);
+                      }
+                    }}
                   />
-                  <Search size={14} />
-                </div>
-                {documents.filter((item) =>
-                  item.toLowerCase().includes(filteredDocuments.toLowerCase()),
-                ).length === 0 && (
-                  <div className="p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
-                {documents
-                  .filter((item) =>
-                    item
-                      .toLowerCase()
-                      .includes(filteredDocuments.toLowerCase()),
-                  )
-                  .map((item, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={() => setData({ ...data, documentType: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {/* Check icon */}
-                        {data.documentType === item && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </label>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </label>
+          </div>
 
           <label className="col-span-5 flex flex-col gap-1">
-            <span className="text-zinc-600">Tipo de Lançamento</span>
-            <DropdownMenu
-              open={isLaunchTypeDropdownOpen}
-              onOpenChange={setIsLaunchTypeDropdownOpen}
-            >
-              <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
-                  <FileText
-                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
-                    size={16}
-                  />
-                  <span className="flex-1 text-zinc-700 2xl:text-lg">
-                    {data.paymentTerms ? (
-                      <span className="line-clamp-2 text-sm">
-                        {data.paymentTerms}
-                      </span>
-                    ) : (
-                      "Selecione"
-                    )}
-                  </span>
-                  <Edit
-                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
-                    size={16}
-                  />
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side={width > 768 ? "right" : "top"}
-                align="start"
-                sideOffset={0}
-                className="z-[999] h-80 w-72 overflow-y-auto border-zinc-200"
-              >
-                <X
-                  className="text-primary ml-auto cursor-pointer"
-                  onClick={() => setIsLaunchTypeDropdownOpen(false)}
-                />
-                <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
-                  <input
-                    value={filteredLaunchTypes}
-                    onChange={(e) => setFilteredLaunchTypes(e.target.value)}
-                    placeholder="Pesquisar tipos de Documentos"
-                    className="flex-1 focus:outline-none"
-                  />
-                  <Search size={14} />
-                </div>
-                {paymentTerms.filter((item) =>
-                  item
-                    .toLowerCase()
-                    .includes(filteredLaunchTypes.toLowerCase()),
-                ).length === 0 && (
-                  <div className="p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
-                {paymentTerms
-                  .filter((item) =>
-                    item
-                      .toLowerCase()
-                      .includes(filteredLaunchTypes.toLowerCase()),
-                  )
-                  .map((item, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={() => setData({ ...data, paymentTerms: item })}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {item}
-                        {/* Check icon */}
-                        {data.paymentTerms === item && (
-                          <div className="border-primary bg-primary h-4 w-4 min-w-4 rounded-md border" />
-                        )}
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <span className="text-zinc-600">Condições de Pagamento</span>
+            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+              <FileText
+                size={16}
+                className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
+              />
+              <span className="flex-1 text-zinc-700 2xl:text-lg">
+                Recorrente
+              </span>
+            </div>
           </label>
 
           <label className="col-span-7 flex flex-col gap-1">
-            <span className="text-zinc-600">Detalhes do Pagamento</span>
+            <span className="text-zinc-600">Quantidade de Pagamentos</span>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full focus:outline-none">
                 <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
                   <DollarSign
-                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                     size={16}
+                    className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                   />
                   <span className="flex-1 text-zinc-700 2xl:text-lg">
-                    {data.paymentDetails || "Selecione"}
+                    {data.installmentCount !== 0
+                      ? data.installmentCount
+                      : "Selecione"}
+                    {data.installmentCount !== 0 && " Pagamento(s)"}
                   </span>
                   <Edit
-                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
                     size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
                   />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side={width > 768 ? "right" : "top"}
-                align={width > 768 ? "start" : "end"}
                 sideOffset={0}
-                className="z-[999] h-80 w-72 overflow-y-auto border-zinc-200"
+                align="end"
+                className="z-[999] h-80 w-72 overflow-y-scroll border-zinc-200 pt-4"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
@@ -468,83 +307,129 @@ export function Step1({
                   />
                   <Search size={14} />
                 </div>
-                {installments
-                  .filter((ins) =>
-                    ins
-                      .toLowerCase()
-                      .includes(filterInstallments.toLowerCase()),
-                  )
-                  .map((ins) => (
-                    <DropdownMenuItem
-                      key={ins}
-                      onClick={(e) => {
-                        if (ins !== "Outra - Digite aqui") {
-                          setOtherInstallments(false);
-                          setData({ ...data, paymentDetails: ins });
-                        } else {
-                          e.preventDefault();
+
+                {data.paymentMode === "INSTALLMENT" ? (
+                  <>
+                    {installments
+                      .filter((ins) =>
+                        ins
+                          .toLowerCase()
+                          .includes(filterInstallments.toLowerCase()),
+                      )
+                      .map((ins) => (
+                        <DropdownMenuItem
+                          key={ins}
+                          onClick={() => {
+                            setData({ ...data, installmentCount: Number(ins) });
+                            setIsCustomInputActive(false);
+                          }}
+                          className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                        >
+                          <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                            {ins}
+                            {data.installmentCount === Number(ins) && (
+                              <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                            )}
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+
+                    {/* Custom input option */}
+                    {!isCustomInputActive ? (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          setIsCustomInputActive(true);
+                          setCustomValue("");
                           e.stopPropagation();
-                          setOtherInstallments(true);
-                        }
-                      }}
-                      className="hover:bg-primary/20 cursor-pointer transition duration-300"
-                    >
-                      <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                        {ins}
-                        {data.paymentDetails === ins && (
-                          <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                        )}
+                          e.preventDefault();
+                        }}
+                        className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                      >
+                        <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                          Outra - Digite aqui
+                        </div>
+                      </DropdownMenuItem>
+                    ) : (
+                      <div className="px-2 py-1">
+                        <div className="flex w-full flex-row items-center gap-2 border-b border-b-zinc-400 p-1 py-2">
+                          <input
+                            type="number"
+                            value={customValue}
+                            onChange={(e) => setCustomValue(e.target.value)}
+                            placeholder="Digite o número de parcelas"
+                            className="flex-1 bg-transparent focus:outline-none"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              e.stopPropagation(); // Prevent dropdown from handling this
+                              if (e.key === "Enter" && customValue.trim()) {
+                                setData({
+                                  ...data,
+                                  installmentCount: Number(customValue),
+                                });
+                                setIsCustomInputActive(false);
+                                setCustomValue("");
+                              } else if (e.key === "Escape") {
+                                setIsCustomInputActive(false);
+                                setCustomValue("");
+                              }
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              if (customValue.trim()) {
+                                setData({
+                                  ...data,
+                                  installmentCount: Number(customValue),
+                                });
+                              }
+                              setIsCustomInputActive(false);
+                              setCustomValue("");
+                            }}
+                            className="text-primary hover:text-primary/80 text-sm"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setIsCustomInputActive(false);
+                              setCustomValue("");
+                            }}
+                            className="text-sm text-zinc-500 hover:text-zinc-700"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
-                    </DropdownMenuItem>
-                  ))}
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setOtherInstallments(true);
-                  }}
-                  className="hover:bg-primary/20 relative h-10 cursor-pointer px-2 py-2 transition duration-300"
-                >
-                  {otherInstallments ? (
-                    <input
-                      ref={inputRef}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                      }}
-                      onBlur={(e) => {
-                        // Prevent losing focus unless clicking outside dropdown
-                        if (
-                          e.relatedTarget &&
-                          !e.relatedTarget.closest('[role="menu"]')
-                        ) {
-                          // Only blur if clicking completely outside
-                        } else {
-                          e.target.focus();
-                        }
-                      }}
-                      onChange={(e) =>
-                        setData({ ...data, paymentDetails: e.target.value })
-                      }
-                      value={data.paymentDetails}
-                      className="absolute top-0 h-full w-full p-1 py-2 focus:outline-none"
-                    />
-                  ) : (
+                    )}
+                  </>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => setData({ ...data, installmentCount: 1 })}
+                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                  >
                     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                      Outra - Digite aqui
-                      {otherInstallments && (
-                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
-                      )}
+                      Pagamento Único
+                      <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
                     </div>
-                  )}
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                )}
+
                 {installments.filter((ins) =>
                   ins.toLowerCase().includes(filterInstallments.toLowerCase()),
-                ).length === 0 && (
-                  <div className="p-2 text-center text-sm text-zinc-600">
-                    Nenhum item encontrado
-                  </div>
-                )}
+                ).length === 0 &&
+                  !isCustomInputActive && (
+                    <div className="p-2 text-center text-sm text-zinc-600">
+                      Nenhum item encontrado
+                    </div>
+                  )}
               </DropdownMenuContent>
             </DropdownMenu>
           </label>
@@ -560,43 +445,41 @@ export function Step1({
                   />
                   <div className="flex h-full flex-1 items-center">
                     <span className="ml-4 flex flex-1 flex-col text-left">
-                      {selectedCostCenters.length > 0
-                        ? `${selectedCostCenters.length} selecionado${selectedCostCenters.length > 1 ? "s" : ""}`
+                      {selectedResultCenters.length > 0
+                        ? `${selectedResultCenters.length} selecionado${selectedResultCenters.length > 1 ? "s" : ""}`
                         : "Selecione"}
-                      {selectedCostCenters.length === 0 && (
+                      {selectedResultCenters.length === 0 && (
                         <span className="text-sm text-zinc-500">
                           Selecionar
                         </span>
                       )}
-                      {selectedCostCenters.length > 0 && (
+                      {selectedResultCenters.length > 0 && (
                         <span className="truncate text-sm text-zinc-500">
-                          {selectedCostCenters
+                          {selectedResultCenters
                             .slice(0, 2)
                             .map((cc) => cc.name)
                             .join(", ")}
-                          {selectedCostCenters.length > 2 &&
-                            ` +${selectedCostCenters.length - 2}`}
+                          {selectedResultCenters.length > 2 &&
+                            ` +${selectedResultCenters.length - 2}`}
                         </span>
                       )}
                     </span>
                   </div>
-                  <div className="flex h-full w-6 justify-end">
-                    <Edit
-                      size={16}
-                      className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
-                    />
-                  </div>
+                  <Edit
+                    size={16}
+                    className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side={width > 768 ? "right" : "top"}
                 align={width > 768 ? "end" : "start"}
-                className="z-[999] max-h-[500px] overflow-y-auto rounded-lg border-zinc-200"
+                className="z-[999] h-[500px] overflow-y-auto rounded-lg border-zinc-200 pt-4"
               >
                 <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
                   <input
-                    value={filteredCostCenters}
-                    onChange={(e) => setFilteredCostCenters(e.target.value)}
+                    value={filteredResultCenters}
+                    onChange={(e) => setFilteredResultCenters(e.target.value)}
                     placeholder="Pesquisar Centro de Custos"
                     className="flex-1 focus:outline-none"
                   />
@@ -604,12 +487,12 @@ export function Step1({
                 </div>
 
                 {/* Add clear all button */}
-                {selectedCostCenters.length > 0 && (
+                {selectedResultCenters.length > 0 && (
                   <div className="px-8 pb-2">
                     <button
                       onClick={() => {
-                        setSelectedCostCenters([]);
-                        setData({ ...data, costCenters: [] });
+                        setSelectedResultCenters([]);
+                        setData({ ...data, resultCenters: [] });
                       }}
                       className="text-sm text-red-500 hover:text-red-700"
                     >
@@ -619,26 +502,26 @@ export function Step1({
                 )}
 
                 <div className="flex flex-col">
-                  {costCenters
+                  {resultCenters
                     .filter((item) =>
-                      item
+                      item.name
                         .toLowerCase()
-                        .includes(filteredCostCenters.toLowerCase()),
+                        .includes(filteredResultCenters.toLowerCase()),
                     )
                     .map((item) => (
                       <DropdownMenuItem
-                        key={item}
+                        key={item.id}
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          handleCostCenterToggle(item);
+                          handleResultCenterToggle(item.id);
                         }}
                         className="hover:bg-primary/20 cursor-pointer transition duration-300"
                       >
                         <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
-                          {item}
-                          {selectedCostCenters.some(
-                            (cc) => cc.name === item,
+                          {item.name}
+                          {selectedResultCenters.some(
+                            (cc) => cc.name === item.name,
                           ) && (
                             <div className="border-primary bg-primary flex h-4 w-4 items-center justify-center rounded-md border">
                               <Check size={12} className="text-white" />
@@ -664,23 +547,23 @@ export function Step1({
               />
               <div className="ml-4 flex flex-1 flex-col overflow-hidden text-left">
                 <span className="flex-1">
-                  {data.accountingAccount.code || "-"}
+                  {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
+                    ?.code || "-"}
                 </span>
-                <span className="text-zinc-400">
-                  {data.accountingAccount.description || "Selecione"}
+                <span className="truncate text-zinc-400">
+                  {ledgerAccounts.find((l) => l.id === data.ledgerAccountId)
+                    ?.name || "Selecione"}
                 </span>
               </div>
-              <div className="flex h-full w-6 justify-end">
-                <Edit
-                  size={16}
-                  className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
-                />
-              </div>
+              <Edit
+                size={16}
+                className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
+              />
             </div>
           </label>
         </div>
-        {data.costCenters.length > 0 && (
-          <CostCentersList data={data} setData={setData} />
+        {data.resultCenters.length > 0 && (
+          <ResultCentersList data={data} setData={setData} />
         )}
       </div>
     </>
