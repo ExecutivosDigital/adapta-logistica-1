@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ClientGroupProps,
   FiscalGroupProps,
   LedgerAccountsProps,
   ResultCenterProps,
@@ -34,6 +35,8 @@ interface FinancialDataContextProps {
   supplierTypes: SupplierTypeProps[];
   tributaryRegimes: TributaryRegimeProps[];
   fiscalGroups: FiscalGroupProps[];
+  clientGroups: ClientGroupProps[];
+  GetClientGroups: () => Promise<void>;
 }
 
 const FinancialDataContext = createContext<
@@ -67,6 +70,7 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
     TributaryRegimeProps[]
   >([]);
   const [fiscalGroups, setFiscalGroups] = useState<FiscalGroupProps[]>([]);
+  const [clientGroups, setClientGroups] = useState<ClientGroupProps[]>([]);
 
   async function GetSuppliers() {
     const suppliers = await GetAPI(
@@ -137,6 +141,16 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  async function GetClientGroups() {
+    const clientGroups = await GetAPI(
+      `/client-group?companyId=${selectedBranch?.companyId}&page=1`,
+      true,
+    );
+    if (clientGroups.status === 200) {
+      setClientGroups(clientGroups.body.clientGroups);
+    }
+  }
+
   useEffect(() => {
     if (!selectedBranch) return;
     GetSuppliers();
@@ -146,6 +160,7 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
     GetFiscalGroups();
     GetSupplierTypes();
     GetTributaryRegimes();
+    GetClientGroups();
   }, [selectedBranch]);
 
   useEffect(() => {
@@ -167,6 +182,8 @@ export const FinancialDataContextProvider = ({ children }: ProviderProps) => {
         supplierTypes,
         tributaryRegimes,
         fiscalGroups,
+        clientGroups,
+        GetClientGroups,
       }}
     >
       {children}

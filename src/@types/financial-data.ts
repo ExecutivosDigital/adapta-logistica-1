@@ -64,3 +64,8 @@ export interface FiscalGroupProps {
   id: string;
   name: string;
 }
+
+export interface ClientGroupProps {
+  id: string;
+  name: string;
+}

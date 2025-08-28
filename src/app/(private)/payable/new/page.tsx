@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AccountingModal } from "./components/accounting-modal";
-import CreateSupplierSheet from "./components/create-client-sheet";
+import CreateSupplierSheet from "./components/create-supplier-sheet";
 import LaunchTypeModal from "./components/launch-type-modal";
 import { Step1 } from "./components/step1";
 import { Step3 } from "./components/step3";
