@@ -9,6 +9,7 @@ import {
 import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { useScreenWidth } from "@/lib/useScreenWidth";
+import { cn } from "@/utils/cn";
 import { getLocalTimeZone } from "@internationalized/date";
 import {
   Building2,
@@ -41,6 +42,7 @@ interface Props {
   handleResultCenterToggle: (resultCenterName: string) => void;
   paymentType: string;
   setPaymentType: React.Dispatch<React.SetStateAction<string>>;
+  isCreating: boolean;
 }
 
 export function Step1({
@@ -54,6 +56,7 @@ export function Step1({
   handleResultCenterToggle,
   paymentType,
   setPaymentType,
+  isCreating,
 }: Props) {
   const installments = [
     "12",
@@ -111,12 +114,14 @@ export function Step1({
               </div>
               <button
                 onClick={() => setPaymentType("FULL")}
+                disabled={isCreating}
                 className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${paymentType === "FULL" ? "font-semibold text-white" : "text-white/80"}`}
               >
                 VALOR INTEIRO
               </button>
               <button
                 onClick={() => setPaymentType("DIVIDED")}
+                disabled={isCreating}
                 className={`relative z-10 w-1/2 px-4 py-1 text-sm transition-all duration-300 ${paymentType === "DIVIDED" ? "font-semibold text-white" : "text-white/80"}`}
               >
                 VALOR DA PARCELA
@@ -136,7 +141,12 @@ export function Step1({
             </span>
             <button
               onClick={() => setIsOpenSupplierModal(true)}
-              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
+              disabled={isCreating}
+              className={cn(
+                "relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                data.supplierId &&
+                  "bg-primary/20 border-primary transition duration-200",
+              )}
             >
               <MapPin
                 size={16}
@@ -168,7 +178,12 @@ export function Step1({
             </span>
             <button
               onClick={() => setIsOpenLaunchTypeModal(true)}
-              className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
+              disabled={isCreating}
+              className={cn(
+                "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                data.ledgerAccountId &&
+                  "bg-primary/20 border-primary transition duration-200",
+              )}
             >
               <DollarSign
                 size={16}
@@ -192,7 +207,13 @@ export function Step1({
               <span className="text-zinc-600">
                 Valor {paymentType === "FULL" ? " Total" : " da Parcela"}
               </span>
-              <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+              <div
+                className={cn(
+                  "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                  data.value &&
+                    "bg-primary/20 border-primary transition duration-200",
+                )}
+              >
                 <DollarSign
                   size={16}
                   className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -203,6 +224,7 @@ export function Step1({
                       style: "currency",
                       currency: "BRL",
                     })}
+                    disabled={isCreating}
                     onChange={handleChange}
                     placeholder="R$ 0,00"
                     className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
@@ -214,8 +236,14 @@ export function Step1({
             <label className="col-span-3 flex flex-col gap-1">
               <span className="text-zinc-600">Mês Referência</span>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                <DropdownMenuTrigger asChild disabled={isCreating}>
+                  <div
+                    className={cn(
+                      "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2",
+                      data.referenceMonth !== null &&
+                        "bg-primary/20 border-primary transition duration-200",
+                    )}
+                  >
                     <CalendarIcon
                       size={16}
                       className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -223,7 +251,7 @@ export function Step1({
                     <div className="flex-1 text-zinc-700 2xl:text-lg">
                       {data.referenceMonth !== null
                         ? moment().month(data.referenceMonth).format("MMM")
-                        : moment().format("MMMM")}
+                        : "Selecione"}
                     </div>
                     <Edit
                       size={16}
@@ -250,8 +278,14 @@ export function Step1({
                 open={isDateDropdownOpen}
                 onOpenChange={setIsDateDropdownOpen}
               >
-                <DropdownMenuTrigger asChild>
-                  <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+                <DropdownMenuTrigger asChild disabled={isCreating}>
+                  <div
+                    className={cn(
+                      "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2",
+                      data.dueDate &&
+                        "bg-primary/20 border-primary transition duration-200",
+                    )}
+                  >
                     <CalendarIcon
                       size={16}
                       className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -259,7 +293,7 @@ export function Step1({
                     <div className="flex-1 text-zinc-700 2xl:text-lg">
                       {data.dueDate
                         ? moment(data.dueDate).format("DD/MM/YYYY")
-                        : moment().format("DD/MM/YYYY")}
+                        : "Selecione"}
                     </div>
                     <Edit
                       size={16}
@@ -290,7 +324,12 @@ export function Step1({
 
           <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">Condições de Pagamento</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+            <div
+              className={cn(
+                "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2",
+                "bg-primary/20 border-primary",
+              )}
+            >
               <FileText
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -304,8 +343,17 @@ export function Step1({
           <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">Quantidade de Pagamentos</span>
             <DropdownMenu>
-              <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+              <DropdownMenuTrigger
+                className="w-full focus:outline-none"
+                disabled={isCreating}
+              >
+                <div
+                  className={cn(
+                    "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                    data.installmentCount !== 0 &&
+                      "bg-primary/20 border-primary transition duration-200",
+                  )}
+                >
                   <DollarSign
                     size={16}
                     className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -467,8 +515,17 @@ export function Step1({
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Centro de Custos</span>
             <DropdownMenu>
-              <DropdownMenuTrigger className="w-full focus:outline-none">
-                <div className="relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+              <DropdownMenuTrigger
+                className="w-full focus:outline-none"
+                disabled={isCreating}
+              >
+                <div
+                  className={cn(
+                    "relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                    data.resultCenters.length !== 0 &&
+                      "bg-primary/20 border-primary transition duration-200",
+                  )}
+                >
                   <Building2
                     size={16}
                     className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -567,9 +624,14 @@ export function Step1({
 
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Conta Contábil</span>
-            <div
+            <button
               onClick={() => setIsOpenContabilidadeModal(true)}
-              className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2"
+              disabled={isCreating}
+              className={cn(
+                "relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                data.ledgerAccountId &&
+                  "bg-primary/20 border-primary transition duration-200",
+              )}
             >
               <MapPin
                 size={16}
@@ -589,7 +651,7 @@ export function Step1({
                 size={16}
                 className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
               />
-            </div>
+            </button>
           </label>
         </div>
         {data.resultCenters.length > 0 && (

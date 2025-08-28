@@ -5,20 +5,17 @@ import { cn } from "@/utils/cn";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import DollarIcon from "../../../../../../../public/icons/dollar";
-import { DataType } from "../page";
 
 interface SupplierModalProps {
   isOpenSupplierModal: boolean;
   setIsOpenSupplierModal: React.Dispatch<React.SetStateAction<boolean>>;
-  data: DataType;
-  setData: React.Dispatch<React.SetStateAction<DataType>>;
+  setSelectedSupplierId: (value: string) => void;
 }
 
 export function SupplierModal({
   isOpenSupplierModal,
   setIsOpenSupplierModal,
-  data,
-  setData,
+  setSelectedSupplierId,
 }: SupplierModalProps) {
   const { suppliers } = useFinancialDataContext();
   const [currentPage, setCurrentPage] = useState(1);
@@ -169,10 +166,7 @@ export function SupplierModal({
               </button>
               <button
                 onClick={() => {
-                  setData({
-                    ...data,
-                    supplierId: selectedSupplier?.id as string,
-                  });
+                  setSelectedSupplierId(selectedSupplier?.id || "");
                   setIsOpenSupplierModal(false);
                 }}
                 className="text-primary hover:bg-primary hover:border-primary flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 px-2 py-1 font-bold transition duration-200 hover:text-white xl:px-6 xl:py-2"

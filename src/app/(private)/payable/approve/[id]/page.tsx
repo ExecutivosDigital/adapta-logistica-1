@@ -1,4 +1,5 @@
 "use client";
+import { PayableTransactionProps } from "@/components/calendar";
 import { OrangeButton } from "@/components/OrangeButton";
 import {
   DropdownMenu,
@@ -6,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useApiContext } from "@/context/ApiContext";
 import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
@@ -14,6 +16,7 @@ import {
   ChevronLeft,
   DollarSign,
   EllipsisVertical,
+  Loader2,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -59,46 +62,74 @@ export interface DataType {
   mail: string;
 }
 
-export default function ApprovePayable() {
+export interface UserProps {
+  accessLevelId: string;
+  birthDate: string;
+  companyId: string;
+  email: string;
+  id: string;
+  isYou: boolean;
+  name: string;
+  phone: string;
+}
+
+export default function ApprovePayable({ params }: { params: { id: string } }) {
   const { handleNavigation } = useLoadingContext();
+  const { GetAPI, PutAPI } = useApiContext();
   const router = useRouter();
 
+  const [selectedPayable, setSelectedPayable] =
+    useState<PayableTransactionProps | null>(null);
   const [steps, setSteps] = useState(1);
-  const [data, setData] = useState<DataType>({
-    totalValue: 100000,
-    entryType: "DESPESAS",
-    supplier: {
-      name: "",
-      cnpj: "",
-    },
-    documentType: "",
-    amount: 0,
-    currency: "",
-    costType: "",
-    category: "",
-    costCenters: [],
-    accountingAccount: {
-      code: "",
-      description: "",
-    },
-    paymentMethod: {
-      bank: "",
-      account: "",
-    },
-    paymentForm: "",
-    documentNumber: "",
-    issueDate: "",
-    dueDate: "",
-    paymentTerms: "",
-    paymentDetails: "",
-    description: "",
-    approval: "",
-    mail: "",
-  });
+  const [isYou, setIsYou] = useState<UserProps | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  async function GetIndividualPayable(id: string) {
+    const payable = await GetAPI(`/payable-transaction/${id}`, true);
+    if (payable.status === 200) {
+      setSelectedPayable(payable.body.payableTransaction);
+      window.dispatchEvent(new CustomEvent("navigationComplete"));
+    }
+  }
+
+  async function GetUser() {
+    const user = await GetAPI("/user", true);
+    if (user.status === 200) {
+      setIsYou(user.body.users.find((user: UserProps) => user.isYou));
+    }
+  }
+
+  async function HandleUpdateTransaction(status: string) {
+    setIsUpdating(true);
+    console.log("selectedPayable", selectedPayable);
+    const update = await PutAPI(
+      `/payable-transaction/${params.id}`,
+      {
+        ...selectedPayable,
+        status,
+        approvedById: isYou?.id,
+      },
+      true,
+    );
+    if (update.status === 200) {
+      if (status === "APPROVED") {
+        toast.success("Transação aprovada com sucesso");
+      } else if (status === "REJECTED") {
+        toast.error("Transação rejeitada com sucesso");
+      }
+      handleNavigation("/calendar");
+      return setIsUpdating(false);
+    }
+    toast.error("Erro ao atualizar transação, tente novamente");
+    return setIsUpdating(false);
+  }
 
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent("navigationComplete"));
+    GetIndividualPayable(params.id);
+    GetUser();
   }, []);
+
+  if (!selectedPayable) return null;
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -121,8 +152,16 @@ export default function ApprovePayable() {
             <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
               Reportar Erro
             </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
-              Negar Lançamento
+            <DropdownMenuItem
+              onClick={() => {
+                if (confirm("Voce deseja negar o lançamento?")) {
+                  HandleUpdateTransaction("REJECTED");
+                }
+              }}
+              disabled={isUpdating}
+              className="hover:bg-primary/20 cursor-pointer transition duration-200"
+            >
+              {isUpdating ? "Negando..." : "Negar Lançamento"}
             </DropdownMenuItem>
             <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
               Lorem
@@ -164,7 +203,7 @@ export default function ApprovePayable() {
                   </div>
                   R$
                 </span>
-                {data.totalValue.toLocaleString("pt-BR", {
+                {selectedPayable.value.toLocaleString("pt-BR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -175,26 +214,32 @@ export default function ApprovePayable() {
             </div>
           </div>
           <div className="my-4 h-px bg-zinc-200/60" />
-          <Step1 data={data} setData={setData} />
+          <Step1 selectedPayable={selectedPayable} isYou={isYou} />
         </section>
         <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
           <div className="my-4 h-px bg-zinc-200/60" />
-          <Step2 data={data} />
+          <Step2
+            selectedPayable={selectedPayable}
+            setSelectedPayable={setSelectedPayable}
+          />
         </section>
       </main>
       <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
         <OrangeButton
           className="h-9 w-[132px]"
-          onClick={() => {
-            toast.success("Fatura aprovada com sucesso!");
-            setTimeout(() => {
-              handleNavigation("/calendar");
-            }, 1000);
-          }}
+          onClick={() => HandleUpdateTransaction("APPROVED")}
           icon={<ChevronDown size={16} className="-rotate-90" />}
           iconPosition="right"
+          disabled={isUpdating}
         >
-          Aprovar
+          {isUpdating ? (
+            <>
+              <Loader2 className="animate-spin" />
+              <span>Aprovando...</span>
+            </>
+          ) : (
+            "Aprovar"
+          )}
         </OrangeButton>
       </footer>
     </div>

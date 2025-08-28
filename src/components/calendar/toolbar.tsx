@@ -9,16 +9,10 @@ const viewNames: { [key: string]: string } = {
 
 interface CustomToolbarProps {
   label: string;
-  localizer: {
-    messages: {
-      today: string;
-    };
-  };
   onNavigate: (action: string) => void;
   onView: (view: string) => void;
   view: string;
   views: string[];
-  addNewEvent: () => void;
 }
 
 const CustomToolbar = ({

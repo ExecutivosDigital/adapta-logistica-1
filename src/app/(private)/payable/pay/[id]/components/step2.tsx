@@ -1,3 +1,5 @@
+import { PayableTransactionProps } from "@/components/calendar";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import { CreditCard, DollarSign, Plus } from "lucide-react";
 import moment from "moment";
@@ -10,7 +12,12 @@ interface TechField {
   date: string;
 }
 
-export function Step2() {
+interface Props {
+  selectedPayable: PayableTransactionProps;
+}
+
+export function Step2({ selectedPayable }: Props) {
+  const { bankAccounts } = useFinancialDataContext();
   const [docNumbers] = useState<string[]>(["123", "456", "789"]);
   const [invoices] = useState<TechField[]>([
     { id: "", number: 0, type: "", date: "" },
@@ -51,7 +58,11 @@ export function Step2() {
             <div className="flex h-full w-full flex-1 items-center text-center">
               <span className="font-semi-bold w-full flex-1 text-xl">
                 <input
-                  value="Pagamento Via Tal"
+                  value={
+                    bankAccounts.find(
+                      (b) => b.id === selectedPayable.bankAccountId,
+                    )?.name
+                  }
                   className="w-full flex-1 pl-4 text-center text-lg text-zinc-700 outline-none"
                   readOnly
                 />

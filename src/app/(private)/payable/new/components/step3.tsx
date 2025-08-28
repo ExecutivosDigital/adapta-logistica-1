@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useScreenWidth } from "@/lib/useScreenWidth";
+import { cn } from "@/utils/cn";
 import { DollarSign, Edit, Search } from "lucide-react";
 import { useState } from "react";
 import { DataType } from "../page";
@@ -14,9 +15,10 @@ import { TransactionsList } from "./installments-list";
 interface Props {
   data: DataType;
   setData: (value: DataType) => void;
+  isCreating: boolean;
 }
 
-export function Step3({ data, setData }: Props) {
+export function Step3({ data, setData, isCreating }: Props) {
   const paymentTypes = [
     "PIX",
     "Boleto",
@@ -59,7 +61,13 @@ export function Step3({ data, setData }: Props) {
       <div className="grid grid-cols-12 gap-2 text-sm text-zinc-700 xl:gap-4">
         <label className="col-span-7 flex flex-col gap-1">
           <span className="text-zinc-600">Valor no Documento</span>
-          <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+          <div
+            className={cn(
+              "relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+              data.value !== 0 &&
+                "bg-primary/20 border-primary transition duration-200",
+            )}
+          >
             <DollarSign
               size={16}
               className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -72,6 +80,7 @@ export function Step3({ data, setData }: Props) {
                     currency: "BRL",
                   })}
                   onChange={handleChange}
+                  disabled={isCreating}
                   placeholder="R$ 0,00"
                   className="flex-1 items-center bg-transparent text-center text-zinc-700 outline-none 2xl:text-lg"
                 />
@@ -83,8 +92,17 @@ export function Step3({ data, setData }: Props) {
         <label className="col-span-5 flex flex-col gap-1">
           <span className="text-zinc-600">Tipo de Lançamento</span>
           <DropdownMenu>
-            <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <DropdownMenuTrigger
+              className="w-full focus:outline-none"
+              disabled={isCreating}
+            >
+              <div
+                className={cn(
+                  "flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                  data.paymentType &&
+                    "bg-primary/20 border-primary transition duration-200",
+                )}
+              >
                 <div className="flex h-full w-6">
                   <DollarSign className="text-primary" size={16} />
                 </div>
@@ -143,7 +161,11 @@ export function Step3({ data, setData }: Props) {
       </div>
       <div>
         <h3 className="mb-4 text-base font-semibold">Detalhes do Pagamento</h3>
-        <TransactionsList data={data} setData={setData} />
+        <TransactionsList
+          data={data}
+          setData={setData}
+          isCreating={isCreating}
+        />
       </div>
     </div>
   );

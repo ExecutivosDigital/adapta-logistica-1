@@ -1,3 +1,4 @@
+import { PayableTransactionProps } from "@/components/calendar";
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
@@ -5,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { useScreenWidth } from "@/lib/useScreenWidth";
 import { cn } from "@/utils/cn";
 import {
@@ -12,58 +14,59 @@ import {
   CreditCard,
   DollarSign,
   Edit,
+  Search,
   Upload,
 } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
-import { DataType } from "../page";
-
-interface TechField {
-  id: string;
-  number: number;
-  type: string;
-  date: string;
-}
 
 interface Props {
-  data: DataType;
+  selectedPayable: PayableTransactionProps;
+  setSelectedPayable: React.Dispatch<
+    React.SetStateAction<PayableTransactionProps | null>
+  >;
 }
 
-export function Step2({ data }: Props) {
+export function Step2({ selectedPayable, setSelectedPayable }: Props) {
   const { width } = useScreenWidth();
-  const [selectedPaymentVia, setSelectedPaymentVia] = useState("");
-  const [selectedPaymentForm, setSelectedPaymentForm] = useState("");
-  const [docNumbers] = useState<string[]>(["123", "456", "789"]);
-  const [invoices, setInvoices] = useState<TechField[]>([
-    { id: "", number: 0, type: "", date: "" },
-  ]);
-  const [valor, setValor] = useState(invoices[0].number);
+  const { bankAccounts } = useFinancialDataContext();
+  const [selectedPaymentForm] = useState("");
+  const [filterPaymentType, setFilterPaymentType] = useState("");
+
+  const paymentTypes = [
+    "PIX",
+    "Boleto",
+    "Cartão de Crédito",
+    "Depósito",
+    "Transferência Bancária",
+    "Dinheiro em Mãos",
+    "Fatura",
+  ];
 
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const digits = e.target.value.replace(/\D/g, "");
-    const cents = digits === "" ? 0 : parseInt(digits, 10);
-    setValor(cents);
-  }
-
-  const formatBRL = (valueInCents: number) =>
-    new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valueInCents / 100);
-
   return (
     <div className="flex-1">
       <div className="grid grid-cols-12 gap-4 text-sm text-zinc-700">
-        <div className="border-primary text-primary col-span-12 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-2 text-center">
+        <div
+          onClick={() => {
+            if (!selectedPayable.payable.mainDocumentUrl) return;
+            window.open(selectedPayable.payable.mainDocumentUrl, "_blank");
+          }}
+          className={cn(
+            "border-primary text-primary col-span-12 flex flex-col items-center justify-center rounded-lg border border-dashed p-2 text-center",
+            selectedPayable.payable.mainDocumentUrl && "cursor-pointer",
+          )}
+        >
           <div className="border-primary flex h-10 w-10 items-center justify-center rounded-full border">
             <Upload />
           </div>
           <span className="font-semibold">Documento Gerador</span>
           <span className="text-sm font-light">
-            Clique para ter acesso ao documento gerador anexado
+            {selectedPayable.payable.mainDocumentUrl
+              ? "Clique para ter acesso ao documento gerador anexado"
+              : "Documento gerador não encontrado"}
           </span>
         </div>
         <label className="col-span-7 flex flex-col gap-1">
@@ -78,7 +81,11 @@ export function Step2({ data }: Props) {
                 <div className="flex h-full w-full flex-1 items-center text-center">
                   <span className="font-semi-bold w-full flex-1 text-xl">
                     <input
-                      value={selectedPaymentVia}
+                      value={
+                        bankAccounts.find(
+                          (b) => b.id === selectedPayable.bankAccountId,
+                        )?.name || "Selecione"
+                      }
                       placeholder="Pagamento Via"
                       className="w-full flex-1 pl-4 text-center text-lg text-zinc-700 outline-none"
                       readOnly
@@ -92,16 +99,19 @@ export function Step2({ data }: Props) {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-              <DropdownMenuItem
-                onSelect={() => setSelectedPaymentVia("Cartão 1234")}
-              >
-                Cartão 1234
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setSelectedPaymentVia("Dinheiro")}
-              >
-                Dinheiro
-              </DropdownMenuItem>
+              {bankAccounts.map((b) => (
+                <DropdownMenuItem
+                  key={b.id}
+                  onSelect={() =>
+                    setSelectedPayable({
+                      ...selectedPayable,
+                      bankAccountId: b.id,
+                    })
+                  }
+                >
+                  {b.name}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
@@ -116,7 +126,7 @@ export function Step2({ data }: Props) {
                   size={16}
                 />
                 <div className="flex-1 text-lg text-zinc-700">
-                  {data.paymentForm || "Selecione"}
+                  {selectedPayable.paymentType || "Selecione"}
                 </div>
                 <Edit
                   className="text-primary absolute top-1 right-1 xl:top-2 xl:right-2"
@@ -124,17 +134,50 @@ export function Step2({ data }: Props) {
                 />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-              <DropdownMenuItem
-                onSelect={() => setSelectedPaymentForm("Dinheiro")}
-              >
-                Dinheiro
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setSelectedPaymentForm("Cartão")}
-              >
-                Cartão
-              </DropdownMenuItem>
+            <DropdownMenuContent
+              side={width > 768 ? "right" : "bottom"}
+              align={width > 768 ? "start" : "end"}
+              className="z-[999] w-72 border-zinc-200"
+            >
+              <div className="border-primary text-primary mx-auto mb-2 flex h-8 w-[95%] items-center justify-between gap-4 rounded-lg border p-2">
+                <input
+                  value={filterPaymentType}
+                  onChange={(e) => setFilterPaymentType(e.target.value)}
+                  placeholder="Pesquisar Forma de Pagamento"
+                  className="flex-1 focus:outline-none"
+                />
+                <Search size={14} />
+              </div>
+              {paymentTypes
+                .filter((f) =>
+                  f.toLowerCase().includes(filterPaymentType.toLowerCase()),
+                )
+                .map((form) => (
+                  <DropdownMenuItem
+                    key={form}
+                    onClick={() => {
+                      setSelectedPayable({
+                        ...selectedPayable,
+                        paymentType: form,
+                      });
+                    }}
+                    className="hover:bg-primary/20 cursor-pointer transition duration-300"
+                  >
+                    <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-b-zinc-400 p-1 py-2">
+                      {form}
+                      {selectedPayable.paymentType === form && (
+                        <div className="border-primary bg-primary h-4 w-4 rounded-md border" />
+                      )}
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              {paymentTypes.filter((f) =>
+                f.toLowerCase().includes(filterPaymentType.toLowerCase()),
+              ).length === 0 && (
+                <div className="p-2 text-center text-sm text-zinc-600">
+                  Nenhum item encontrado
+                </div>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </label>
@@ -143,95 +186,100 @@ export function Step2({ data }: Props) {
       </div>
       <div>
         <h3 className="mb-4 text-base font-semibold">Detalhes do Pagamento</h3>
-        {invoices.map((field, idx) => (
-          <div
-            key={field.id}
-            className="mb-4 grid grid-cols-12 items-center gap-4"
-          >
-            <div className="col-span-6 flex items-center gap-2">
-              <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
-                <span className="">{idx + 1} - Pagamento</span>
-                <input
-                  value={formatBRL(valor)}
-                  onChange={handleChange}
-                  placeholder="R$ 0,00"
-                  className={`h-12 w-full rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 focus:outline-none xl:h-12 xl:px-3 xl:py-2 ${field.number ? "border-primary" : "border-zinc-200"}`}
-                />
-              </div>
-            </div>
-            <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
-              <span className="">Forma</span>
-
-              <div
-                className={cn(
-                  buttonBase,
-                  "flex h-8 items-center justify-center rounded-2xl px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
-                  selectedPaymentForm
-                    ? "border-primary text-zinc-700"
-                    : "border-zinc-200 text-zinc-500",
-                )}
-              >
-                {selectedPaymentForm || "Selecione"}
-              </div>
-            </div>
-            <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div>
-                    <span className="">Data</span>
-
-                    <div
-                      className={`relative flex h-8 items-center justify-center rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 xl:h-12 xl:px-3 xl:py-2 ${field.date ? "border-primary" : "border-zinc-200"}`}
-                    >
-                      {field.date
-                        ? moment(field.date).format("DD/MM/YYYY")
-                        : moment().format("DD/MM/YYYY")}
-                      <ChevronDown className="absolute top-1/2 right-0 -translate-y-1/2" />
-                    </div>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  side={width > 768 ? "right" : "top"}
-                  sideOffset={0}
-                  align={width > 768 ? "start" : "end"}
-                  className="z-[999] w-72 border-zinc-200"
-                >
-                  <Calendar
-                    mode="single"
-                    selected={moment(field.date).toDate()}
-                    onSelect={(e) =>
-                      setInvoices((prev) =>
-                        prev.map((f, i) =>
-                          i === idx
-                            ? { ...f, date: moment(e).format("YYYY-MM-DD") }
-                            : f,
-                        ),
-                      )
-                    }
-                    initialFocus
-                  />
-                </DropdownMenuContent>
-              </DropdownMenu>
+        <div className="mb-4 grid grid-cols-12 items-center gap-4">
+          <div className="col-span-6 flex items-center gap-2">
+            <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
+              <span className=""> Pagamento</span>
+              <input
+                value={selectedPayable.value.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+                readOnly
+                placeholder="R$ 0,00"
+                className="border-primary h-12 w-full cursor-auto rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 focus:outline-none xl:h-12 xl:px-3 xl:py-2"
+              />
             </div>
           </div>
-        ))}
+          <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
+            <span className="">Forma</span>
+
+            <div
+              className={cn(
+                buttonBase,
+                "flex h-8 items-center justify-center rounded-2xl px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
+                selectedPaymentForm
+                  ? "border-primary text-zinc-700"
+                  : "border-zinc-200 text-zinc-500",
+              )}
+            >
+              {selectedPaymentForm || "Selecione"}
+            </div>
+          </div>
+          <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div>
+                  <span className="">Data</span>
+
+                  <div
+                    className={cn(
+                      "relative flex h-8 items-center justify-center rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 xl:h-12 xl:px-3 xl:py-2",
+                      selectedPayable.dueDate && "border-primary",
+                    )}
+                  >
+                    {selectedPayable.dueDate
+                      ? moment(selectedPayable.dueDate).format("DD/MM/YYYY")
+                      : moment().format("DD/MM/YYYY")}
+                    <ChevronDown className="absolute top-1/2 right-0 -translate-y-1/2" />
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side={width > 768 ? "right" : "top"}
+                sideOffset={0}
+                align={width > 768 ? "start" : "end"}
+                className="z-[999] w-72 border-zinc-200"
+              >
+                <Calendar
+                  mode="single"
+                  selected={moment(selectedPayable.dueDate).toDate()}
+                  onSelect={(e) =>
+                    setSelectedPayable({
+                      ...selectedPayable,
+                      dueDate: moment(e).format("YYYY-MM-DD"),
+                    })
+                  }
+                  initialFocus
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
 
         <div className="mt-6 h-px bg-zinc-200/60" />
-        <h3 className="mb-4 text-base font-semibold">Números dos Documentos</h3>
-        {docNumbers.map((field, idx) => (
-          <div key={idx} className="mb-4 grid grid-cols-12 items-center gap-4">
-            <div className="col-span-12 flex items-center gap-2">
-              <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
-                <span className="">{idx + 1} - Documento</span>
-                <input
-                  value={field}
-                  readOnly
-                  className="border-primary h-8 w-full rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 focus:outline-none xl:h-12 xl:px-3 xl:py-2"
-                />
+        <div className="flex h-80 w-full flex-col overflow-y-scroll">
+          <h3 className="mb-4 text-base font-semibold">
+            Números dos Documentos
+          </h3>
+          {selectedPayable.documents.map((field, idx) => (
+            <div
+              key={idx}
+              className="mb-4 grid grid-cols-12 items-center gap-4"
+            >
+              <div className="col-span-12 flex items-center gap-2">
+                <div className="flex w-full flex-col text-[13px] font-medium text-zinc-600">
+                  <span className="">{idx + 1} - Documento</span>
+                  <input
+                    value={field.documentNumber}
+                    readOnly
+                    className="border-primary h-8 w-full rounded-2xl border px-2 py-1 text-sm placeholder:text-zinc-500 focus:outline-none xl:h-12 xl:px-3 xl:py-2"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

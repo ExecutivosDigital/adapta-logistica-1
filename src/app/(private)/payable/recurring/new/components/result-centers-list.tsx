@@ -28,12 +28,9 @@ export function ResultCentersList({
       0,
     );
 
-    // ✅ If FULL, every unlocked center gets the full data.value
-    // ✅ If DIVIDED, we split remaining value evenly
-    const totalValue =
+    const totalTarget =
       paymentType === "FULL" ? data.value : data.value * data.installmentCount;
-
-    const remainingValue = totalValue - lockedTotal;
+    const remainingValue = totalTarget - lockedTotal;
 
     if (unlockedCenters.length > 0 && remainingValue >= 0) {
       const remainingCents = Math.round(remainingValue * 100);
@@ -138,11 +135,8 @@ export function ResultCentersList({
       return sum + (Number(center.value) || 0);
     }, 0);
 
-    // ✅ FULL → total should be data.value * number of centers
     const expectedTotal =
-      paymentType === "FULL"
-        ? data.value * data.resultCenters.length
-        : data.value * data.installmentCount;
+      paymentType === "FULL" ? data.value : data.value * data.installmentCount;
 
     const totalCents = Math.round(expectedTotal * 100);
     const assignedCents = Math.round(totalAssigned * 100);

@@ -15,9 +15,14 @@ import { DataType } from "../page";
 interface TransactionsListProps {
   data: DataType;
   setData: (value: DataType) => void;
+  isCreating: boolean;
 }
 
-export function TransactionsList({ data, setData }: TransactionsListProps) {
+export function TransactionsList({
+  data,
+  setData,
+  isCreating,
+}: TransactionsListProps) {
   const paymentType = [
     "PIX",
     "Boleto",
@@ -228,6 +233,7 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
           )}
           <button
             onClick={distributeValueEvenly}
+            disabled={isCreating}
             className="text-primary hover:text-primary text-sm"
           >
             Distribuir igualmente
@@ -270,9 +276,10 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
                     {transaction.position} / {data.installmentCount}
                   </span>
                 </div>
-                <div className="flex w-full items-center gap-2">
+                <div className="flex w-full items-end gap-2">
                   <button
                     onClick={() => toggleTransactionLock(index)}
+                    disabled={isCreating}
                     className={`rounded p-1 transition-colors ${
                       transaction.locked
                         ? "text-primary hover:text-primary"
@@ -302,43 +309,52 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
                   </button>
 
                   <span className="text-sm text-zinc-500">R$</span>
-                  <input
-                    type="number"
-                    value={transaction.value}
-                    onChange={(e) =>
-                      handleTransactionValueChange(index, e.target.value)
-                    }
-                    disabled={transaction.locked}
-                    className={cn(
-                      "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition focus:outline-none",
+                  <div className="flex w-full flex-col">
+                    <span className="text-sm text-zinc-500">Pagamento</span>
+                    <input
+                      type="number"
+                      value={transaction.value}
+                      onChange={(e) =>
+                        handleTransactionValueChange(index, e.target.value)
+                      }
+                      disabled={transaction.locked || isCreating}
+                      className={cn(
+                        "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition focus:outline-none",
 
-                      transaction.locked
-                        ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
-                        : "focus:border-primary border-zinc-300",
-                    )}
-                    placeholder="0,00"
-                    step="0.01"
-                    min="0"
-                  />
+                        transaction.locked
+                          ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                          : "focus:border-primary border-zinc-300",
+                      )}
+                      placeholder="0,00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
                 </div>
               </div>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild disabled={transaction.locked}>
-                  <button
-                    type="button"
-                    className={cn(
-                      "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition",
-                      transaction.paymentType !== ""
-                        ? "border-primary text-zinc-700"
-                        : "border-zinc-200 text-zinc-500",
-                      transaction.locked
-                        ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
-                        : "focus:border-primary border-zinc-300",
-                    )}
-                  >
-                    {transaction.paymentType || "Tipo"}
-                    <ChevronDown size={16} />
-                  </button>
+                <DropdownMenuTrigger
+                  asChild
+                  disabled={transaction.locked || isCreating}
+                >
+                  <div className="flex w-full flex-col">
+                    <span className="text-sm text-zinc-500">Forma</span>
+                    <button
+                      type="button"
+                      className={cn(
+                        "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition",
+                        transaction.paymentType !== ""
+                          ? "border-primary text-zinc-700"
+                          : "border-zinc-200 text-zinc-500",
+                        transaction.locked
+                          ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                          : "focus:border-primary border-zinc-300",
+                      )}
+                    >
+                      {transaction.paymentType || "Tipo"}
+                      <ChevronDown size={16} />
+                    </button>
+                  </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   side="bottom"
@@ -362,21 +378,27 @@ export function TransactionsList({ data, setData }: TransactionsListProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild disabled={transaction.locked}>
-                  <div
-                    className={cn(
-                      "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition",
-                      transaction.dueDate !== ""
-                        ? "border-primary text-zinc-700"
-                        : "border-zinc-200 text-zinc-500",
-                      transaction.locked
-                        ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
-                        : "focus:border-primary border-zinc-300",
-                    )}
-                  >
-                    <span>
-                      {moment(transaction.dueDate).format("DD/MM/YYYY")}
-                    </span>
+                <DropdownMenuTrigger
+                  asChild
+                  disabled={transaction.locked || isCreating}
+                >
+                  <div className="flex w-full flex-col">
+                    <span className="text-sm text-zinc-500">Data</span>
+                    <div
+                      className={cn(
+                        "relative flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-sm transition",
+                        transaction.dueDate !== ""
+                          ? "border-primary text-zinc-700"
+                          : "border-zinc-200 text-zinc-500",
+                        transaction.locked
+                          ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"
+                          : "focus:border-primary border-zinc-300",
+                      )}
+                    >
+                      <span>
+                        {moment(transaction.dueDate).format("DD/MM/YYYY")}
+                      </span>
+                    </div>
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>

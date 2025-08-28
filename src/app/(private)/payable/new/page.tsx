@@ -2,7 +2,10 @@
 "use client";
 import { ResultCenterProps } from "@/@types/financial-data";
 import { OrangeButton } from "@/components/OrangeButton";
-import { AiFileReader } from "@/components/ai-file-reader";
+import {
+  AiFileReader,
+  PaymentDocumentProps,
+} from "@/components/ai-file-reader";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +42,7 @@ export interface DataType {
   dueDate: string;
   installmentCount: number;
   ledgerAccountId: string;
-  paymentMode: "FULL" | "INSTALLMENT";
+  paymentMode: "FULL" | "INSTALLMENT" | "";
   paymentType?: string;
   resultCenters: {
     resultCenterId: string;
@@ -97,9 +100,9 @@ export default function NewPayable() {
   const [data, setData] = useState<DataType>({
     businessUnitId: selectedBusinessUnit?.id || "",
     dueDate: "",
-    installmentCount: 1,
+    installmentCount: 0,
     ledgerAccountId: "",
-    paymentMode: "FULL",
+    paymentMode: "",
     referenceMonth: null,
     resultCenters: [],
     status: "PENDING",
@@ -182,8 +185,14 @@ export default function NewPayable() {
     }
   };
 
-  const handleData = () => {
-    return;
+  const handleData = (
+    summaryData: PaymentDocumentProps,
+    documentUrl: string,
+  ) => {
+    setData((prevData) => ({
+      ...prevData,
+      mainDocumentUrl: documentUrl,
+    }));
   };
 
   async function CreatePayable() {
@@ -201,9 +210,7 @@ export default function NewPayable() {
     );
     if (create.status === 200) {
       toast.success("À Pagar criado com sucesso!");
-      setTimeout(() => {
-        handleNavigation("/calendar");
-      }, 1000);
+      handleNavigation("/calendar");
       return setIsCreating(false);
     }
     toast.error("Erro ao criar À Pagar, tente novamente");
@@ -231,6 +238,30 @@ export default function NewPayable() {
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("navigationComplete"));
   }, []);
+
+  const HandleNextStep = () => {
+    if (steps === 1) {
+      if (
+        data.supplierId === "" ||
+        data.ledgerAccountId === "" ||
+        data.value === 0 ||
+        data.resultCenters.length === 0
+      ) {
+        return toast.error("Preencha todos os campos obrigatórios");
+      } else {
+        setSteps((s) => s + 1);
+      }
+    } else if (steps === 2) {
+      if (
+        data.transactions.length === 0 ||
+        data.transactions.find((t) => t.paymentType === "")
+      ) {
+        return toast.error("Preencha todos os campos obrigatórios");
+      } else {
+        return CreatePayable();
+      }
+    }
+  };
 
   return (
     <>
@@ -303,8 +334,14 @@ export default function NewPayable() {
               <label className="flex w-1/2 flex-col gap-1">
                 <span className="text-zinc-600">Filial</span>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DropdownMenuTrigger asChild disabled={isCreating}>
+                    <button
+                      className={cn(
+                        "relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                        data.subsidiaryId !== "" &&
+                          "bg-primary/20 border-primary transition duration-200",
+                      )}
+                    >
                       <MapPin
                         size={16}
                         className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -341,8 +378,14 @@ export default function NewPayable() {
               <label className="flex w-1/2 flex-col gap-1">
                 <span className="text-zinc-600">Unidade de Negócio</span>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+                  <DropdownMenuTrigger asChild disabled={isCreating}>
+                    <button
+                      className={cn(
+                        "relative flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2",
+                        data.businessUnitId !== "" &&
+                          "bg-primary/20 border-primary transition duration-200",
+                      )}
+                    >
                       <MapPin
                         size={16}
                         className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -389,9 +432,10 @@ export default function NewPayable() {
                 setIsOpenSupplierModal={setIsOpenSupplierModal}
                 setIsOpenContabilidadeModal={setIsOpenContabilAccountModal}
                 setIsOpenLaunchTypeModal={setIsOpenLaunchTypeModal}
+                isCreating={isCreating}
               />
             ) : steps === 2 ? (
-              <Step3 data={data} setData={setData} />
+              <Step3 data={data} setData={setData} isCreating={isCreating} />
             ) : (
               <></>
             )}
@@ -407,7 +451,7 @@ export default function NewPayable() {
 
                   <OrangeButton
                     className="h-9 w-[132px]"
-                    onClick={() => setSteps(steps + 1)}
+                    onClick={HandleNextStep}
                     icon={<ChevronDown size={16} className="-rotate-90" />}
                     iconPosition="right"
                   >
@@ -426,9 +470,7 @@ export default function NewPayable() {
 
                 <OrangeButton
                   className="h-9 w-[132px]"
-                  onClick={() => {
-                    CreatePayable();
-                  }}
+                  onClick={HandleNextStep}
                   icon={<ChevronDown size={16} className="-rotate-90" />}
                   iconPosition="right"
                   disabled={isCreating}

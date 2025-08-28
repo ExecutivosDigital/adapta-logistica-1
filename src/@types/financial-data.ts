@@ -69,3 +69,8 @@ export interface ClientGroupProps {
   id: string;
   name: string;
 }
+
+export interface BankAccountProps {
+  id: string;
+  name: string;
+}

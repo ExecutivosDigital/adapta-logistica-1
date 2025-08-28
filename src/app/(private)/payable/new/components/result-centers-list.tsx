@@ -7,8 +7,13 @@ import { DataType } from "../page";
 interface ResultCentersListProps {
   data: DataType;
   setData: (value: DataType) => void;
+  isCreating: boolean;
 }
-export function ResultCentersList({ data, setData }: ResultCentersListProps) {
+export function ResultCentersList({
+  data,
+  setData,
+  isCreating,
+}: ResultCentersListProps) {
   const distributeValueEvenly = () => {
     if (data.resultCenters.length === 0) return;
 
@@ -139,6 +144,7 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
           )}
           <button
             onClick={distributeValueEvenly}
+            disabled={isCreating}
             className="text-primary hover:text-primary text-sm"
           >
             Distribuir igualmente
@@ -186,6 +192,7 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
               <div className="flex w-full items-center gap-2">
                 <button
                   onClick={() => toggleResultCenterLock(index)}
+                  disabled={isCreating}
                   className={`rounded p-1 transition-colors ${
                     item.locked
                       ? "text-primary hover:text-primary"
@@ -221,7 +228,7 @@ export function ResultCentersList({ data, setData }: ResultCentersListProps) {
                   onChange={(e) =>
                     handleResultCenterValueChange(index, e.target.value)
                   }
-                  disabled={item.locked}
+                  disabled={item.locked || isCreating}
                   className={`w-full rounded border px-2 py-1 text-right focus:outline-none ${
                     item.locked
                       ? "border-primary bg-primary/20 text-primary cursor-not-allowed font-semibold"

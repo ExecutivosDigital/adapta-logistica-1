@@ -1,5 +1,6 @@
 "use client";
 
+import { useApiContext } from "@/context/ApiContext";
 import { Loader2 } from "lucide-react";
 import OpenAI from "openai";
 import { useState } from "react";
@@ -13,10 +14,11 @@ export interface PaymentDocumentProps {
 }
 
 interface AiFileReaderProps {
-  handleData: (data: PaymentDocumentProps) => void;
+  handleData: (data: PaymentDocumentProps, documentUrl: string) => void;
 }
 
 export function AiFileReader({ handleData }: AiFileReaderProps) {
+  const { PostAPI } = useApiContext();
   const [isShowingDocument, setIsShowingDocument] = useState(false);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -34,7 +36,7 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
     const summaryAssistant = "asst_Tb0t6rgXuR1nhiHO8aexLmNC";
 
     try {
-      const file = new File([buffer], "edital.pdf", {
+      const file = new File([buffer.buffer as ArrayBuffer], "edital.pdf", {
         type: "application/pdf",
       });
 
@@ -110,6 +112,23 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
     }
   }
 
+  const handleUploadFile = async (
+    summaryData: PaymentDocumentProps,
+    selectedFile: File,
+  ) => {
+    const formData = new FormData();
+    const sanitized = selectedFile.name.replace(/\s+/g, "-");
+    formData.append("file", selectedFile, sanitized);
+    const res = await PostAPI("/file", formData, true);
+    if (res?.status === 200 && res.body?.fullUrl) {
+      handleData(summaryData, res.body.url);
+      setFile(selectedFile);
+      setIsShowingDocument(true);
+      return res.body.fullUrl as string;
+    }
+    toast.error(res?.body?.message ?? "Falha no upload.");
+  };
+
   return (
     <>
       {!isShowingDocument ? (
@@ -133,9 +152,7 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
                   const summaryData = await analyze(buffer);
 
                   if (summaryData) {
-                    handleData(summaryData);
-                    setFile(selectedFile);
-                    setIsShowingDocument(true);
+                    handleUploadFile(summaryData, selectedFile);
                   }
                   setLoading(false);
                 };

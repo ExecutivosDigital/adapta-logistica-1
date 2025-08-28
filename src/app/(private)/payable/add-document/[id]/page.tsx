@@ -1,6 +1,11 @@
 "use client";
-import { AiFileReader } from "@/components/ai-file-reader";
+import {
+  AiFileReader,
+  PaymentDocumentProps,
+} from "@/components/ai-file-reader";
+import { PayableTransactionProps } from "@/components/calendar";
 import { OrangeButton } from "@/components/OrangeButton";
+import { useApiContext } from "@/context/ApiContext";
 import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
@@ -8,91 +13,96 @@ import {
   ChevronDown,
   ChevronLeft,
   DollarSign,
+  Loader2,
   X,
 } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Step1 } from "./components/step1";
-import { SupplierModal } from "./components/supplier-modal";
+import { Document, Step1 } from "./components/step1";
 
-export interface DataType {
-  totalValue: number;
-  entryType: "DESPESAS" | "IMPOSTOS" | "C. VENDAS";
-  supplierId: string;
-  documentType: string;
-  amount: number;
-  currency: string;
-  costType: string;
-  category: string;
-  costCenters: {
-    name: string;
-    value: string;
-    locked?: boolean;
-  }[];
-  accountingAccount: {
-    code: string;
-    description: string;
-  };
-  paymentMethod: {
-    bank: string;
-    account: string;
-  };
-  paymentForm: string;
-  documentNumber: string;
-  issueDate: string;
-  dueDate: string;
-  paymentTerms: string;
-  paymentDetails: string;
-  description: string;
-  approval: string;
-  mail: string;
-}
-
-export default function PayableAddDocument() {
+export default function PayableAddDocument({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { handleNavigation } = useLoadingContext();
+  const { GetAPI, PutAPI } = useApiContext();
   const router = useRouter();
 
-  const [isOpenSupplierModal, setIsOpenSupplierModal] = useState(false);
+  const [selectedPayable, setSelectedPayable] =
+    useState<PayableTransactionProps | null>(null);
   const [steps, setSteps] = useState(1);
+  const [allDocuments, setAllDocuments] = useState<Document[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [data, setData] = useState<DataType>({
-    totalValue: 100000,
-    entryType: "DESPESAS",
-    supplierId: "",
-    documentType: "",
-    amount: 0,
-    currency: "",
-    costType: "",
-    category: "",
-    costCenters: [],
-    accountingAccount: {
-      code: "",
-      description: "",
-    },
-    paymentMethod: {
-      bank: "",
-      account: "",
-    },
-    paymentForm: "",
-    documentNumber: "",
-    issueDate: "",
-    dueDate: "",
-    paymentTerms: "",
-    paymentDetails: "",
-    description: "",
-    approval: "",
-    mail: "",
-  });
+  async function GetIndividualPayable(id: string) {
+    const payable = await GetAPI(`/payable-transaction/${id}`, true);
+    if (payable.status === 200) {
+      setSelectedPayable(payable.body.payableTransaction);
+      window.dispatchEvent(new CustomEvent("navigationComplete"));
+    }
+  }
 
-  const handleData = () => {
-    return;
+  const handleData = (
+    summaryData: PaymentDocumentProps,
+    documentUrl: string,
+  ) => {
+    return setAllDocuments((prev) => [
+      ...prev,
+      {
+        documentUrl,
+        documentNumber: "",
+        dueDate: moment().format(),
+        supplierId: selectedPayable?.payable.supplier.id as string,
+        value: 0,
+        comments: "",
+        id: Date.now().toString(),
+      },
+    ]);
   };
 
+  async function AddDocument() {
+    setIsLoading(true);
+    const deletedDocuments = selectedPayable?.documents
+      .filter((doc) => !allDocuments?.find((newDoc) => newDoc.id === doc.id))
+      .map((doc) => doc.id);
+    const editedDocuments = allDocuments?.filter((doc) =>
+      selectedPayable?.documents?.find((newDoc) => newDoc.id === doc.id),
+    );
+    const newDocuments = allDocuments?.filter(
+      (doc) =>
+        !selectedPayable?.documents?.find((newDoc) => newDoc.id === doc.id),
+    );
+
+    const response = await PutAPI(
+      `/payable-transaction/${params.id}`,
+      {
+        ...selectedPayable,
+        documents: editedDocuments,
+        newDocuments,
+        deletedDocuments,
+        value: allDocuments.map((doc) => doc.value).reduce((a, b) => a + b, 0),
+      },
+      true,
+    );
+    console.log("response", response);
+    if (response.status === 200) {
+      toast.success("Documento(s) adicionado(s) com sucesso!");
+      handleNavigation("/calendar");
+      return setIsLoading(false);
+    }
+    toast.error("Erro ao adicionar documento(s), tente novamente");
+    return setIsLoading(false);
+  }
+
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent("navigationComplete"));
+    GetIndividualPayable(params.id);
   }, []);
+
+  if (!selectedPayable) return null;
 
   return (
     <>
@@ -152,10 +162,13 @@ export default function PayableAddDocument() {
                     </div>
                     R$
                   </span>
-                  {data.totalValue.toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {allDocuments
+                    .map((doc) => doc.value)
+                    .reduce((a, b) => a + b, 0)
+                    .toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
                 </h2>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   Valor Total do Pagamento
@@ -164,22 +177,26 @@ export default function PayableAddDocument() {
             </div>
             <div className="my-4 h-px bg-zinc-200/60" />
             <Step1
-              data={data}
-              setIsOpenSupplierModal={setIsOpenSupplierModal}
+              selectedPayable={selectedPayable}
+              allDocuments={allDocuments}
+              setAllDocuments={setAllDocuments}
             />
             <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
               <OrangeButton
                 className="h-9 w-[132px]"
-                onClick={() => {
-                  toast.success("Fatura atualizada com sucesso!");
-                  setTimeout(() => {
-                    handleNavigation("/calendar");
-                  }, 1000);
-                }}
+                onClick={AddDocument}
                 icon={<ChevronDown size={16} className="-rotate-90" />}
                 iconPosition="right"
+                disabled={isLoading}
               >
-                Salvar
+                {isLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    <span>Salvando...</span>
+                  </>
+                ) : (
+                  "Salvar"
+                )}
               </OrangeButton>
             </footer>
           </section>
@@ -189,14 +206,6 @@ export default function PayableAddDocument() {
           </section>
         </main>
       </div>
-      {isOpenSupplierModal && (
-        <SupplierModal
-          isOpenSupplierModal={isOpenSupplierModal}
-          setIsOpenSupplierModal={setIsOpenSupplierModal}
-          data={data}
-          setData={setData}
-        />
-      )}
     </>
   );
 }

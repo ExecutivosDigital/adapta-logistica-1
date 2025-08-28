@@ -265,7 +265,6 @@ export default function CreateClientSheet({ open, onOpenChange }: Props) {
         },
         true,
       );
-      console.log("create", create);
       if (create.status === 200) {
         GetClientGroups();
         toast.success("Cliente criado com sucesso!");

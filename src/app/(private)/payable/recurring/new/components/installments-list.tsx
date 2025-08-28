@@ -38,13 +38,14 @@ export function TransactionsList({
     const numTransactions = data.installmentCount || 1;
 
     const totalCents = Math.round(data.value * 100);
-    const baseValueCents = Math.floor(
-      totalCents / (type === "FULL" ? numTransactions : 1),
-    );
-    const remainder = totalCents % numTransactions;
+    const isFull = type === "FULL";
+    const baseValueCents = isFull
+      ? Math.floor(totalCents / numTransactions)
+      : totalCents;
+    const remainder = isFull ? totalCents % numTransactions : 0;
 
     return Array.from({ length: numTransactions }, (_, index) => {
-      const extraCent = index < remainder ? 1 : 0;
+      const extraCent = isFull && index < remainder ? 1 : 0;
       const finalValueCents = baseValueCents + extraCent;
       const finalValue = finalValueCents / 100;
 
@@ -83,7 +84,9 @@ export function TransactionsList({
       0,
     );
 
-    const remainingValue = data.value - lockedTotal;
+    const totalTarget =
+      type === "FULL" ? data.value : data.value * transactions.length;
+    const remainingValue = totalTarget - lockedTotal;
 
     if (unlockedTransactions.length > 0 && remainingValue >= 0) {
       const remainingCents = Math.round(remainingValue * 100);
@@ -137,7 +140,9 @@ export function TransactionsList({
       return sum;
     }, 0);
 
-    const remainingValue = data.value - lockedTotal;
+    const totalTarget =
+      type === "FULL" ? data.value : data.value * updatedTransactions.length;
+    const remainingValue = totalTarget - lockedTotal;
 
     if (unlockedTransactions.length > 0 && remainingValue >= 0) {
       const remainingCents = Math.round(remainingValue * 100);

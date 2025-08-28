@@ -1,4 +1,5 @@
 "use client";
+import { PayableTransactionProps } from "@/components/calendar";
 import { OrangeButton } from "@/components/OrangeButton";
 import {
   DropdownMenu,
@@ -6,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useApiContext } from "@/context/ApiContext";
 import { useLoadingContext } from "@/context/LoadingContext";
 import { cn } from "@/utils/cn";
 import {
@@ -58,45 +60,49 @@ export interface DataType {
   mail: string;
 }
 
-export default function PayablePay() {
+export interface UserProps {
+  accessLevelId: string;
+  birthDate: string;
+  companyId: string;
+  email: string;
+  id: string;
+  isYou: boolean;
+  name: string;
+  phone: string;
+}
+
+export default function PayablePay({ params }: { params: { id: string } }) {
   const { handleNavigation } = useLoadingContext();
+  const { GetAPI } = useApiContext();
   const router = useRouter();
+
+  const [selectedPayable, setSelectedPayable] =
+    useState<PayableTransactionProps | null>(null);
   const [steps, setSteps] = useState(1);
-  const [data, setData] = useState<DataType>({
-    totalValue: 100000,
-    entryType: "DESPESAS",
-    supplier: {
-      name: "",
-      cnpj: "",
-    },
-    documentType: "",
-    amount: 0,
-    currency: "",
-    costType: "",
-    category: "",
-    costCenters: [],
-    accountingAccount: {
-      code: "",
-      description: "",
-    },
-    paymentMethod: {
-      bank: "",
-      account: "",
-    },
-    paymentForm: "",
-    documentNumber: "",
-    issueDate: "",
-    dueDate: "",
-    paymentTerms: "",
-    paymentDetails: "",
-    description: "",
-    approval: "",
-    mail: "",
-  });
+  const [users, setUsers] = useState<UserProps[]>([]);
+
+  async function GetIndividualPayable(id: string) {
+    const payable = await GetAPI(`/payable-transaction/${id}`, true);
+    console.log(" payable", payable);
+    if (payable.status === 200) {
+      setSelectedPayable(payable.body.payableTransaction);
+      window.dispatchEvent(new CustomEvent("navigationComplete"));
+    }
+  }
+
+  async function GetUser() {
+    const user = await GetAPI("/user", true);
+    if (user.status === 200) {
+      setUsers(user.body.users);
+    }
+  }
 
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent("navigationComplete"));
+    GetIndividualPayable(params.id);
+    GetUser();
   }, []);
+
+  if (!selectedPayable) return null;
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden pb-20 xl:pb-0">
@@ -162,7 +168,7 @@ export default function PayablePay() {
                   </div>
                   R$
                 </span>
-                {data.totalValue.toLocaleString("pt-BR", {
+                {selectedPayable.value.toLocaleString("pt-BR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -173,10 +179,10 @@ export default function PayablePay() {
             </div>
           </div>
           <div className="my-4 h-px bg-zinc-200/60" />
-          <Step1 data={data} setData={setData} />
+          <Step1 selectedPayable={selectedPayable} users={users} />
         </section>
         <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
-          <Step2 />
+          <Step2 selectedPayable={selectedPayable} />
         </section>
       </main>
       <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">

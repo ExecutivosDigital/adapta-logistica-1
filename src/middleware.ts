@@ -29,7 +29,6 @@ export const config = {
     "/payable/pay/:id",
     "/payable/payed/:id",
     "/payable/recurring/new",
-    "/payable/recurring/add-document/:id",
     "/receivable/new",
     "/receivable/update/:id",
     "/receivable/update-2/:id",
