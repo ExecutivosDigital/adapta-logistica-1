@@ -18,18 +18,15 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Document, Step1 } from "./components/step1";
 
-export default function PayableAddDocument({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function PayableAddDocument() {
   const { handleNavigation } = useLoadingContext();
   const { GetAPI, PutAPI } = useApiContext();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
   const [selectedPayable, setSelectedPayable] =
@@ -78,7 +75,7 @@ export default function PayableAddDocument({
     );
 
     const response = await PutAPI(
-      `/payable-transaction/${params.id}`,
+      `/payable-transaction/${id}`,
       {
         ...selectedPayable,
         documents: editedDocuments,
@@ -88,7 +85,6 @@ export default function PayableAddDocument({
       },
       true,
     );
-    console.log("response", response);
     if (response.status === 200) {
       toast.success("Documento(s) adicionado(s) com sucesso!");
       handleNavigation("/calendar");
@@ -99,7 +95,7 @@ export default function PayableAddDocument({
   }
 
   useEffect(() => {
-    GetIndividualPayable(params.id);
+    GetIndividualPayable(id);
   }, []);
 
   if (!selectedPayable) return null;

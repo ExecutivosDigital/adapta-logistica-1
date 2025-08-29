@@ -27,7 +27,7 @@ export default function Payable() {
           <PayableGoalCards selectedTableType="overdue" />
         </div>
         <div className="col-span-12">
-          <PayableTransactions filterType="overdue" />
+          <PayableTransactions selectedStatus="OVERDUE" />
         </div>
       </div>
     </div>

@@ -16,11 +16,13 @@ import {
   ChevronLeft,
   DollarSign,
   EllipsisVertical,
+  Loader2,
   X,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Step1 } from "./components/step1";
 import { Step2 } from "./components/step2";
 
@@ -71,19 +73,20 @@ export interface UserProps {
   phone: string;
 }
 
-export default function PayablePay({ params }: { params: { id: string } }) {
+export default function PayablePay() {
   const { handleNavigation } = useLoadingContext();
-  const { GetAPI } = useApiContext();
+  const { GetAPI, PutAPI } = useApiContext();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
   const [selectedPayable, setSelectedPayable] =
     useState<PayableTransactionProps | null>(null);
   const [steps, setSteps] = useState(1);
   const [users, setUsers] = useState<UserProps[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   async function GetIndividualPayable(id: string) {
     const payable = await GetAPI(`/payable-transaction/${id}`, true);
-    console.log(" payable", payable);
     if (payable.status === 200) {
       setSelectedPayable(payable.body.payableTransaction);
       window.dispatchEvent(new CustomEvent("navigationComplete"));
@@ -97,8 +100,27 @@ export default function PayablePay({ params }: { params: { id: string } }) {
     }
   }
 
+  async function SendReceipt() {
+    setIsSaving(true);
+    const receipt = await PutAPI(
+      `/payable-transaction/${id}`,
+      {
+        receiptUrl: selectedPayable?.receiptUrl,
+        status: "CLOSED",
+      },
+      true,
+    );
+    if (receipt.status === 200) {
+      toast.success("Transação finalizada com sucesso");
+      handleNavigation("/payable");
+      return setIsSaving(false);
+    }
+    toast.error("Erro ao finalizar transação, tente novamente");
+    return setIsSaving(false);
+  }
+
   useEffect(() => {
-    GetIndividualPayable(params.id);
+    GetIndividualPayable(id);
     GetUser();
   }, []);
 
@@ -182,21 +204,28 @@ export default function PayablePay({ params }: { params: { id: string } }) {
           <Step1 selectedPayable={selectedPayable} users={users} />
         </section>
         <section className="flex w-full flex-col bg-white px-3 py-2 pb-4 shadow-[0_4px_4px_0px_rgba(0,0,0,0.25)] xl:w-[49%] xl:px-12 xl:pt-10">
-          <Step2 selectedPayable={selectedPayable} />
+          <Step2
+            selectedPayable={selectedPayable}
+            setSelectedPayable={setSelectedPayable}
+          />
         </section>
       </main>
       <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
         <OrangeButton
           className="h-9 w-[132px]"
-          onClick={() => {
-            setTimeout(() => {
-              handleNavigation("/calendar");
-            }, 1000);
-          }}
+          onClick={SendReceipt}
           icon={<ChevronDown size={16} className="-rotate-90" />}
           iconPosition="right"
+          disabled={isSaving}
         >
-          Salvar
+          {isSaving ? (
+            <>
+              <Loader2 className="animate-spin" />
+              <span>Salvando...</span>
+            </>
+          ) : (
+            "Salvar"
+          )}
         </OrangeButton>
       </footer>
     </div>

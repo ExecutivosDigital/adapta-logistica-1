@@ -1,5 +1,6 @@
 "use client";
 import { Calendar } from "@/components/ui/calendar";
+import { CustomPagination } from "@/components/ui/custom-pagination";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,123 +8,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useApiContext } from "@/context/ApiContext";
+import { useBranch } from "@/context/BranchContext";
+import { PayableTransactionProps } from "@/context/PayableContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
-import { ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DateRange, SelectRangeEventHandler } from "react-day-picker";
+
 export function PayableFinancialLists() {
   const { viewAllValues } = useValueContext();
-  const incomeList = [
-    {
-      id: "1",
-      label: "Lorem",
-      value: 12890,
-    },
-    {
-      id: "2",
-      label: "Lorem",
-      value: 200,
-    },
-    {
-      id: "3",
-      label: "Lorem",
-      value: 16000,
-    },
-    {
-      id: "4",
-      label: "Lorem",
-      value: 321.32,
-    },
-    {
-      id: "5",
-      label: "Lorem",
-      value: 0,
-    },
-    {
-      id: "6",
-      label: "Lorem",
-      value: 12890,
-    },
-    {
-      id: "7",
-      label: "Lorem",
-      value: 200,
-    },
-    {
-      id: "8",
-      label: "Lorem",
-      value: 16000,
-    },
-    {
-      id: "9",
-      label: "Lorem",
-      value: 321.32,
-    },
-    {
-      id: "10",
-      label: "Lorem",
-      value: 0,
-    },
-  ];
+  const { selectedBranch } = useBranch();
+  const { GetAPI } = useApiContext();
 
-  const expenseList = [
-    {
-      id: "1",
-      label: "Lorem",
-      value: 12890,
-    },
-    {
-      id: "2",
-      label: "Lorem",
-      value: 200,
-    },
-    {
-      id: "3",
-      label: "Lorem",
-      value: 16000,
-    },
-    {
-      id: "4",
-      label: "Lorem",
-      value: 321.32,
-    },
-    {
-      id: "5",
-      label: "Lorem",
-      value: 0,
-    },
-    {
-      id: "6",
-      label: "Lorem",
-      value: 12890,
-    },
-    {
-      id: "7",
-      label: "Lorem",
-      value: 200,
-    },
-    {
-      id: "8",
-      label: "Lorem",
-      value: 16000,
-    },
-    {
-      id: "9",
-      label: "Lorem",
-      value: 321.32,
-    },
-    {
-      id: "10",
-      label: "Lorem",
-      value: 0,
-    },
-  ];
   const [dateRange, setDateRange] = useState({
     from: moment().subtract(1, "month").toDate(),
     to: moment().toDate(),
   });
+  const [selectedClosedPage, setSelectedClosedPage] = useState(1);
+  const [closedTransactionPages, setClosedTransactionPages] = useState(1);
+  const [closedTransactionList, setClosedTransactionList] = useState<
+    PayableTransactionProps[]
+  >([]);
+  const [selectedApprovedPage, setSelectedApprovedPage] = useState(1);
+  const [approvedTransactionPages, setApprovedTransactionPages] = useState(1);
+  const [approvedTransactionList, setApprovedTransactionList] = useState<
+    PayableTransactionProps[]
+  >([]);
 
   const handleSelect: SelectRangeEventHandler = (
     range: DateRange | undefined,
@@ -134,6 +47,36 @@ export function PayableFinancialLists() {
       setDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
     }
   };
+
+  async function GetClosedTransactions() {
+    const transactions = await GetAPI(
+      `/payable-transaction?companyId=${selectedBranch?.companyId}&page=${selectedClosedPage}&status=CLOSED`,
+      true,
+    );
+    if (transactions.status === 200) {
+      setClosedTransactionList(transactions.body.payableTransactions);
+      setClosedTransactionPages(transactions.body.total);
+    }
+  }
+
+  async function GetApprovedTransactions() {
+    const transactions = await GetAPI(
+      `/payable-transaction?companyId=${selectedBranch?.companyId}&page=${selectedApprovedPage}&status=APPROVED`,
+      true,
+    );
+    if (transactions.status === 200) {
+      setApprovedTransactionList(transactions.body.payableTransactions);
+      setApprovedTransactionPages(transactions.body.total);
+    }
+  }
+
+  useEffect(() => {
+    GetClosedTransactions();
+  }, [selectedClosedPage]);
+
+  useEffect(() => {
+    GetApprovedTransactions();
+  }, [selectedApprovedPage]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -166,7 +109,14 @@ export function PayableFinancialLists() {
             <div className="flex flex-col">
               <span className="text-sm">Efetuado</span>
               <span className="text-primary font-semibold">
-                {viewAllValues ? "R$12,890.00" : "********"}
+                {viewAllValues
+                  ? closedTransactionList
+                      .reduce((a, b) => a + b.value, 0)
+                      .toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                  : "********"}
               </span>
             </div>
             <DropdownMenu>
@@ -189,14 +139,14 @@ export function PayableFinancialLists() {
             </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
-            {incomeList.map((inc) => (
+            {closedTransactionList.map((inc) => (
               <div
                 className="my-2 flex w-full items-center justify-between"
                 key={inc.id}
               >
                 <div className="flex items-center gap-2">
                   <div className="bg-primary h-6 w-6 rounded-full" />
-                  <span>{inc.label}</span>
+                  <span>{moment(inc.dueDate).format("DD/MM/YYYY")}</span>
                 </div>
                 <span>
                   {viewAllValues
@@ -210,30 +160,11 @@ export function PayableFinancialLists() {
             ))}
           </ScrollArea>
           <div className="flex h-20 w-full items-center justify-center gap-2 overflow-hidden border-t border-t-zinc-200 p-2">
-            <button className="flex items-center justify-center rounded-full p-1 text-zinc-400">
-              <ChevronLeft />
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              1
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              2
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              3
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              4
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              5
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              6
-            </button>
-            <button className="flex items-center justify-center rounded-full p-1 text-zinc-400">
-              <ChevronRight />
-            </button>
+            <CustomPagination
+              currentPage={selectedClosedPage}
+              pages={closedTransactionPages}
+              setCurrentPage={setSelectedClosedPage}
+            />
           </div>
         </div>
         <div className="flex w-full flex-col rounded-xl border border-zinc-200 shadow-sm xl:w-1/2">
@@ -241,7 +172,14 @@ export function PayableFinancialLists() {
             <div className="flex flex-col">
               <span className="text-sm">Á Pagar</span>
               <span className="font-semibold text-[#EF4444]">
-                {viewAllValues ? "-R$8,890.00" : "********"}
+                {viewAllValues
+                  ? approvedTransactionList
+                      .reduce((a, b) => a + b.value, 0)
+                      .toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                  : "********"}
               </span>
             </div>
             <DropdownMenu>
@@ -264,14 +202,14 @@ export function PayableFinancialLists() {
             </DropdownMenu>
           </div>
           <ScrollArea className="h-60 w-full px-4">
-            {expenseList.map((exp) => (
+            {approvedTransactionList.map((exp) => (
               <div
                 className="my-2 flex w-full items-center justify-between"
                 key={exp.id}
               >
                 <div className="flex items-center gap-2">
                   <div className="h-6 w-6 rounded-full bg-[#EF4444]" />
-                  <span>{exp.label}</span>
+                  <span>{moment(exp.dueDate).format("DD/MM/YYYY")}</span>
                 </div>
                 <span>
                   {viewAllValues
@@ -285,30 +223,11 @@ export function PayableFinancialLists() {
             ))}
           </ScrollArea>
           <div className="flex h-20 w-full items-center justify-center gap-2 overflow-hidden border-t border-t-zinc-200 p-2">
-            <button className="flex items-center justify-center rounded-full p-1 text-zinc-400">
-              <ChevronLeft />
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              1
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              2
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              3
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              4
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              5
-            </button>
-            <button className="text-primary bg-primary/20 flex h-6 w-6 items-center justify-center rounded-full p-1 text-sm">
-              6
-            </button>
-            <button className="flex items-center justify-center rounded-full p-1 text-zinc-400">
-              <ChevronRight />
-            </button>
+            <CustomPagination
+              currentPage={selectedApprovedPage}
+              pages={approvedTransactionPages}
+              setCurrentPage={setSelectedApprovedPage}
+            />
           </div>
         </div>
       </div>

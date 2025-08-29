@@ -20,7 +20,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Step1 } from "./components/step1";
@@ -73,9 +73,10 @@ export interface UserProps {
   phone: string;
 }
 
-export default function ApprovePayable({ params }: { params: { id: string } }) {
+export default function ApprovePayable() {
   const { handleNavigation } = useLoadingContext();
   const { GetAPI, PutAPI } = useApiContext();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
   const [selectedPayable, setSelectedPayable] =
@@ -101,11 +102,12 @@ export default function ApprovePayable({ params }: { params: { id: string } }) {
 
   async function HandleUpdateTransaction(status: string) {
     setIsUpdating(true);
-    console.log("selectedPayable", selectedPayable);
     const update = await PutAPI(
-      `/payable-transaction/${params.id}`,
+      `/payable-transaction/${id}`,
       {
-        ...selectedPayable,
+        bankAccountId: selectedPayable?.bankAccountId,
+        paymentType: selectedPayable?.paymentType,
+        dueDate: selectedPayable?.dueDate,
         status,
         approvedById: isYou?.id,
       },
@@ -125,7 +127,7 @@ export default function ApprovePayable({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    GetIndividualPayable(params.id);
+    GetIndividualPayable(id);
     GetUser();
   }, []);
 

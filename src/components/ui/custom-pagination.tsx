@@ -12,11 +12,13 @@ interface Props {
   pages: number;
   currentPage: number;
   setCurrentPage: (page: number) => void;
+  className?: string;
 }
 export const CustomPagination = ({
   pages,
   currentPage,
   setCurrentPage,
+  className,
 }: Props) => {
   const handleFirst = () => {
     if (currentPage > 1) {
@@ -54,7 +56,7 @@ export const CustomPagination = ({
   };
 
   return (
-    <Pagination className="">
+    <Pagination className={className}>
       <PaginationContent>
         <PaginationPrevious
           onClick={handleFirst}

@@ -27,7 +27,7 @@ export default function Payable() {
           <PayableGoalCards selectedTableType="consolidated" />
         </div>
         <div className="col-span-12">
-          <PayableTransactions filterType="consolidated" />
+          <PayableTransactions selectedStatus="CONSOLIDATED" />
         </div>
       </div>
     </div>

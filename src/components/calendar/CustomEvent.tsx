@@ -58,13 +58,15 @@ export function CustomEvent({
           <div
             className={cn(
               "w-full text-center",
-              event.status === "Pago" || event.status === "Recebido"
+              event.status === "CLOSED" || event.status === "Recebido"
                 ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
                 : (event.status === "PENDING" &&
                       moment(event.dueDate).endOf("day").isBefore(moment())) ||
                     event.status === "REJECTED"
                   ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
-                  : "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]",
+                  : event.status === "APPROVED"
+                    ? "rounded-md border border-blue-500 bg-blue-500/20 px-2 py-1 text-blue-500"
+                    : "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]",
             )}
           >
             {event.status === "PENDING" &&
@@ -77,7 +79,11 @@ export function CustomEvent({
                   ? "À Pagar"
                   : event.status === "REJECTED"
                     ? "Rejeitado"
-                    : "Atrasado"}{" "}
+                    : event.status === "CLOSED" && event.payable
+                      ? "Pago"
+                      : event.status === "CLOSED" && !event.payable
+                        ? "Recebido"
+                        : "Atrasado"}{" "}
           </div>{" "}
         </div>
       </div>

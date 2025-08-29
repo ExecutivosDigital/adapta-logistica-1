@@ -27,7 +27,7 @@ export default function Payable() {
           <PayableGoalCards selectedTableType="this-month" />
         </div>
         <div className="col-span-12">
-          <PayableTransactions filterType="this-month" />
+          <PayableTransactions selectedStatus="THIS_MONTH" />
         </div>
       </div>
     </div>

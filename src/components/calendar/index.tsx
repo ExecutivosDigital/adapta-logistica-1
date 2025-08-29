@@ -19,7 +19,10 @@ const localizer = momentLocalizer(moment);
 
 export interface PayableTransactionProps {
   approvedById: string;
-  bankAccount: unknown | null;
+  bankAccount: {
+    id: string;
+    name: string;
+  } | null;
   bankAccountId?: string;
   documentNumber: unknown | null;
   documents: {
@@ -305,7 +308,6 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
       `/payable-transaction/monthly${data}`,
       true,
     );
-    console.log("transactions", transactions);
     if (transactions.status === 200) {
       const grouped = transactions.body.payableTransactions.reduce(
         (acc: any, item: any) => {

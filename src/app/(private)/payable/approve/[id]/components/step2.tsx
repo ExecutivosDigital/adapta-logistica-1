@@ -30,7 +30,6 @@ interface Props {
 export function Step2({ selectedPayable, setSelectedPayable }: Props) {
   const { width } = useScreenWidth();
   const { bankAccounts } = useFinancialDataContext();
-  const [selectedPaymentForm] = useState("");
   const [filterPaymentType, setFilterPaymentType] = useState("");
 
   const paymentTypes = [
@@ -208,12 +207,12 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
               className={cn(
                 buttonBase,
                 "flex h-8 items-center justify-center rounded-2xl px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
-                selectedPaymentForm
+                selectedPayable.paymentType
                   ? "border-primary text-zinc-700"
                   : "border-zinc-200 text-zinc-500",
               )}
             >
-              {selectedPaymentForm || "Selecione"}
+              {selectedPayable.paymentType || "Selecione"}
             </div>
           </div>
           <div className="col-span-3 flex flex-col text-[13px] font-medium text-zinc-600">

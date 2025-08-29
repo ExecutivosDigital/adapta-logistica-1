@@ -28,7 +28,6 @@ export function Step1({
   setAllDocuments,
 }: Props) {
   const addNewDocument = () => {
-    console.log("entrou");
     const newDocument: Document = {
       id: Date.now().toString(),
       documentNumber: "",

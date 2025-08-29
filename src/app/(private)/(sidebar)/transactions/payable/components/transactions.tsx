@@ -16,137 +16,314 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toPay, TransactionProps } from "@/const/transactions";
 import { useLoadingContext } from "@/context/LoadingContext";
+import {
+  PayableTransactionProps,
+  usePayableContext,
+} from "@/context/PayableContext";
 import { useValueContext } from "@/context/ValueContext";
 import { cn } from "@/utils/cn";
-
+import debounce from "lodash.debounce";
 import {
   ChevronDown,
   ChevronRight,
   ChevronUp,
   EllipsisVertical,
-  Files,
+  Search,
 } from "lucide-react";
 import moment from "moment";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { SelectSingleEventHandler } from "react-day-picker";
+import { PayableDocumentsModal } from "./payable-documents-modal";
 
 type SortDirection = "asc" | "desc" | null;
 type SortableColumn =
   | "date"
   | "origin"
   | "value"
-  | "category"
+  | "ledgerAccount"
   | "cc"
   | "status";
+
 interface Props {
-  filterType?: string;
+  selectedStatus?: string;
 }
-export function PayableTransactions({ filterType }: Props) {
+
+export function PayableTransactions({ selectedStatus }: Props) {
   const { viewAllValues } = useValueContext();
   const { handleNavigation } = useLoadingContext();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
-  const [accessLevel, setAccessLevel] = useState("common");
+  const {
+    payableList,
+    payablePages,
+    selectedPayablePage,
+    setSelectedPayablePage,
+    isGettingPayables,
+    payableQuery,
+    setPayableQuery,
+    payableTransactionList,
+    payableTransactionPages,
+    selectedPayableTransactionPage,
+    setSelectedPayableTransactionPage,
+  } = usePayableContext();
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  const [query] = useState("");
-  const tableTypes = [{ id: "1", name: "Pagamentos" }] as const;
-  const [selectedTableType, setSelectedTableType] = useState<{
-    id: "1" | "2" | "3";
-    name: string;
-  }>(tableTypes[0]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [accessLevel, setAccessLevel] = useState("common");
+  const [isOpenPayableDocumentsModal, setIsOpenPayableDocumentsModal] =
+    useState(false);
+  const [selectedPayable, setSelectedPayable] =
+    useState<PayableTransactionProps | null>(null);
+  const [tableType, setTableType] = useState<"payable" | "transaction">(
+    "payable",
+  );
 
-  const rawRows: TransactionProps[] = (() => {
-    if (filterType === "overdue") {
-      return toPay.filter((r) => r.status === "atrasado");
-    }
-    if (filterType === "consolidated") {
-      return toPay.filter((r) => r.status === "pago");
-    }
-    if (filterType === "this-month") {
-      return toPay.filter(
-        (r) =>
-          moment(r.date).isSame(new Date(), "month") && r.status === "a_pagar",
-      );
-    }
-    return toPay;
-  })();
+  const PayableColumns = [
+    { key: "date" as SortableColumn, label: "Data", sortable: true },
+    { key: "origin" as SortableColumn, label: "Fornecedor", sortable: true },
+    { key: "value" as SortableColumn, label: "Valor", sortable: true },
+    {
+      key: "ledgerAccount" as SortableColumn,
+      label: "Conta Contábil",
+      sortable: true,
+    },
+    { key: "cc" as SortableColumn, label: "Centro de Custos", sortable: true },
+    { key: "status" as SortableColumn, label: "Status", sortable: true },
+    { key: "actions", label: "", sortable: false },
+  ];
 
-  const parseDate = (raw: string): Date => {
-    if (raw.includes("/")) {
-      const [d, m, y] = raw.split("/");
-      return new Date(Number(y), Number(m) - 1, Number(d));
+  const PayableTransactionColumns = [
+    { key: "date" as SortableColumn, label: "Data", sortable: true },
+    {
+      key: "bankAccount" as SortableColumn,
+      label: "Conta Bancária",
+      sortable: true,
+    },
+    { key: "value" as SortableColumn, label: "Valor", sortable: true },
+    {
+      key: "paymentType" as SortableColumn,
+      label: "Tipo de pagamento",
+      sortable: true,
+    },
+    {
+      key: "documents" as SortableColumn,
+      label: "Documentos",
+      sortable: false,
+    },
+    { key: "status" as SortableColumn, label: "Status", sortable: true },
+    { key: "actions", label: "", sortable: false },
+  ];
+
+  const TransactionColumns = [
+    { key: "date" as SortableColumn, label: "Data", sortable: true },
+    { key: "supplier" as SortableColumn, label: "Fornecedor", sortable: true },
+    {
+      key: "ledgerAccount" as SortableColumn,
+      label: "Conta Contábil",
+      sortable: true,
+    },
+    {
+      key: "bankAccount" as SortableColumn,
+      label: "Conta Bancária",
+      sortable: true,
+    },
+    { key: "value" as SortableColumn, label: "Valor", sortable: true },
+    {
+      key: "paymentType" as SortableColumn,
+      label: "Tipo de pagamento",
+      sortable: true,
+    },
+    {
+      key: "documents" as SortableColumn,
+      label: "Documentos",
+      sortable: false,
+    },
+    { key: "status" as SortableColumn, label: "Status", sortable: true },
+    { key: "actions", label: "", sortable: false },
+  ];
+
+  const toggleRow = (rowIndex: number) => {
+    const newExpandedRows = new Set(expandedRows);
+    if (newExpandedRows.has(rowIndex)) {
+      newExpandedRows.delete(rowIndex);
+    } else {
+      newExpandedRows.add(rowIndex);
     }
-    if (raw.includes("-")) {
-      const [y, m, d] = raw.split("-");
-      return new Date(Number(y), Number(m) - 1, Number(d));
-    }
-    return new Date(raw);
+    setExpandedRows(newExpandedRows);
   };
 
-  const formatDate = (raw: string): string => {
-    const d = parseDate(raw);
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
+  const HandleRedirect = (transaction: PayableTransactionProps) => {
+    if (transaction.status === "REJECTED") {
+      return;
+    } else if (transaction.status === "CLOSED") {
+      return handleNavigation(`/payable/payed/${transaction.id}`);
+    } else if (transaction.status !== "APPROVED") {
+      if (accessLevel === "common") {
+        return handleNavigation(`/payable/add-document/${transaction.id}`);
+      } else if (accessLevel === "admin") {
+        return handleNavigation(`/payable/approve/${transaction.id}`);
+      }
+    } else if (transaction.status === "APPROVED") {
+      return handleNavigation(`/payable/pay/${transaction.id}`);
+    }
   };
 
-  const parseValue = (value: string): number =>
-    Number(value.replace(/[^0-9,-]+/g, "").replace(/,/g, "."));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderTransactionRow = (transaction: any, isSubRow = false) => (
+    <TableRow
+      key={transaction.id}
+      className={cn(
+        "hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300",
+        isSubRow && "bg-gray-50",
+      )}
+    >
+      <TableCell className="py-0.5 pl-20 text-start text-sm font-medium whitespace-nowrap">
+        {moment(transaction.dueDate).format("DD/MM/YYYY")}
+      </TableCell>
+      <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+        <div className="flex items-center gap-4 text-center">
+          {transaction.bankAccount ? transaction.bankAccount.name : "N/A"}
+        </div>
+      </TableCell>
+      <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#EF4444]">
+        {viewAllValues
+          ? transaction.value.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })
+          : "********"}
+      </TableCell>
+      <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+        {transaction.paymentType}
+      </TableCell>
+      <TableCell
+        onClick={() => {
+          setSelectedPayable(transaction);
+          setIsOpenPayableDocumentsModal(true);
+        }}
+        className="h-full cursor-pointer py-0.5 text-start text-sm font-medium whitespace-nowrap"
+      >
+        <div className="flex items-center gap-2">
+          Documentos
+          <ChevronRight className="h-4" />
+        </div>
+      </TableCell>
+      <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+        <div
+          className={cn(
+            "w-full text-center",
+            transaction.status === "CLOSED" || transaction.status === "Recebido"
+              ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
+              : (transaction.status === "PENDING" &&
+                    moment(transaction.dueDate)
+                      .endOf("day")
+                      .isBefore(moment())) ||
+                  transaction.status === "REJECTED"
+                ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
+                : transaction.status === "APPROVED"
+                  ? "rounded-md border border-blue-500 bg-blue-500/20 px-2 py-1 text-blue-500"
+                  : "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]",
+          )}
+        >
+          {transaction.status === "PENDING" &&
+          moment(transaction.dueDate).endOf("day").isAfter(moment())
+            ? "Pendente"
+            : transaction.status === "PENDING" &&
+                moment(transaction.dueDate).endOf("day").isBefore(moment())
+              ? "Atrasado"
+              : transaction.status === "APPROVED"
+                ? "À Pagar"
+                : transaction.status === "REJECTED"
+                  ? "Rejeitado"
+                  : transaction.status === "CLOSED"
+                    ? "Pago"
+                    : "Atrasado"}{" "}
+        </div>
+      </TableCell>
+      <TableCell
+        className={cn(
+          "py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-800 underline",
+          transaction.status === "REJECTED" && "hidden",
+        )}
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <EllipsisVertical />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => HandleRedirect(transaction)}>
+              Detalhes
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
+    </TableRow>
+  );
 
   const handleSort = (column: SortableColumn) => {
     if (sortColumn === column) {
-      const next =
-        sortDirection === "asc"
-          ? "desc"
-          : sortDirection === "desc"
-            ? null
-            : "asc";
-      setSortDirection(next);
-      if (!next) setSortColumn(null);
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortDirection(null);
+        setSortColumn(null);
+      }
     } else {
       setSortColumn(column);
       setSortDirection("asc");
     }
-    setCurrentPage(1);
+  };
+
+  const getSortIcon = (column: SortableColumn) => {
+    if (sortColumn !== column) {
+      return <ChevronUp className="h-4 w-4 text-gray-300" />;
+    }
+
+    if (sortDirection === "asc") {
+      return <ChevronUp className="h-4 w-4 text-gray-600" />;
+    } else if (sortDirection === "desc") {
+      return <ChevronDown className="h-4 w-4 text-gray-600" />;
+    }
+
+    return <ChevronUp className="h-4 w-4 text-gray-300" />;
   };
 
   const sortedRows = useMemo(() => {
-    if (!sortColumn || !sortDirection) return rawRows;
+    if (!sortColumn || !sortDirection) return payableList;
 
-    const rowsCopy = [...rawRows];
-    rowsCopy.sort((a, b) => {
+    return [...payableList].sort((a, b) => {
+      // Get the first transaction from each row for comparison
+      const aPayable = a;
+      const bPayable = b;
+
       let aValue: number | Date | string;
       let bValue: number | Date | string;
 
       switch (sortColumn) {
         case "date":
-          aValue = parseDate(a.date);
-          bValue = parseDate(b.date);
+          aValue = new Date(aPayable.dueDate);
+          bValue = new Date(bPayable.dueDate);
           break;
         case "origin":
-          aValue = a.origin.toLowerCase();
-          bValue = b.origin.toLowerCase();
+          aValue = aPayable.supplier.name.toLowerCase();
+          bValue = bPayable.supplier.name.toLowerCase();
           break;
         case "value":
-          aValue = parseValue(a.value);
-          bValue = parseValue(b.value);
+          aValue = aPayable.value;
+          bValue = bPayable.value;
           break;
-        case "category":
-          aValue = a.category.toLowerCase();
-          bValue = b.category.toLowerCase();
+        case "ledgerAccount":
+          aValue = aPayable.ledgerAccount.name.toLowerCase();
+          bValue = bPayable.ledgerAccount.name.toLowerCase();
           break;
         case "cc":
-          aValue = a.cc.toLowerCase();
-          bValue = b.cc.toLowerCase();
+          aValue = aPayable.ledgerAccount.resultCenter.name.toLowerCase();
+          bValue = bPayable.ledgerAccount.resultCenter.name.toLowerCase();
           break;
         case "status":
-          aValue = String(a.status).toLowerCase();
-          bValue = String(b.status).toLowerCase();
+          aValue = aPayable.status.toLowerCase();
+          bValue = bPayable.status.toLowerCase();
           break;
         default:
           return 0;
@@ -156,80 +333,126 @@ export function PayableTransactions({ filterType }: Props) {
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-
-    return rowsCopy;
-  }, [rawRows, sortColumn, sortDirection]);
+  }, [payableList, sortColumn, sortDirection]);
 
   const filteredRows = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    if (!term) return sortedRows;
+    const searchTerm = payableQuery.toLowerCase().trim();
 
-    return sortedRows.filter((tx) =>
-      [
-        formatDate(tx.date),
-        tx.origin,
-        tx.value,
-        tx.type,
-        tx.category,
-        tx.cc,
-        String(tx.status),
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(term),
-    );
-  }, [sortedRows, query]);
+    const queryFiltered = sortedRows.filter((row) => {
+      return (
+        row.supplier.name.toLowerCase().includes(searchTerm) ||
+        row.ledgerAccount.name.toLowerCase().includes(searchTerm) ||
+        row.value.toString().includes(searchTerm) ||
+        row.ledgerAccount.resultCenter.name
+          .toLowerCase()
+          .includes(searchTerm) ||
+        row.status.toLowerCase().includes(searchTerm)
+      );
+    });
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(filteredRows.length / rowsPerPage)),
-    [filteredRows.length, rowsPerPage],
-  );
+    const dateFiltered = queryFiltered.filter((p) => {
+      if (!selectedDate) return true;
+      const sel = moment(selectedDate).startOf("day").valueOf();
+      const payableMatches = moment(p.dueDate).startOf("day").valueOf() === sel;
+      const transactionMatches =
+        Array.isArray(p.transactions) &&
+        p.transactions.some(
+          (tx) => moment(tx.dueDate).startOf("day").valueOf() === sel,
+        );
+      return payableMatches || transactionMatches;
+    });
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [totalPages, currentPage]);
+    const statusFiltered =
+      selectedStatus === "CONSOLIDATED"
+        ? dateFiltered.filter((p) => p.status === "CLOSED")
+        : selectedStatus === "THIS_MONTH"
+          ? dateFiltered.filter((p) =>
+              moment(p.dueDate).isSame(new Date(), "month"),
+            )
+          : selectedStatus === "OVERDUE"
+            ? dateFiltered.filter((p) =>
+                moment(p.dueDate).startOf("day").isBefore(new Date()),
+              )
+            : dateFiltered;
+    return statusFiltered;
+  }, [sortedRows, payableQuery]);
 
-  const paginatedRows = useMemo(() => {
-    const start = (currentPage - 1) * rowsPerPage;
-    return filteredRows.slice(start, start + rowsPerPage);
-  }, [filteredRows, currentPage, rowsPerPage]);
+  const sortedTransactionRows = useMemo(() => {
+    if (!sortColumn || !sortDirection) return payableTransactionList;
 
-  const columns = [
-    { key: "date" as const, label: "Data Pag.", sortable: true },
-    { key: "origin" as const, label: "Fornecedor", sortable: true },
-    { key: "value" as const, label: "Valor Título", sortable: true },
-    { key: "category" as const, label: "Lançamentos", sortable: true },
-    { key: "cc" as const, label: "Documentos", sortable: true },
-    { key: "status" as const, label: "Status", sortable: true },
-  ] satisfies { key: SortableColumn; label: string; sortable: boolean }[];
+    return [...payableTransactionList].sort((a, b) => {
+      // Get the first transaction from each row for comparison
+      const aPayable = a;
+      const bPayable = b;
 
-  const getSortIcon = (column: SortableColumn) => {
-    if (sortColumn !== column)
-      return <ChevronUp className="h-4 w-4 text-gray-300" />;
-    if (sortDirection === "asc")
-      return <ChevronUp className="h-4 w-4 text-gray-600" />;
-    if (sortDirection === "desc")
-      return <ChevronDown className="h-4 w-4 text-gray-600" />;
-    return <ChevronUp className="h-4 w-4 text-gray-300" />;
-  };
+      let aValue: number | Date | string;
+      let bValue: number | Date | string;
 
-  const handleRedirect = (row: TransactionProps) => {
-    if (row.status === "negado") {
-      return;
-    } else if (row.status === "pago") {
-      return handleNavigation(`/payable/payed/${row.id}`);
-    } else if (row.status !== "a_pagar") {
-      if (accessLevel === "common") {
-        return handleNavigation(`/payable/add-document/${row.id}`);
-      } else if (accessLevel === "admin") {
-        return handleNavigation(`/payable/approve/${row.id}`);
+      switch (sortColumn) {
+        case "date":
+          aValue = new Date(aPayable.dueDate);
+          bValue = new Date(bPayable.dueDate);
+          break;
+        case "origin":
+          aValue = aPayable.bankAccount?.name.toLowerCase() || "";
+          bValue = bPayable.bankAccount?.name.toLowerCase() || "";
+          break;
+        case "value":
+          aValue = aPayable.value;
+          bValue = bPayable.value;
+          break;
+        case "ledgerAccount":
+          aValue = aPayable.paymentType.toLowerCase();
+          bValue = bPayable.paymentType.toLowerCase();
+          break;
+        case "status":
+          aValue = aPayable.status.toLowerCase();
+          bValue = bPayable.status.toLowerCase();
+          break;
+        default:
+          return 0;
       }
-    } else if (row.status === "a_pagar") {
-      return handleNavigation(`/payable/pay/${row.id}`);
-    }
-  };
+
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [payableTransactionList, sortColumn, sortDirection]);
+
+  const filteredTransactionRows = useMemo(() => {
+    const searchTerm = payableQuery.toLowerCase().trim();
+
+    const queryFiltered = sortedTransactionRows.filter((row) => {
+      return (
+        row.bankAccount?.name.toLowerCase().includes(searchTerm) ||
+        row.value.toString().includes(searchTerm) ||
+        row.paymentType.toLowerCase().includes(searchTerm) ||
+        row.status.toLowerCase().includes(searchTerm)
+      );
+    });
+
+    const dateFiltered = queryFiltered.filter((p) => {
+      if (!selectedDate) return true;
+      const sel = moment(selectedDate).startOf("day").valueOf();
+      const transactionMatches =
+        moment(p.dueDate).startOf("day").valueOf() === sel;
+      return transactionMatches;
+    });
+
+    const statusFiltered =
+      selectedStatus === "CONSOLIDATED"
+        ? dateFiltered.filter((p) => p.status === "CLOSED")
+        : selectedStatus === "THIS_MONTH"
+          ? dateFiltered.filter((p) =>
+              moment(p.dueDate).isSame(new Date(), "month"),
+            )
+          : selectedStatus === "OVERDUE"
+            ? dateFiltered.filter((p) =>
+                moment(p.dueDate).startOf("day").isBefore(new Date()),
+              )
+            : dateFiltered;
+    return statusFiltered;
+  }, [sortedTransactionRows, payableQuery]);
 
   const handleSelect: SelectSingleEventHandler = (date: Date | undefined) => {
     if (date) {
@@ -239,275 +462,534 @@ export function PayableTransactions({ filterType }: Props) {
     }
   };
 
+  const handleStopTypingPositive = (value: string) => {
+    setPayableQuery(value);
+  };
+
+  const debouncedHandleStopTyping = useCallback(
+    debounce(handleStopTypingPositive, 1000),
+    [],
+  );
+
   return (
-    <div className="flex flex-col">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Fluxo de Pagamentos</span>
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Fluxo de Pagamentos</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="rounded-md border border-zinc-200 px-4 py-2 font-semibold text-zinc-400">
+                  Acesso {accessLevel === "common" ? "Comum" : "Diretor"}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="border-zinc-200">
+                <DropdownMenuItem
+                  onClick={() => setAccessLevel("common")}
+                  className={cn(
+                    "hover:bg-primary/20 cursor-pointer transition duration-300",
+                    accessLevel === "common" &&
+                      "bg-primary/20 text-primary font-semibold",
+                  )}
+                >
+                  Comum
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setAccessLevel("admin")}
+                  className={cn(
+                    "hover:bg-primary/20 cursor-pointer transition duration-300",
+                    accessLevel === "admin" &&
+                      "bg-primary/20 text-primary font-semibold",
+                  )}
+                >
+                  Diretor
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="rounded-md border border-zinc-200 px-4 py-2 font-semibold text-zinc-400">
-                Acesso {accessLevel === "common" ? "Comum" : "Diretor"}
+              <div>
+                <OrangeButton
+                  disabled
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
+                >
+                  <span className="text-sm"> Criar Lançamento</span>
+                  <ChevronRight />
+                </OrangeButton>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="border-zinc-200">
+            <DropdownMenuContent side="bottom" align="end" className="z-[999]">
               <DropdownMenuItem
-                onClick={() => setAccessLevel("common")}
-                className={cn(
-                  "hover:bg-primary/20 cursor-pointer transition duration-300",
-                  accessLevel === "common" &&
-                    "bg-primary/20 text-primary font-semibold",
-                )}
+                onClick={() => handleNavigation("/payable/new")}
+                className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
-                Comum
+                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                  Lançar Despesa
+                  <div className="border-primary h-4 w-4 rounded-md border"></div>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
+                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                  Pagamento de Colaboradores
+                  <div className="border-primary h-4 w-4 rounded-md border"></div>
+                </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => setAccessLevel("admin")}
-                className={cn(
-                  "hover:bg-primary/20 cursor-pointer transition duration-300",
-                  accessLevel === "admin" &&
-                    "bg-primary/20 text-primary font-semibold",
-                )}
+                onClick={() => handleNavigation("/payable/recurring/new")}
+                className="hover:bg-primary/20 cursor-pointer transition duration-300"
               >
-                Diretor
+                <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
+                  Desp. Recorrentes
+                  <div className="border-primary h-4 w-4 rounded-md border"></div>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div>
-              <OrangeButton
-                disabled
-                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-white shadow-sm transition duration-300"
-              >
-                <span className="text-sm"> Criar Lançamento</span>
-                <ChevronRight />
-              </OrangeButton>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" className="z-[999]">
-            <DropdownMenuItem
-              onClick={() => handleNavigation("/payable/new")}
-              className="hover:bg-primary/20 cursor-pointer transition duration-300"
-            >
-              <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
-                Lançar Despesa
-                <div className="border-primary h-4 w-4 rounded-md border"></div>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-300">
-              <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
-                Pagamento de Colaboradores
-                <div className="border-primary h-4 w-4 rounded-md border"></div>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleNavigation("/payable/recurring/new")}
-              className="hover:bg-primary/20 cursor-pointer transition duration-300"
-            >
-              <div className="flex w-full flex-row items-center justify-between gap-2 border-b p-1 py-2">
-                Desp. Recorrentes
-                <div className="border-primary h-4 w-4 rounded-md border"></div>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
-        {tableTypes.map((tab) => {
-          const isActive = tab.id === selectedTableType.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setSelectedTableType(tab);
-                setCurrentPage(1); // reset page when changing tab
-              }}
+        <div className="relative flex w-full gap-8 border-b border-b-zinc-200">
+          <button
+            onClick={() => setTableType("payable")}
+            className={cn(
+              "flex h-12 items-center gap-2 border-b border-b-transparent px-2 text-sm transition duration-200",
+              tableType === "payable" && "border-b-primary text-primary",
+            )}
+          >
+            <div
               className={cn(
-                "flex h-12 items-center gap-2 border-b px-2 text-sm transition",
-                isActive
-                  ? "border-b-primary text-primary"
-                  : "hover:text-primary border-b-transparent",
+                "flex h-4 w-4 items-center justify-center rounded-full",
+                tableType === "payable" && "bg-primary/20 text-primary",
               )}
             >
-              <div
-                className={cn(
-                  "flex h-4 w-4 items-center justify-center rounded-full",
-                  isActive
-                    ? "bg-primary/20 text-primary"
-                    : "bg-zinc-400/20 text-zinc-400",
-                )}
-              >
-                {isActive ? <ChevronDown /> : <ChevronRight />}
-              </div>
-              {tab.name}
-            </button>
-          );
-        })}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex h-12 items-center gap-2 px-2 text-sm transition">
-              {selectedDate
-                ? moment(selectedDate).format("DD/MM/YYYY")
-                : "Filtrar por Dia"}
-              <div className="flex h-4 w-4 items-center justify-center rounded-full">
-                <ChevronDown />
-              </div>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <Calendar
-              initialFocus
-              mode="single"
-              defaultMonth={moment().toDate()}
-              selected={selectedDate ? selectedDate : undefined}
-              onSelect={handleSelect}
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <Table className="border-collapse">
-        <TableHeader>
-          <TableRow>
-            {columns.map((column) => (
-              <TableHead
-                key={column.key}
-                className="h-12 cursor-pointer text-sm text-zinc-500"
-                onClick={() => column.sortable && handleSort(column.key)}
-              >
-                <div
-                  className={cn("flex items-center gap-2", {
-                    "justify-center": column.label === "Status",
-                  })}
-                >
-                  {column.label}
-                  {column.sortable && getSortIcon(column.key)}
+              <ChevronDown />
+            </div>
+            À Pagar
+          </button>
+          <button
+            onClick={() => setTableType("transaction")}
+            className={cn(
+              "flex h-12 items-center gap-2 border-b border-b-transparent px-2 text-sm transition duration-200",
+              tableType === "transaction" && "border-b-primary text-primary",
+            )}
+          >
+            <div
+              className={cn(
+                "flex h-4 w-4 items-center justify-center rounded-full",
+                tableType === "transaction" && "bg-primary/20 text-primary",
+              )}
+            >
+              <ChevronDown />
+            </div>
+            Transações
+          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex h-12 items-center gap-2 px-2 text-sm transition">
+                {selectedDate
+                  ? moment(selectedDate).format("DD/MM/YYYY")
+                  : "Filtrar por Dia"}
+                <div className="flex h-4 w-4 items-center justify-center rounded-full">
+                  <ChevronDown />
                 </div>
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {paginatedRows
-            .filter(
-              (r) =>
-                selectedDate === null ||
-                moment(r.date).toDate().getTime() === selectedDate.getTime(),
-            )
-            .map((row) => (
-              <Fragment key={row.id}>
-                <TableRow
-                  onClick={() => handleRedirect(row)}
-                  className="hover:bg-primary/20 h-14 cursor-pointer transition"
-                >
-                  {/* Data */}
-                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                    {moment(row.date).format("DD/MM/YYYY")}
-                  </TableCell>
-
-                  {/* Fornecedor */}
-                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                    {row.origin}
-                  </TableCell>
-
-                  {/* Valor */}
-                  <TableCell
-                    className={cn(
-                      "py-0.5 text-sm whitespace-nowrap",
-                      row.type === "toReceive"
-                        ? "text-emerald-600"
-                        : "text-red-500",
-                    )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <Calendar
+                initialFocus
+                mode="single"
+                defaultMonth={moment().toDate()}
+                selected={selectedDate ? selectedDate : undefined}
+                onSelect={handleSelect}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <label
+            htmlFor="search"
+            className="relative ml-auto flex h-10 w-full items-center overflow-hidden rounded-md border border-zinc-200 transition duration-200 focus-within:border-zinc-200 xl:w-80"
+          >
+            <input
+              className="absolute top-0 left-0 h-full w-full bg-transparent px-4"
+              id="search"
+              type="text"
+              onChange={(e) => debouncedHandleStopTyping(e.target.value)}
+              placeholder="Busca"
+            />
+            <Search className="text-default-500 absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2" />
+          </label>
+        </div>
+        {tableType === "payable" ? (
+          <Table className="border-collapse">
+            <TableHeader>
+              <TableRow className="gap-1">
+                {PayableColumns.map((column) => (
+                  <TableHead
+                    key={column.key}
+                    className={cn("h-12 cursor-pointer text-sm text-zinc-500")}
+                    onClick={() =>
+                      column.sortable &&
+                      handleSort(column.key as SortableColumn)
+                    }
                   >
-                    {viewAllValues ? row.value : "********"}
-                  </TableCell>
-
-                  {/* Lançamentos */}
-                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                    {row.category}
-                  </TableCell>
-
-                  {/* Documentos */}
-                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                    <div className="flex items-center gap-2 font-bold underline">
-                      Ver Documentos
-                      <Files />
+                    <div className="flex items-center gap-2">
+                      {column.label}
+                      {column.sortable &&
+                        getSortIcon(column.key as SortableColumn)}
                     </div>
-                  </TableCell>
-
-                  {/* Status + Ações */}
-                  <TableCell className="py-0.5 text-sm whitespace-nowrap">
-                    <div className="flex items-center gap-4">
-                      {/* Badge */}
-                      <div
-                        className={cn(
-                          "flex-1 rounded-md border px-2 py-1 text-center text-xs font-medium uppercase",
-                          {
-                            "border-red-500 bg-red-500/20 text-red-500":
-                              row.status === "a_pagar" ||
-                              row.status === "a_receber",
-                            "border-black bg-black/20 text-black":
-                              row.status === "negado",
-                            "border-emerald-600 bg-emerald-600/20 text-emerald-600":
-                              row.status === "recebido" ||
-                              row.status === "pago",
-                            "border-yellow-600 bg-yellow-600/20 text-yellow-600":
-                              row.status === "pendente",
-                            "border-zinc-400 bg-zinc-400/20 text-zinc-600":
-                              row.status === "rascunho",
-                            "border-orange-500 bg-orange-500/20 text-orange-500":
-                              row.status === "atrasado",
-                          },
-                        )}
-                      >
-                        {row.status === "a_pagar"
-                          ? "À PAGAR"
-                          : row.status === "negado"
-                            ? "NEGADO"
-                            : row.status === "a_receber"
-                              ? "À RECEBER"
-                              : row.status === "recebido"
-                                ? "RECEBIDO"
-                                : row.status === "pendente"
-                                  ? "PENDENTE"
-                                  : row.status === "rascunho"
-                                    ? "RASCUNHO"
-                                    : row.status === "pago"
-                                      ? "PAGO"
-                                      : "ATRASADO"}
-                      </div>
-
-                      {/* Menu */}
-                      <button className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-400">
-                        <EllipsisVertical />
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              </Fragment>
-            ))}
-          {paginatedRows.length < 10 &&
-            [...Array(10 - paginatedRows.length)].map((_, i) => (
-              <TableRow key={i} className="h-14">
-                <TableCell colSpan={6} className="h-full" />
+                  </TableHead>
+                ))}
               </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-
-      {/* ----------------------- Pagination Footer --------------------- */}
-      <div className="border-t border-t-zinc-200 p-2">
-        <CustomPagination
-          currentPage={currentPage}
-          pages={totalPages}
-          setCurrentPage={setCurrentPage}
-        />
+            </TableHeader>
+            <TableBody className="relative">
+              {isGettingPayables
+                ? Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                    </TableRow>
+                  ))
+                : !isGettingPayables && filteredRows.length !== 0
+                  ? filteredRows.map((row, rowIndex) => {
+                      const hasTransactions =
+                        row.transactions && row.transactions.length > 0;
+                      const isExpanded = expandedRows.has(rowIndex);
+                      return (
+                        <Fragment key={row.id}>
+                          <TableRow
+                            className="hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300"
+                            onClick={() =>
+                              hasTransactions && toggleRow(rowIndex)
+                            }
+                          >
+                            <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className={cn(
+                                    "p-1",
+                                    hasTransactions
+                                      ? "opacity-00"
+                                      : "opacity-0",
+                                  )}
+                                >
+                                  <ChevronRight
+                                    size={16}
+                                    className={cn(
+                                      "transition duration-300",
+                                      isExpanded ? "rotate-90" : "rotate-0",
+                                    )}
+                                  />
+                                </button>
+                                {moment(row.dueDate).format("DD/MM/YYYY")}
+                                {hasTransactions && (
+                                  <span className="text-xs text-gray-500">
+                                    (+{row.transactions.length})
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                              <div className="flex items-center gap-4 text-center">
+                                {row.supplier
+                                  ? row.supplier.name
+                                  : "Sem fornecedor"}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#EF4444]">
+                              {viewAllValues
+                                ? row.value.toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })
+                                : "********"}
+                            </TableCell>
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                              {row.ledgerAccount.name}
+                            </TableCell>
+                            <TableCell className="h-full py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                              {row.ledgerAccount
+                                ? row.ledgerAccount.resultCenter.name
+                                : "N/A"}
+                            </TableCell>
+                            <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                              <div
+                                className={cn(
+                                  row.status === "Pago"
+                                    ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
+                                    : row.status === "Negado"
+                                      ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
+                                      : row.status === "PENDING"
+                                        ? "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]"
+                                        : "rounded-md border border-[#1877F2] bg-[#1877F2]/20 px-2 py-1 text-[#1877F2]",
+                                )}
+                              >
+                                {row.status === "PENDING"
+                                  ? "PENDENTE"
+                                  : row.status}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-400 underline">
+                              {/* <EllipsisVertical /> */}
+                            </TableCell>
+                          </TableRow>
+                          {hasTransactions && isExpanded && (
+                            <>
+                              <TableRow className="gap-1 bg-gray-50">
+                                {PayableTransactionColumns.map((column) => (
+                                  <TableHead
+                                    key={column.key}
+                                    className={cn(
+                                      "h-12 cursor-pointer text-sm text-zinc-500",
+                                    )}
+                                    onClick={() =>
+                                      column.sortable &&
+                                      handleSort(column.key as SortableColumn)
+                                    }
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      {column.label}
+                                      {column.sortable &&
+                                        getSortIcon(
+                                          column.key as SortableColumn,
+                                        )}
+                                    </div>
+                                  </TableHead>
+                                ))}
+                              </TableRow>
+                              {row.transactions
+                                // .slice(0, 2)
+                                .sort((a, b) =>
+                                  a.dueDate.localeCompare(b.dueDate),
+                                )
+                                .map((transaction) =>
+                                  renderTransactionRow(transaction, true),
+                                )}
+                              {/* <TableRow>
+                        <TableCell colSpan={7}>
+                          <CustomPagination
+                            currentPage={selectedPayablePage}
+                            setCurrentPage={setSelectedPayablePage}
+                            pages={payablePages}
+                          />
+                        </TableCell>
+                      </TableRow> */}
+                            </>
+                          )}
+                        </Fragment>
+                      );
+                    })
+                  : !isGettingPayables &&
+                    filteredRows.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={PayableColumns.length}
+                          className="h-24"
+                        >
+                          <div className="flex w-full items-center justify-center">
+                            Nenhum À Pagar encontrado.
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+            </TableBody>
+          </Table>
+        ) : (
+          tableType === "transaction" && (
+            <Table className="border-collapse">
+              <TableHeader>
+                <TableRow className="gap-1">
+                  {TransactionColumns.map((column) => (
+                    <TableHead
+                      key={column.key}
+                      className={cn(
+                        "h-12 cursor-pointer text-sm text-zinc-500",
+                      )}
+                      onClick={() =>
+                        column.sortable &&
+                        handleSort(column.key as SortableColumn)
+                      }
+                    >
+                      <div className="flex items-center gap-2">
+                        {column.label}
+                        {column.sortable &&
+                          getSortIcon(column.key as SortableColumn)}
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody className="relative">
+                {isGettingPayables
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                        <TableCell className="h-14 animate-pulse bg-zinc-50" />
+                      </TableRow>
+                    ))
+                  : !isGettingPayables && filteredTransactionRows.length !== 0
+                    ? filteredTransactionRows.map((transaction) => {
+                        return (
+                          <TableRow
+                            key={transaction.id}
+                            className={cn(
+                              "hover:bg-primary/20 h-14 cursor-pointer py-8 text-center transition duration-300",
+                            )}
+                          >
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                              {moment(transaction.dueDate).format("DD/MM/YYYY")}
+                            </TableCell>
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                              {transaction.payable.supplier.name}
+                            </TableCell>
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                              {transaction.payable.ledgerAccount.name}
+                            </TableCell>
+                            <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                              <div className="flex items-center gap-4 text-center">
+                                {transaction.bankAccount
+                                  ? transaction.bankAccount.name
+                                  : "N/A"}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap text-[#EF4444]">
+                              {viewAllValues
+                                ? transaction.value.toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })
+                                : "********"}
+                            </TableCell>
+                            <TableCell className="py-0.5 text-start text-sm font-medium whitespace-nowrap">
+                              {transaction.paymentType}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => {
+                                setSelectedPayable(transaction);
+                                setIsOpenPayableDocumentsModal(true);
+                              }}
+                              className="h-full cursor-pointer py-0.5 text-start text-sm font-medium whitespace-nowrap"
+                            >
+                              <div className="flex items-center gap-2">
+                                Documentos
+                                <ChevronRight className="h-4" />
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-0.5 text-sm font-medium whitespace-nowrap">
+                              <div
+                                className={cn(
+                                  "w-full text-center",
+                                  transaction.status === "CLOSED" ||
+                                    transaction.status === "Recebido"
+                                    ? "rounded-md border border-[#00A181] bg-[#00A181]/20 px-2 py-1 text-[#00A181]"
+                                    : (transaction.status === "PENDING" &&
+                                          moment(transaction.dueDate)
+                                            .endOf("day")
+                                            .isBefore(moment())) ||
+                                        transaction.status === "REJECTED"
+                                      ? "rounded-md border border-[#EF4444] bg-[#EF4444]/20 px-2 py-1 text-[#EF4444]"
+                                      : transaction.status === "APPROVED"
+                                        ? "rounded-md border border-blue-500 bg-blue-500/20 px-2 py-1 text-blue-500"
+                                        : "rounded-md border border-[#D4A300] bg-[#D4A300]/20 px-2 py-1 text-[#D4A300]",
+                                )}
+                              >
+                                {transaction.status === "PENDING" &&
+                                moment(transaction.dueDate)
+                                  .endOf("day")
+                                  .isAfter(moment())
+                                  ? "Pendente"
+                                  : transaction.status === "PENDING" &&
+                                      moment(transaction.dueDate)
+                                        .endOf("day")
+                                        .isBefore(moment())
+                                    ? "Atrasado"
+                                    : transaction.status === "APPROVED"
+                                      ? "À Pagar"
+                                      : transaction.status === "REJECTED"
+                                        ? "Rejeitado"
+                                        : transaction.status === "CLOSED"
+                                          ? "Pago"
+                                          : "Atrasado"}{" "}
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "py-2 text-end text-sm font-medium whitespace-nowrap text-zinc-800 underline",
+                                transaction.status === "REJECTED" && "hidden",
+                              )}
+                            >
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <EllipsisVertical />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                  <DropdownMenuItem
+                                    onClick={() => HandleRedirect(transaction)}
+                                  >
+                                    Detalhes
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    : !isGettingPayables &&
+                      filteredTransactionRows.length === 0 && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={PayableColumns.length}
+                            className="h-24"
+                          >
+                            <div className="flex w-full items-center justify-center">
+                              Nenhuma transação encontrada.
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+              </TableBody>
+            </Table>
+          )
+        )}
+        <div className="w-full border-t border-t-zinc-200 p-2">
+          <CustomPagination
+            currentPage={
+              tableType === "payable"
+                ? selectedPayablePage
+                : selectedPayableTransactionPage
+            }
+            setCurrentPage={
+              tableType === "payable"
+                ? setSelectedPayablePage
+                : setSelectedPayableTransactionPage
+            }
+            pages={
+              tableType === "payable" ? payablePages : payableTransactionPages
+            }
+          />
+        </div>
       </div>
-    </div>
+      {isOpenPayableDocumentsModal && selectedPayable && (
+        <PayableDocumentsModal
+          isOpenPayableDocumentsModal={isOpenPayableDocumentsModal}
+          setIsOpenPayableDocumentsModal={() => {
+            setIsOpenPayableDocumentsModal(false);
+            setSelectedPayable(null);
+          }}
+          selectedPayable={selectedPayable}
+        />
+      )}
+    </>
   );
 }

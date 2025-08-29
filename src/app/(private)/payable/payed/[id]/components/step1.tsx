@@ -1,6 +1,6 @@
+import { PayableTransactionProps } from "@/components/calendar";
 import { cn } from "@/utils/cn";
 import {
-  Building2,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -16,72 +16,29 @@ import "moment/locale/pt-br";
 import { useCallback, useRef, useState } from "react";
 import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { DataType } from "../page";
-import { CostCentersList } from "./cost-centers-list";
+import { UserProps } from "../page";
 moment.locale("pt-br");
 
-interface Props {
-  data: DataType;
-  setData: (value: DataType) => void;
+interface DocumentProps {
+  comments?: string | null;
+  documentNumber: string;
+  documentUrl?: string | null;
+  dueDate: string;
+  id: string;
+  supplierId: string;
+  value: number;
 }
 
-export function Step1({ data, setData }: Props) {
+interface Props {
+  selectedPayable: PayableTransactionProps;
+  users: UserProps[];
+}
+
+export function Step1({ selectedPayable, users }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sliderRef: any = useRef(null);
-  const [selectedDocument, setSelectedDocument] = useState(4);
-
-  const Documents = [
-    {
-      id: "1",
-      name: "Documento 1",
-      doc: null,
-    },
-    {
-      id: "2",
-      name: "Documento 2",
-      doc: null,
-    },
-    {
-      id: "3",
-      name: "Documento 3",
-      doc: "/test-pdf.pdf",
-    },
-    {
-      id: "4",
-      name: "Documento 4",
-      doc: "/test-pdf.pdf",
-    },
-    {
-      id: "5",
-      name: "Documento 5",
-      doc: null,
-    },
-    {
-      id: "6",
-      name: "Documento 6",
-      doc: "/test-pdf.pdf",
-    },
-    {
-      id: "7",
-      name: "Documento 7",
-      doc: null,
-    },
-    {
-      id: "8",
-      name: "Documento 8",
-      doc: null,
-    },
-    {
-      id: "9",
-      name: "Documento 9",
-      doc: "/test-pdf.pdf",
-    },
-    {
-      id: "10",
-      name: "Documento 10",
-      doc: null,
-    },
-  ];
+  const [selectedDocument, setSelectedDocument] =
+    useState<DocumentProps | null>(null);
 
   const handlePrev = useCallback(() => {
     if (!sliderRef.current) return;
@@ -93,17 +50,17 @@ export function Step1({ data, setData }: Props) {
     sliderRef.current.slideNext();
   }, []);
 
-  const handleCardClick = (index: number, doc: string | null) => {
+  const handleCardClick = (index: number, document: DocumentProps) => {
     if (sliderRef.current) {
       sliderRef.current.slideTo(index);
-      setSelectedDocument(index + 1);
-      if (index === selectedDocument - 1) {
-        if (doc) {
+      if (document.id === selectedDocument?.id) {
+        if (document.documentUrl) {
           if (confirm("Voce deseja abrir o documento?")) {
-            window.open(doc, "_blank");
+            window.open(document.documentUrl, "_blank");
           }
         }
       }
+      setSelectedDocument(document);
     }
   };
 
@@ -124,27 +81,27 @@ export function Step1({ data, setData }: Props) {
               slidesPerView={"auto"}
               centeredSlides
               spaceBetween={10}
-              initialSlide={3}
+              initialSlide={1}
             >
-              {Documents.map((d, index) => (
+              {selectedPayable.documents.map((d, index) => (
                 <SwiperSlide key={index}>
                   <div
-                    onClick={() => handleCardClick(index, d.doc ? d.doc : null)}
+                    onClick={() => handleCardClick(index, d)}
                     className="flex w-32 flex-col gap-2"
                   >
                     <div className="border-primary relative w-full cursor-pointer overflow-hidden rounded-lg border">
                       <CircleCheck
                         className={cn(
                           "fill-primary absolute top-1 right-1 z-10 text-white transition duration-200",
-                          selectedDocument !== index + 1 && "opacity-0",
+                          selectedDocument?.id !== d.id && "opacity-0",
                         )}
                       />
-                      {d.doc ? (
+                      {d.documentUrl ? (
                         <div className="flex h-32 w-32 items-center justify-center">
                           <FileText
                             className={cn(
                               "m-auto transition duration-200",
-                              selectedDocument !== index + 1 && "opacity-20",
+                              selectedDocument?.id !== d.id && "opacity-20",
                             )}
                           />
                         </div>
@@ -153,30 +110,31 @@ export function Step1({ data, setData }: Props) {
                           <FileText
                             className={cn(
                               "m-auto text-red-500 transition duration-200",
-                              selectedDocument !== index + 1 && "opacity-20",
+                              selectedDocument?.id !== d.id && "opacity-20",
                             )}
                           />
                         </div>
                       )}
                     </div>
                     <div className="flex flex-col gap-1 text-sm">
-                      <span>{d.doc ? d.name : "Sem Documento"}</span>
-                      {d.doc && (
-                        <>
-                          <div className="flex items-center gap-1">
-                            <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
-                            <span className="text-sm text-zinc-600">
-                              12/06/2025
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <CircleDollarSign className="text-primary fill-primary/40 h-5 w-5" />
-                            <span className="text-primary text-sm">
-                              R$ 1.234,56
-                            </span>
-                          </div>
-                        </>
-                      )}
+                      <span>
+                        {d.documentUrl ? d.documentNumber : "Sem Documento"}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <CalendarDays className="text-primary fill-primary/40 h-5 w-5" />
+                        <span className="text-sm text-zinc-600">
+                          {moment(d.dueDate).format("DD/MM/YYYY")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CircleDollarSign className="text-primary fill-primary/40 h-5 w-5" />
+                        <span className="text-primary text-sm">
+                          {d.value.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </SwiperSlide>
@@ -197,8 +155,12 @@ export function Step1({ data, setData }: Props) {
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
               />
               <div className="flex flex-1 flex-col text-center">
-                <span className="flex-1 2xl:text-lg">Fornecedor Tal</span>
-                <span className="text-zinc-400">00.000.000/0000-00</span>
+                <span className="flex-1 2xl:text-lg">
+                  {selectedPayable.payable.supplier.name}
+                </span>
+                <span className="text-zinc-400">
+                  {selectedPayable.payable.supplier.cnpj}
+                </span>
               </div>
             </div>
           </label>
@@ -212,7 +174,12 @@ export function Step1({ data, setData }: Props) {
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
               />
               <div className="flex h-full flex-1 items-center">
-                <span className="flex-1 2xl:text-lg">Usuário Tal</span>
+                <span className="flex-1 2xl:text-lg">
+                  {
+                    users.find((u) => u.id === selectedPayable.approvedById)
+                      ?.name as string
+                  }
+                </span>
               </div>
             </div>
           </label>
@@ -225,7 +192,9 @@ export function Step1({ data, setData }: Props) {
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
               />
               <div className="flex flex-1 flex-col text-center">
-                <span className="flex-1 2xl:text-lg">Comentário tal</span>
+                <span className="flex-1 2xl:text-lg">
+                  {selectedDocument?.comments || "Sem comentário"}
+                </span>
               </div>
             </div>
           </label>
@@ -238,7 +207,9 @@ export function Step1({ data, setData }: Props) {
                 size={16}
               />
               <span className="flex-1 text-center text-zinc-700 2xl:text-lg">
-                Tipo de Lançamento Tal
+                {selectedPayable.payable.ledgerAccount.code +
+                  " - " +
+                  selectedPayable.payable.ledgerAccount.name}
               </span>
             </div>
           </label>
@@ -251,12 +222,14 @@ export function Step1({ data, setData }: Props) {
                 size={16}
               />
               <span className="flex-1 text-center text-zinc-700 2xl:text-lg">
-                TIpo de Custo Tal
+                {selectedPayable.payable.ledgerAccount.entryType.code +
+                  " - " +
+                  selectedPayable.payable.ledgerAccount.entryType.name}
               </span>
             </div>
           </label>
 
-          <label className="col-span-6 flex flex-col gap-1">
+          {/* <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Centro de Resultados</span>
             <div className="relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <Building2
@@ -288,11 +261,11 @@ export function Step1({ data, setData }: Props) {
                 </span>
               </div>
             </div>
-          </label>
+          </label> */}
         </div>
-        {data.costCenters.length > 0 && (
+        {/* {selectedPayable.payable.costCenters.length > 0 && (
           <CostCentersList data={data} setData={setData} />
-        )}
+        )} */}
       </div>
     </>
   );
