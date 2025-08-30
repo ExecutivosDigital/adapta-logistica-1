@@ -40,7 +40,7 @@ export default function Payable() {
                 </OrangeButton>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="bottom" className="z-[999]">
+            <DropdownMenuContent side="bottom" align="end" className="z-[999]">
               <DropdownMenuItem
                 onClick={() => handleNavigation("/payable/new")}
                 className="hover:bg-primary/20 cursor-pointer transition duration-300"

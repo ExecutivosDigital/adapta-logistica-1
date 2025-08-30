@@ -949,7 +949,7 @@ export function PayableTransactions({ selectedStatus }: Props) {
                       filteredTransactionRows.length === 0 && (
                         <TableRow>
                           <TableCell
-                            colSpan={PayableColumns.length}
+                            colSpan={PayableTransactionColumns.length}
                             className="h-24"
                           >
                             <div className="flex w-full items-center justify-center">
@@ -962,7 +962,16 @@ export function PayableTransactions({ selectedStatus }: Props) {
             </Table>
           )
         )}
-        <div className="w-full border-t border-t-zinc-200 p-2">
+        <div
+          className={cn(
+            "w-full border-t border-t-zinc-200 p-2",
+            tableType === "payable"
+              ? filteredRows.length === 0 && "hidden"
+              : tableType === "transaction"
+                ? filteredTransactionRows.length === 0 && "hidden"
+                : "",
+          )}
+        >
           <CustomPagination
             currentPage={
               tableType === "payable"

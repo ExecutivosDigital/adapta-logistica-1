@@ -191,6 +191,8 @@ export default function NewPayable() {
   ) => {
     setData((prevData) => ({
       ...prevData,
+      value: summaryData.value,
+      dueDate: summaryData.dueDate,
       mainDocumentUrl: documentUrl,
     }));
   };

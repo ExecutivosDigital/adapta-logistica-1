@@ -149,7 +149,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
           </div>
           <label className="col-span-7 flex flex-col gap-1">
             <span className="text-zinc-600">Fornecedor</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div className="border-primary relative flex h-12 items-center gap-2 rounded-2xl border px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <MapPin
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -168,7 +168,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
           <label className="col-span-5 flex flex-col gap-1">
             <span className="text-zinc-600">Aprovação</span>
 
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
+            <div className="border-primary relative flex h-12 items-center gap-2 rounded-2xl border px-2 py-1 text-center xl:h-16 xl:px-3 xl:py-2">
               <DollarSign
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -181,7 +181,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
 
           <label className="col-span-12 flex flex-col gap-1">
             <span className="text-zinc-600">Comentário</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div className="border-primary relative flex h-12 items-center gap-2 rounded-2xl border px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <MessageCircle
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -196,7 +196,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
 
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Tipo de Lançamento</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div className="border-primary relative flex h-12 items-center gap-2 rounded-2xl border px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <FileText
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                 size={16}
@@ -211,7 +211,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
 
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Tipo de Custo</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div className="border-primary relative flex h-12 items-center gap-2 rounded-2xl border px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <DollarSign
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                 size={16}
@@ -226,7 +226,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
 
           {/* <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Centro de Resultados</span>
-            <div className="relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div className="relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl border border-primary px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <Building2
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -244,7 +244,7 @@ export function Step1({ selectedPayable, isYou }: Props) {
 
           <label className="col-span-6 flex flex-col gap-1">
             <span className="text-zinc-600">Conta Contábil</span>
-            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
+            <div className="relative flex h-12 items-center gap-2 rounded-2xl border border-primary px-2 py-1 xl:h-16 xl:px-3 xl:py-2">
               <MapPin
                 size={16}
                 className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"

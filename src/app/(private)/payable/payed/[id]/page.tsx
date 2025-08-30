@@ -1,12 +1,6 @@
 "use client";
 import { PayableTransactionProps } from "@/components/calendar";
 import { OrangeButton } from "@/components/OrangeButton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useApiContext } from "@/context/ApiContext";
 import { cn } from "@/utils/cn";
 import {
@@ -14,9 +8,9 @@ import {
   ChevronDown,
   ChevronLeft,
   DollarSign,
-  EllipsisVertical,
   X,
 } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -113,24 +107,7 @@ export default function PayablePay() {
           className="h-16 w-auto"
           priority
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="absolute top-4 left-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 p-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 focus:outline-none">
-              <EllipsisVertical size={16} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" align="start" className="bg-white">
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
-              Reportar Erro
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
-              Negar Lançamento
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-primary/20 cursor-pointer transition duration-200">
-              Lorem
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
         <button
           onClick={() => router.back()}
           className="absolute top-4 right-8 flex cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
@@ -152,7 +129,7 @@ export default function PayablePay() {
                 <span className="text-lg font-semibold">Fatura Paga</span>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
-                  22/03/2025
+                  {moment(selectedPayable.dueDate).format("DD/MM/YYYY")}
                 </span>
               </div>
             </div>

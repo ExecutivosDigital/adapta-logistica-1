@@ -4,7 +4,6 @@ import { useFinancialDataContext } from "@/context/FinancialDataContext";
 import { cn } from "@/utils/cn";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
-import DollarIcon from "../../../../../../public/icons/dollar";
 import { DataType } from "../page";
 
 interface SupplierModalProps {
@@ -126,28 +125,6 @@ export function SupplierModal({
                             {fornecedor.cnpj}
                           </span>
                         </div>
-                      </div>
-                      <div className="flex w-full items-center justify-between gap-6 text-sm xl:w-auto xl:justify-normal">
-                        <div className="text-primary flex w-28 items-center gap-1 font-medium">
-                          <span>
-                            <DollarIcon
-                              width={22}
-                              height={22}
-                              className="fill-primary text-primary"
-                            />
-                          </span>
-                          <span>fornecedor.expirationDate</span>
-                        </div>
-                        <span
-                          className={cn(
-                            "w-32 rounded-md border px-3 py-1 font-semibold",
-                            // fornecedor.status === "ATIVO"
-                            //   ? "border-emerald-600 bg-emerald-600/20 text-emerald-600"
-                            //   : "border-rose-600 bg-rose-600/20 text-rose-600",
-                          )}
-                        >
-                          fornecedor.status
-                        </span>
                       </div>
                     </li>
                   ))}

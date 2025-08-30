@@ -72,7 +72,12 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
           <span className="text-zinc-600">Pagamento Via</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="relative flex h-8 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-12 xl:px-3 xl:py-2">
+              <div
+                className={cn(
+                  "relative flex h-8 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-12 xl:px-3 xl:py-2",
+                  selectedPayable.bankAccountId && "border-primary",
+                )}
+              >
                 <CreditCard
                   size={16}
                   className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
@@ -119,7 +124,12 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
           <span className="text-zinc-600">Forma de Pagamento</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full focus:outline-none">
-              <div className="relative flex h-8 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-12 xl:px-3 xl:py-2">
+              <div
+                className={cn(
+                  "relative flex h-8 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 xl:h-12 xl:px-3 xl:py-2",
+                  selectedPayable.paymentType && "border-primary",
+                )}
+              >
                 <DollarSign
                   className="text-primary absolute top-1 left-1 xl:top-2 xl:left-2"
                   size={16}

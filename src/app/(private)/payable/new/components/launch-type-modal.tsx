@@ -93,14 +93,14 @@ export default function LaunchTypeModal({
                 >
                   <div className="flex-1 text-sm">
                     <span className="block text-start font-medium text-zinc-800">
-                      {item.code}
+                      {item.name}
                     </span>
                   </div>
                   <div className="flex-1 text-start text-xs text-zinc-500">
-                    {item.name}
+                    item.type
                   </div>
                   <div className="border-primary bg-primary/20 text-primary rounded-md border px-3 py-1 text-sm font-semibold">
-                    item.conta
+                    {item.code}
                   </div>
                 </li>
               ))}

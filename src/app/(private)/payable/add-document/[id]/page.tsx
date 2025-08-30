@@ -81,10 +81,14 @@ export default function PayableAddDocument() {
         documents: editedDocuments,
         newDocuments,
         deletedDocuments,
-        value: allDocuments.map((doc) => doc.value).reduce((a, b) => a + b, 0),
+        value: allDocuments
+          .map((doc) => doc.value)
+          .reduce((a, b) => a + b, 0)
+          .toFixed(2),
       },
       true,
     );
+
     if (response.status === 200) {
       toast.success("Documento(s) adicionado(s) com sucesso!");
       handleNavigation("/calendar");
@@ -162,8 +166,8 @@ export default function PayableAddDocument() {
                     .map((doc) => doc.value)
                     .reduce((a, b) => a + b, 0)
                     .toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
                     })}
                 </h2>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">

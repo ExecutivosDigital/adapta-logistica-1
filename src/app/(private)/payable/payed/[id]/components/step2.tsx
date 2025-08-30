@@ -72,7 +72,7 @@ export function Step2({ selectedPayable }: Props) {
           <span className="text-zinc-600">Forma de Pagamento</span>
           <div
             className={cn(
-              "relative flex h-8 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
+              "relative flex h-8 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
               "border-primary",
             )}
           >

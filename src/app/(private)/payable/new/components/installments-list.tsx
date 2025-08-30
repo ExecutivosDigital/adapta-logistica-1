@@ -49,7 +49,7 @@ export function TransactionsList({
           const finalValue = finalValueCents / 100;
 
           return {
-            dueDate: moment()
+            dueDate: moment(data.dueDate)
               .add(index * 30, "days")
               .format("YYYY-MM-DD"),
             position: index + 1,

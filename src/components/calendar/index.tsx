@@ -364,71 +364,69 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
   return (
     <div className="flex h-full w-full">
       <div className="flex w-full">
-        {payableTransactions.length !== 0 && (
-          <Calendar
-            selectable
-            date={date}
-            onNavigate={setDate}
-            view={view}
-            onView={setView}
-            events={
-              view === Views.MONTH
-                ? monthSummaryTransactions
-                : payableTransactions
-            }
-            localizer={localizer}
-            defaultView={Views.MONTH}
-            scrollToTime={new Date(1970, 1, 1, 6)}
-            defaultDate={new Date()}
-            components={{
-              event: (props) => {
-                const { event } = props;
-                if (view === Views.MONTH) {
-                  return (
-                    <MonthSummaryEvent
-                      event={event as MonthSummaryTransactionProps}
-                    />
-                  );
-                } else if (view === Views.WEEK) {
-                  return (
-                    <CustomEventWeek
-                      event={event as PayableTransactionProps}
-                      onView={() => {}}
-                    />
-                  );
-                } else {
-                  return (
-                    <CustomEvent
-                      event={event as PayableTransactionProps}
-                      onView={() => {}}
-                    />
-                  );
-                }
+        <Calendar
+          selectable
+          date={date}
+          onNavigate={setDate}
+          view={view}
+          onView={setView}
+          events={
+            view === Views.MONTH
+              ? monthSummaryTransactions
+              : payableTransactions
+          }
+          localizer={localizer}
+          defaultView={Views.MONTH}
+          scrollToTime={new Date(1970, 1, 1, 6)}
+          defaultDate={new Date()}
+          components={{
+            event: (props) => {
+              const { event } = props;
+              if (view === Views.MONTH) {
+                return (
+                  <MonthSummaryEvent
+                    event={event as MonthSummaryTransactionProps}
+                  />
+                );
+              } else if (view === Views.WEEK) {
+                return (
+                  <CustomEventWeek
+                    event={event as PayableTransactionProps}
+                    onView={() => {}}
+                  />
+                );
+              } else {
+                return (
+                  <CustomEvent
+                    event={event as PayableTransactionProps}
+                    onView={() => {}}
+                  />
+                );
+              }
+            },
+            toolbar: (props: any) => <CustomToolbar {...props} />,
+          }}
+          onSelectEvent={onSelectEvent}
+          eventPropGetter={() => {
+            const bg = "#FFECEC";
+            const border = "#D93025";
+            return {
+              style: {
+                backgroundColor: bg,
+                borderLeft: `4px solid ${border}`,
+                paddingLeft: 4,
+                marginLeft: 2,
+                width: "95%",
+                color: border,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
               },
-              toolbar: (props: any) => <CustomToolbar {...props} />,
-            }}
-            onSelectEvent={onSelectEvent}
-            eventPropGetter={() => {
-              const bg = "#FFECEC";
-              const border = "#D93025";
-              return {
-                style: {
-                  backgroundColor: bg,
-                  borderLeft: `4px solid ${border}`,
-                  paddingLeft: 4,
-                  marginLeft: 2,
-                  width: "95%",
-                  color: border,
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
-                },
-              };
-            }}
-            className="min-h-[600px] w-full text-black xl:min-h-[900px]"
-            culture="pt-BR"
-            messages={{ noEventsInRange: "Nenhuma atividade encontrada." }}
-          />
-        )}
+            };
+          }}
+          className="min-h-[600px] w-full text-black xl:min-h-[900px]"
+          culture="pt-BR"
+          messages={{ noEventsInRange: "Nenhuma atividade encontrada." }}
+        />
       </div>
     </div>
   );

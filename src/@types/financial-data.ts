@@ -4,18 +4,33 @@ export interface SupplierProps {
   cnpj: string;
   code: number;
   companyId: string;
-  complement: string | null;
+  complement: string;
   createdAt: string;
-  email: string;
+  emails: string[];
+  fiscalGroupId: string;
   id: string;
-  municipalRegistration: string | null;
+  latitude: number;
+  ledgerAccountId: string;
+  longitude: number;
+  mobilePhone: string;
+  municipalRegistration: string;
   name: string;
   neighborhood: string;
   number: string;
+  paymentAccount: string;
+  paymentAccountOwner: string;
+  paymentAccountOwnerDocument: string;
+  paymentAgency: string;
+  paymentBank: string;
   phone: string;
   postalCode: string;
+  resultCenterId: string;
   state: string;
-  stateRegistration: string | null;
+  stateRegistration: string;
+  suframa: string;
+  supplierGroupId: string;
+  supplierTypeId: string;
+  tributaryRegimeId: string;
 }
 
 export interface LedgerAccountsProps {

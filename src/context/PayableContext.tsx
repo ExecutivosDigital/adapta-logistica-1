@@ -266,7 +266,6 @@ export const PayableContextProvider = ({ children }: ProviderProps) => {
       `/payable-transaction?companyId=${selectedBranch?.companyId}&page=${selectedPayableTransactionPage}`,
       true,
     );
-    console.log("transactions", transactions);
     if (transactions.status === 200) {
       setPayableTransactionList(transactions.body.payableTransactions);
       setPayableTransactionPages(transactions.body.total);

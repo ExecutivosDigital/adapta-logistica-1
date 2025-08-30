@@ -19,6 +19,7 @@ import {
   Loader2,
   X,
 } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -101,6 +102,8 @@ export default function PayablePay() {
   }
 
   async function SendReceipt() {
+    if (!selectedPayable?.receiptUrl)
+      return toast.error("Insira um Comprovante de Pagamento");
     setIsSaving(true);
     const receipt = await PutAPI(
       `/payable-transaction/${id}`,
@@ -111,11 +114,11 @@ export default function PayablePay() {
       true,
     );
     if (receipt.status === 200) {
-      toast.success("Transação finalizada com sucesso");
-      handleNavigation("/payable");
+      toast.success("Comprovante enviado com sucesso");
+      handleNavigation("/calendar");
       return setIsSaving(false);
     }
-    toast.error("Erro ao finalizar transação, tente novamente");
+    toast.error("Erro ao enviar comprovante, tente novamente");
     return setIsSaving(false);
   }
 
@@ -178,7 +181,7 @@ export default function PayablePay() {
                 </span>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
-                  22/03/2025
+                  {moment(selectedPayable.dueDate).format("DD/MM/YYYY")}
                 </span>
               </div>
             </div>

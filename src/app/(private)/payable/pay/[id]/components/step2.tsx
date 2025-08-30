@@ -26,6 +26,7 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
   const { PostAPI } = useApiContext();
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
+  const [fullUrl, setFullUrl] = useState("");
 
   const buttonBase =
     "relative flex w-full items-center gap-2 rounded-lg border  px-3 py-3 text-sm transition";
@@ -41,6 +42,7 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
         ...selectedPayable,
         receiptUrl: res.body.url,
       });
+      setFullUrl(res.body.fullUrl);
       setIsUploaded(true);
       return setIsUploading(false);
     }
@@ -60,7 +62,7 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
         <div
           onClick={() => {
             if (isUploaded) {
-              window.open(selectedPayable.receiptUrl as string, "_blank");
+              window.open(fullUrl, "_blank");
             }
           }}
           className="border-primary text-primary relative col-span-12 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-2 text-center"
@@ -168,7 +170,7 @@ export function Step2({ selectedPayable, setSelectedPayable }: Props) {
           <span className="text-zinc-600">Forma de Pagamento</span>
           <div
             className={cn(
-              "relative flex h-8 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
+              "relative flex h-8 items-center gap-2 rounded-2xl border border-zinc-200 px-2 py-1 text-center xl:h-12 xl:px-3 xl:py-2",
               "border-primary",
             )}
           >

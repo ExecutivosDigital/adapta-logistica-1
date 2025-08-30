@@ -139,7 +139,10 @@ export function Document({
               <div className="flex-1 text-zinc-700 2xl:text-lg">
                 <input
                   placeholder="R$ 0,00"
-                  value={document.value}
+                  value={document.value.toLocaleString("pt-br", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                   onChange={(e) =>
                     updateDocument(document.id, "value", e.target.value)
                   }

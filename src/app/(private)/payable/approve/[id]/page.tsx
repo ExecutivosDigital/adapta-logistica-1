@@ -19,6 +19,7 @@ import {
   Loader2,
   X,
 } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -101,13 +102,17 @@ export default function ApprovePayable() {
   }
 
   async function HandleUpdateTransaction(status: string) {
+    if (status === "APPROVED") {
+      if (!selectedPayable?.bankAccountId)
+        return toast.error("Selecione uma conta");
+    }
     setIsUpdating(true);
     const update = await PutAPI(
       `/payable-transaction/${id}`,
       {
         bankAccountId: selectedPayable?.bankAccountId,
         paymentType: selectedPayable?.paymentType,
-        dueDate: selectedPayable?.dueDate,
+        dueDate: moment(selectedPayable?.dueDate).toDate(),
         status,
         approvedById: isYou?.id,
       },
@@ -193,7 +198,7 @@ export default function ApprovePayable() {
                 </span>
                 <span className="flex items-center gap-1 text-sm text-zinc-600">
                   <Calendar size={16} />
-                  22/03/2025
+                  {moment(selectedPayable.dueDate).format("DD/MM/YYYY")}
                 </span>
               </div>
             </div>

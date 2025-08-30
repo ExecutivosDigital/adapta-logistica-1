@@ -51,10 +51,20 @@ export function Step1({
     setAllDocuments(
       allDocuments.map((doc) => {
         if (doc.id === documentId) {
-          return {
-            ...doc,
-            [field]: value,
-          };
+          if (field !== "value") {
+            return {
+              ...doc,
+              [field]: value,
+            };
+          } else {
+            const onlyDigits = value.replace(/\D/g, "");
+            const amountNumber = Number(onlyDigits) / 100;
+
+            return {
+              ...doc,
+              [field]: amountNumber,
+            };
+          }
         }
         return doc;
       }),
