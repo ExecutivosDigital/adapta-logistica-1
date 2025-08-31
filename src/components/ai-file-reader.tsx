@@ -15,9 +15,13 @@ export interface PaymentDocumentProps {
 
 interface AiFileReaderProps {
   handleData: (data: PaymentDocumentProps, documentUrl: string) => void;
+  setIsAddingDocument?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function AiFileReader({ handleData }: AiFileReaderProps) {
+export function AiFileReader({
+  handleData,
+  setIsAddingDocument,
+}: AiFileReaderProps) {
   const { PostAPI } = useApiContext();
   const [isShowingDocument, setIsShowingDocument] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -142,6 +146,9 @@ export function AiFileReader({ handleData }: AiFileReaderProps) {
             accept=".pdf"
             onChange={async (e) => {
               setLoading(true);
+              if (setIsAddingDocument) {
+                setIsAddingDocument(true);
+              }
               const selectedFile = e.target.files?.[0];
               if (selectedFile) {
                 const reader = new FileReader();

@@ -34,6 +34,7 @@ export default function PayableAddDocument() {
   const [steps, setSteps] = useState(1);
   const [allDocuments, setAllDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddingDocument, setIsAddingDocument] = useState(false);
 
   async function GetIndividualPayable(id: string) {
     const payable = await GetAPI(`/payable-transaction/${id}`, true);
@@ -47,14 +48,15 @@ export default function PayableAddDocument() {
     summaryData: PaymentDocumentProps,
     documentUrl: string,
   ) => {
+    setIsAddingDocument(false);
     return setAllDocuments((prev) => [
       ...prev,
       {
         documentUrl,
-        documentNumber: "",
-        dueDate: moment().format(),
+        documentNumber: summaryData.documentNumber,
+        dueDate: moment(summaryData.dueDate).format("DD/MM/YYYY"),
         supplierId: selectedPayable?.payable.supplier.id as string,
-        value: 0,
+        value: summaryData.value,
         comments: "",
         id: Date.now().toString(),
       },
@@ -180,6 +182,9 @@ export default function PayableAddDocument() {
               selectedPayable={selectedPayable}
               allDocuments={allDocuments}
               setAllDocuments={setAllDocuments}
+              handleData={handleData}
+              isAddingDocument={isAddingDocument}
+              setIsAddingDocument={setIsAddingDocument}
             />
             <footer className="mt-4 flex items-center justify-end gap-6 border-t border-orange-200 bg-white px-8 py-4">
               <OrangeButton

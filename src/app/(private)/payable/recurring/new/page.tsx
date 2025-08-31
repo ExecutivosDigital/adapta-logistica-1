@@ -26,6 +26,7 @@ import {
   MapPin,
   X,
 } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -198,6 +199,8 @@ export default function NewRecurringPayable() {
   ) => {
     setData((prevData) => ({
       ...prevData,
+      value: summaryData.value,
+      dueDate: moment(summaryData.dueDate).format("DD/MM/YYYY"),
       mainDocumentUrl: documentUrl,
     }));
   };
@@ -208,6 +211,7 @@ export default function NewRecurringPayable() {
       "/payable",
       {
         ...data,
+        dueDate: moment(data.dueDate).toDate(),
         resultCenters: data.resultCenters.map((center) => ({
           ...center,
           value: Number(center.value),

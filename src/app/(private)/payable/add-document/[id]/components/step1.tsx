@@ -1,5 +1,9 @@
+import {
+  AiFileReader,
+  PaymentDocumentProps,
+} from "@/components/ai-file-reader";
 import { PayableTransactionProps } from "@/components/calendar";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import moment from "moment";
 import "moment/locale/pt-br";
 import React, { useEffect } from "react";
@@ -20,12 +24,18 @@ interface Props {
   selectedPayable: PayableTransactionProps;
   allDocuments: Document[];
   setAllDocuments: React.Dispatch<React.SetStateAction<Document[]>>;
+  handleData: (data: PaymentDocumentProps, documentUrl: string) => void;
+  isAddingDocument: boolean;
+  setIsAddingDocument: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function Step1({
   selectedPayable,
   allDocuments,
   setAllDocuments,
+  handleData,
+  isAddingDocument,
+  setIsAddingDocument,
 }: Props) {
   const addNewDocument = () => {
     const newDocument: Document = {
@@ -96,14 +106,28 @@ export function Step1({
               </span>
             </div>
           </button>
-          <div className="border-primary text-primary col-span-12 flex gap-4 rounded-lg border border-dashed p-2 xl:col-span-5">
+          <div className="border-primary text-primary relative col-span-12 flex gap-4 rounded-lg border border-dashed p-2 xl:col-span-5">
+            <div className="absolute top-0 left-0 h-full w-full overflow-hidden opacity-0">
+              <AiFileReader
+                handleData={handleData}
+                setIsAddingDocument={setIsAddingDocument}
+              />
+            </div>
             <div className="border-primary flex h-6 w-6 items-center justify-center rounded-full border">
-              <Plus />
+              {isAddingDocument ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Plus />
+              )}
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold">Upload de Documento</span>
+              <span className="font-semibold">
+                {isAddingDocument ? "Carregando..." : "Upload de Documento"}
+              </span>
               <span className="text-sm font-light">
-                Clique ou arraste o documento aqui
+                {isAddingDocument
+                  ? "Aguarde enquanto analisamos o documento"
+                  : "Clique ou arraste o documento aqui"}
               </span>
             </div>
           </div>

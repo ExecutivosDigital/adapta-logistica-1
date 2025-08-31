@@ -25,11 +25,7 @@ export default function Calendar() {
           />
         </div>
         <div className="col-span-12 flex w-full flex-col gap-4">
-          <CalendarApp
-            accessLevel={accessLevel}
-            setAccessLevel={setAccessLevel}
-            filter={filter}
-          />
+          <CalendarApp accessLevel={accessLevel} filter={filter} />
         </div>
       </div>
     </div>

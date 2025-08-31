@@ -7,7 +7,7 @@ import { useLoadingContext } from "@/context/LoadingContext";
 import { useValueContext } from "@/context/ValueContext";
 import moment from "moment";
 import "moment/locale/pt-br";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, momentLocalizer, View, Views } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { CustomEvent } from "./CustomEvent";
@@ -152,7 +152,6 @@ type RBCEvent = PayableTransactionProps | MonthSummaryTransactionProps;
 
 interface ButtonGroupProps {
   accessLevel: string;
-  setAccessLevel: React.Dispatch<React.SetStateAction<string>>;
   filter: string;
 }
 
@@ -244,7 +243,7 @@ function MonthSummaryEvent({ event }: { event: MonthSummaryTransactionProps }) {
   );
 }
 
-const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
+const CalendarApp = ({ accessLevel, filter }: ButtonGroupProps) => {
   const { handleNavigation } = useLoadingContext();
   const { selectedBranch, selectedBusinessUnit } = useBranch();
   const { GetAPI } = useApiContext();
@@ -372,7 +371,11 @@ const CalendarApp = ({ accessLevel }: ButtonGroupProps) => {
           onView={setView}
           events={
             view === Views.MONTH
-              ? monthSummaryTransactions
+              ? filter === "Saída"
+                ? monthSummaryTransactions.filter((e) => e.isPayable)
+                : filter === "Entrada"
+                  ? monthSummaryTransactions.filter((e) => !e.isPayable)
+                  : monthSummaryTransactions
               : payableTransactions
           }
           localizer={localizer}
