@@ -99,8 +99,8 @@ export default function LaunchTypeModal({
                   <div className="flex-1 text-start text-xs text-zinc-500">
                     {item.name}
                   </div>
-                  <div className="border-primary bg-primary/20 text-primary rounded-md border px-3 py-1 text-sm font-semibold">
-                    item.conta
+                  <div className="border-primary bg-primary/20 text-primary w-40 truncate rounded-md border px-3 py-1 text-sm font-semibold">
+                    {item.entryType.name}
                   </div>
                 </li>
               ))}

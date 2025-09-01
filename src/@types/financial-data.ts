@@ -36,6 +36,12 @@ export interface SupplierProps {
 export interface LedgerAccountsProps {
   code: string;
   companyId: string;
+  entryType: {
+    code: number;
+    companyId: string;
+    id: string;
+    name: string;
+  };
   id: string;
   level: number;
   name: string;
