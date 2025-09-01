@@ -1,6 +1,5 @@
 import { HomeButtonGroup } from "./components/button-group";
 import HomeCategoryList from "./components/category-list";
-
 import { HomeFinancialLists } from "./components/financial-lists";
 import { HomeGoalCards } from "./components/goal-cards";
 import { HomeNewRelease } from "./components/new-release";

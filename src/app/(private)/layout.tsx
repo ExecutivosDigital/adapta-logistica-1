@@ -1,5 +1,6 @@
 "use client";
 
+import ChatWidget from "@/components/chatPopup";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { useLoadingContext } from "@/context/LoadingContext";
 
@@ -13,6 +14,7 @@ export default function Layout({
     <>
       {isNavigating && <LoadingOverlay />}
       {children}
+      <ChatWidget />
     </>
   );
 }

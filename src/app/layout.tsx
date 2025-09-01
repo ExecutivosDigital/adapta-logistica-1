@@ -1,4 +1,3 @@
-import ChatWidget from "@/components/chatPopup";
 import { ContextProviders } from "@/context/ContextProviders";
 import { SidebarProvider } from "@/context/SidebarContext";
 import type { Metadata } from "next";
@@ -50,7 +49,6 @@ export default function RootLayout({
             position="top-center"
             toastOptions={{ duration: 5000, className: "z-[1000000]" }}
           />
-          <ChatWidget />
         </body>
       </ContextProviders>
     </html>

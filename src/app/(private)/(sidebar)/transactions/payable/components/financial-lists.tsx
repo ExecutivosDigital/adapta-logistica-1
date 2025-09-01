@@ -51,7 +51,7 @@ export function PayableFinancialLists() {
     if (range && range.from && range.to) {
       setDateRange({ from: range.from, to: range.to });
     } else {
-      setDateRange({ from: new Date(), to: new Date() }); // or handle undefined case as needed
+      setDateRange({ from: new Date(), to: new Date() });
     }
   };
 
@@ -207,7 +207,7 @@ export function PayableFinancialLists() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <ScrollArea className="relative h-60 w-full px-4">
+          <ScrollArea className="relative h-80 w-full px-4">
             {isGettingClosedTransactions
               ? Array.from({ length: 10 }, (_, index) => (
                   <div
@@ -291,7 +291,7 @@ export function PayableFinancialLists() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <ScrollArea className="relative h-60 w-full px-4">
+          <ScrollArea className="relative h-80 w-full px-4">
             {isGettingApprovedTransactions
               ? Array.from({ length: 10 }, (_, index) => (
                   <div

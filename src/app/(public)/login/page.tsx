@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useCookies } from "next-client-cookies";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -50,7 +49,11 @@ export default function Login() {
         );
         handleNavigation("/register/branches");
       } else {
-        toast.error(res?.body?.message ?? "Não foi possível realizar o login.");
+        toast.error(
+          res?.body?.message
+            ? "Email ou Senha incorretos"
+            : "Não foi possível realizar o login.",
+        );
       }
     },
     (errors) => {
@@ -139,12 +142,12 @@ export default function Login() {
                     Lembrar de mim
                   </Label>
                 </div>
-                <Link
+                {/* <Link
                   href="/recover-password"
                   className="text-primary hover:text-primary-dark flex-none text-sm font-bold transition duration-300"
                 >
                   Esqueceu a senha?
-                </Link>
+                </Link> */}
               </div>
             </div>
             <button
@@ -153,12 +156,12 @@ export default function Login() {
             >
               Entrar Agora
             </button>
-            <span className="mx-auto text-center md:text-start">
+            {/* <span className="mx-auto text-center md:text-start">
               Novo aqui no Adapta?
               <span className="text-primary hover:text-primary-dark cursor-pointer font-semibold transition duration-300">
                 {""} Conheça o Grupo Agora
               </span>
-            </span>
+            </span> */}
           </form>
         </div>
       </div>
